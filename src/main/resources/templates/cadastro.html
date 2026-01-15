@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - Help Desk</title>
+
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/cadastro.css}">
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-box">
+
+        <h2>Criar Conta</h2>
+
+        <form th:action="@{/usuarios/salvar}" th:object="${usuario}" method="post">
+
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" th:field="*{nome}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" th:field="*{email}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" th:field="*{senha}" required>
+            </div>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <p>
+            Já tem conta?
+            <a th:href="@{/login}">Entrar</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>
