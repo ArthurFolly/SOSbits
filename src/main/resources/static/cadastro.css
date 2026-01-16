@@ -1,4 +1,4 @@
-/* RESET */
+/* RESET PADRÃO */
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +6,7 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* FUNDO COM GRADIENTE */
+/* FUNDO COM GRADIENTE IDÊNTICO AO LOGIN */
 body {
     min-height: 100vh;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -16,11 +16,11 @@ body {
     padding: 20px;
 }
 
-/* CARD CENTRAL */
-.login-container {
+/* CARD CENTRAL (O CONTAINER) */
+.cadastro-container {
     display: flex;
     width: 1100px;
-    height: 650px; /* Ajustado para um respiro melhor */
+    height: 750px; /* Aumentado para 750px para caber os 4 campos confortavelmente */
     background-color: #ffffff;
     border-radius: 24px;
     overflow: hidden;
@@ -28,61 +28,51 @@ body {
 }
 
 /* LADO ESQUERDO - IMAGEM */
-.login-left {
+.cadastro-left {
     width: 50%;
+    /* O caminho abaixo considera que a pasta images está em static */
     background: #f8fafc url("images/SOSBitsImage-removebg-preview.png") no-repeat center center;
     background-size: contain;
     padding: 20px;
 }
 
-/* LADO DIREITO - LOGIN (CENTRALIZAÇÃO AQUI) */
-.login-box {
+/* LADO DIREITO - FORMULÁRIO */
+.cadastro-box {
     width: 50%;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centraliza verticalmente */
-    align-items: center;     /* CENTRALIZA HORIZONTALMENTE O CONTEÚDO */
+    justify-content: center;
     padding: 48px;
 }
 
-/* HEADER - Alinhado ao centro para combinar */
-.login-header {
-    width: 100%;
-    max-width: 380px;
-    margin-bottom: 28px;
-    text-align: center; /* Centraliza o texto do título */
+/* CABEÇALHO */
+.cadastro-header {
+    margin-bottom: 25px;
 }
 
-.login-header h1 {
-    font-size: 36px;
+.cadastro-header h1 {
+    font-size: 32px;
     color: #1e293b;
     font-weight: bold;
 }
 
-.login-header p {
+.cadastro-header p {
     font-size: 15px;
     color: #64748b;
     margin-top: 8px;
 }
 
-/* FORM - Agora ele está preso no centro pela login-box */
-.login-form {
-    width: 100%;
-    max-width: 380px;
-    display: flex;
-    flex-direction: column;
-}
-
+/* ESTILO DOS CAMPOS (INPUTS) */
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 18px;
+    margin-bottom: 16px; /* Espaçamento entre os campos */
 }
 
 .form-group label {
     margin-bottom: 6px;
-    font-size: 15px;
+    font-size: 14px;
     color: #334155;
     font-weight: 500;
 }
@@ -100,11 +90,11 @@ body {
     border-color: #3b82f6;
 }
 
-/* BOTÃO PRIMÁRIO */
+/* BOTÃO DE CADASTRO */
 button {
     width: 100%;
     padding: 14px;
-    margin-top: 12px;
+    margin-top: 10px;
     background-color: #3b82f6;
     color: white;
     font-size: 17px;
@@ -118,12 +108,10 @@ button {
 button:hover {
     background-color: #2563eb;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* BOTÃO SECUNDÁRIO (ALINHADO E CENTRALIZADO) */
+/* LINK PARA VOLTAR AO LOGIN */
 .btn-secondary {
-    width: 100%;
     display: block;
     text-align: center;
     text-decoration: none;
@@ -131,24 +119,23 @@ button:hover {
     color: #3b82f6;
     font-weight: 600;
     font-size: 15px;
-    padding: 10px 0;
 }
 
 .btn-secondary:hover {
     text-decoration: underline;
 }
 
-/* RESPONSIVO */
+/* RESPONSIVO PARA CELULARES */
 @media (max-width: 900px) {
-    .login-container {
+    .cadastro-container {
         width: 100%;
         height: auto;
     }
-    .login-left {
-        display: none;
+    .cadastro-left {
+        display: none; /* Esconde a imagem no celular */
     }
-    .login-box {
+    .cadastro-box {
         width: 100%;
-        padding: 40px 20px;
+        padding: 40px 25px;
     }
 }
