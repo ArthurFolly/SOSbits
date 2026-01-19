@@ -2,9 +2,12 @@ package com.sosbits.helpdesk.controller;
 
 import com.sosbits.helpdesk.model.Usuario;
 import com.sosbits.helpdesk.repository.UsuarioRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Controller
 public class LoginController {
@@ -15,39 +18,52 @@ public class LoginController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // GET - tela de login
+    @GetMapping("/")
+    public String redirectLogin() {
+        return "redirect:/login";
+    }
+
     @GetMapping("/login")
-    public String loginPage(
-            @RequestParam(required = false) String erro,
-            Model model
-    ) {
-        if (erro != null) {
-            model.addAttribute("erro", "Email ou senha inválidos");
-        }
+    public String telaLogin() {
         return "index";
     }
 
-    // POST - autenticação
-    @PostMapping("/auth/login")
-    public String autenticar(
-            @RequestParam String email,
-            @RequestParam String password
-    ) {
+    @PostMapping("/login")
+    public String login(@RequestParam String email,
+                        @RequestParam String senha,
+                        Model model,
+                        HttpSession session) {
 
-        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
-        if (usuario == null) {
-            return "redirect:/login?erro";
+        if (usuarioOpt.isEmpty() || !usuarioOpt.get().getSenha().equals(senha)) {
+            model.addAttribute("erro", "E-mail ou senha incorretos!");
+            return "index";
         }
 
-        if (!usuario.getSenha().equals(password)) {
-            return "redirect:/login?erro";
+        Usuario usuario = usuarioOpt.get();
+
+        if (usuario.getAtivo() == null || !usuario.getAtivo()) {
+            model.addAttribute("erro", "Usuário inativo!");
+            return "index";
         }
 
-        if (!usuario.isAtivo()) {
-            return "redirect:/login?erro";
-        }
-
+        session.setAttribute("usuarioNome", usuario.getNome());
         return "redirect:/dashboard";
+    }
+
+    @GetMapping("/dashboard")
+    public String abrirDashboard(HttpSession session, Model model) {
+        String nome = (String) session.getAttribute("usuarioNome");
+
+        if (nome == null) {
+            return "redirect:/login";
+        }
+
+        // Garante que o nome e a lista existam para o Thymeleaf não dar erro 500
+        model.addAttribute("usuarioNome", nome);
+        model.addAttribute("chamadosRecentes", new ArrayList<>());
+
+        return "dashboard";
     }
 }

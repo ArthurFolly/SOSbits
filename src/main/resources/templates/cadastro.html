@@ -16,10 +16,17 @@
             <p>Preencha os dados abaixo</p>
         </div>
 
-        <form th:action="@{/usuarios/salvar}" th:object="${usuario}" method="post">
+        <form th:action="@{/salvar}" th:object="${usuario}" method="post">
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" th:field="*{nome}" placeholder="Digite seu nome" required>
+            </div>
+
             <div class="form-group">
                 <label>CPF</label>
-                <input type="text" th:field="*{cpf}" placeholder="000.000.000-00" required>
+                <input type="text" name="cpf" placeholder="00000000000"
+                       maxlength="11" minlength="11" required
+                       pattern="\d{11}" title="Digite apenas os 11 números do CPF">
             </div>
 
             <div class="form-group">
@@ -33,12 +40,14 @@
             </div>
 
             <div class="form-group">
-                <label>Senha</label>
-                <input type="password" th:field="*{senha}" placeholder="Sua senha" required>
+                <label>Telefone</label>
+                <input type="text" name="telefone" placeholder="11999999999"
+                       maxlength="11" minlength="10" required
+                       pattern="\d{10,11}" title="Digite o DDD e o número (10 ou 11 dígitos)">
             </div>
 
             <button type="submit">Cadastrar</button>
-            <a th:href="@{/login}" class="btn-secondary">Já tenho conta</a>
+            <a th:href="@{/index}" class="btn-secondary">Já tenho conta</a>
         </form>
     </div>
 </div>

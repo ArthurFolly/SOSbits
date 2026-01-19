@@ -3,30 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - Help Desk</title>
-
-    <!-- CSS -->
     <link rel="stylesheet" th:href="@{/base.css}">
     <link rel="stylesheet" th:href="@{/login.css}">
 </head>
 <body>
 
 <div class="login-container">
-
-    <!-- LADO ESQUERDO (IMAGEM) -->
     <div class="login-left"></div>
-
-    <!-- LADO DIREITO (LOGIN) -->
     <div class="login-box">
-
         <div class="login-header">
             <h1>Help Desk</h1>
             <p>Sistema de Gerenciamento de Chamados</p>
         </div>
 
-        <!-- Mensagem de erro -->
-        <p th:if="${erro}" style="color: red;" th:text="${erro}"></p>
+        <p th:if="${erro}" style="color: #ff4d4d; font-weight: bold; text-align: center; background: #ffe6e6; padding: 10px; border-radius: 5px;" th:text="${erro}"></p>
 
-        <form class="login-form" th:action="@{/auth/login}" method="post">
+        <form class="login-form" th:action="@{/login}" method="post">
             <div class="form-group">
                 <label>E-mail</label>
                 <input type="email" name="email" placeholder="seu@email.com" required>
@@ -34,15 +26,13 @@
 
             <div class="form-group">
                 <label>Senha</label>
-                <input type="password" name="password" placeholder="Sua senha" required>
+                <input type="password" name="senha" placeholder="Sua senha" required>
             </div>
 
             <button type="submit">Entrar</button>
         </form>
 
-        <!-- Botão de Cadastro -->
         <a th:href="@{/cadastro}" class="btn-secondary">Criar Nova Conta</a>
-
     </div>
 </div>
 
