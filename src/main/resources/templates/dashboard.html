@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
 <div class="app-container">
+
     <aside class="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-headset"></i>
@@ -16,15 +18,32 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a th:href="@{/dashboard}" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
-                <li><a th:href="@{/chamados}"><i class="fas fa-ticket-alt"></i> Chamados</a></li>
-                <li><a th:href="@{/novo-chamado}"><i class="fas fa-plus-circle"></i> Abrir Chamado</a></li>
-                <li><a th:href="@{/login}"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                <li>
+                    <a th:href="@{/dashboard}" class="active">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/chamados}">
+                        <i class="fas fa-ticket-alt"></i> Chamados
+                        <span class="dot-alert"></span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/novo-chamado}">
+                        <i class="fas fa-plus"></i> Abrir Chamado
+                    </a>
+                </li>
+                <li><a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> Usuários</a></li>
+                <li><a href="#"><i class="fas fa-tags"></i> Categorias</a></li>
+                <li><a href="#"><i class="fas fa-exclamation-triangle"></i> Prioridades</a></li>
             </ul>
         </nav>
     </aside>
 
     <main class="main-content">
+
         <header class="page-header">
             <div class="header-left">
                 <h1>Dashboard</h1>
@@ -35,7 +54,9 @@
                     <span class="user-name" th:text="${usuarioNome} ?: 'João Silva'">João Silva</span>
                     <div class="user-avatar"
                          th:text="${usuarioNome != null and #strings.length(usuarioNome) >= 2}
-                             ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))} : 'JS'">JS</div>
+                         ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))} : 'JS'">
+                        JS
+                    </div>
                     <a th:href="@{/login}" class="logout-link">Sair</a>
                 </div>
             </div>
@@ -46,28 +67,28 @@
                 <div class="stat-icon"><i class="far fa-circle"></i></div>
                 <div class="stat-data">
                     <h3>Abertos</h3>
-                    <div class="value">0</div>
+                    <div class="value" th:text="${totalAbertos} ?: '24'">24</div>
                 </div>
             </div>
             <div class="stat-card progress">
                 <div class="stat-icon"><i class="far fa-clock"></i></div>
                 <div class="stat-data">
                     <h3>Em Andamento</h3>
-                    <div class="value">0</div>
+                    <div class="value" th:text="${totalAndamento} ?: '12'">12</div>
                 </div>
             </div>
             <div class="stat-card solved">
                 <div class="stat-icon"><i class="far fa-check-circle"></i></div>
                 <div class="stat-data">
                     <h3>Resolvidos</h3>
-                    <div class="value">0</div>
+                    <div class="value" th:text="${totalResolvidos} ?: '89'">89</div>
                 </div>
             </div>
             <div class="stat-card urgent">
                 <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
                 <div class="stat-data">
                     <h3>Urgentes</h3>
-                    <div class="value">0</div>
+                    <div class="value" th:text="${totalUrgentes} ?: '5'">5</div>
                 </div>
             </div>
         </section>
@@ -75,8 +96,9 @@
         <section class="recent-tickets">
             <div class="section-header">
                 <h2>Chamados Recentes</h2>
-                <a href="#" class="view-all">Ver todos</a>
+                <a th:href="@{/chamados}" class="view-all">Ver todos</a>
             </div>
+
             <div class="card-table">
                 <table>
                     <thead>
@@ -89,19 +111,31 @@
                     </thead>
                     <tbody>
                     <tr th:each="chamado : ${chamadosRecentes}">
-                        <td th:text="'#' + ${chamado.id}" class="id-cell">#1245</td>
+                        <td>
+                            <a href="#" class="id-cell" th:text="'#' + ${chamado.id}">#1245</a>
+                        </td>
                         <td th:text="${chamado.assunto}">Erro ao acessar sistema</td>
-                        <td><span class="badge" th:text="${chamado.status}">Aberto</span></td>
+                        <td>
+                                <span class="badge"
+                                      th:classappend="${chamado.status == 'Aberto' ? 'badge-aberto' :
+                                                      (chamado.status == 'Em Andamento' ? 'badge-progresso' : 'badge-resolvido')}"
+                                      th:text="${chamado.status}">Aberto</span>
+                        </td>
                         <td th:text="${#temporals.format(chamado.data, 'dd/MM/yyyy')}">15/01/2026</td>
                     </tr>
+
                     <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
-                        <td colspan="4" class="empty-msg">Nenhum chamado recente.</td>
+                        <td colspan="4" class="empty-msg" style="text-align: center; padding: 40px; color: #94a3b8;">
+                            Nenhum chamado recente encontrado.
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </section>
+
     </main>
 </div>
+
 </body>
 </html>

@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Controller
@@ -25,7 +24,7 @@ public class LoginController {
 
     @GetMapping("/login")
     public String telaLogin() {
-        return "index";
+        return "index"; // Abre o index.html (seu formulário de login)
     }
 
     @PostMapping("/login")
@@ -48,22 +47,10 @@ public class LoginController {
             return "index";
         }
 
+        // Salva na sessão e REDIRECIONA para o outro Controller
         session.setAttribute("usuarioNome", usuario.getNome());
         return "redirect:/dashboard";
     }
 
-    @GetMapping("/dashboard")
-    public String abrirDashboard(HttpSession session, Model model) {
-        String nome = (String) session.getAttribute("usuarioNome");
 
-        if (nome == null) {
-            return "redirect:/login";
-        }
-
-        // Garante que o nome e a lista existam para o Thymeleaf não dar erro 500
-        model.addAttribute("usuarioNome", nome);
-        model.addAttribute("chamadosRecentes", new ArrayList<>());
-
-        return "dashboard";
-    }
 }

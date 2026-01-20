@@ -1,0 +1,67 @@
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS: TELA DE CHAMADOS (Complemento ao Dashboard.css)
+   ========================================================================== */
+
+/* Container do Formulário */
+.form-container {
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    max-width: 800px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: 0.2s;
+    background-color: #f8fafc;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Botões de Ação na Tabela */
+.actions-cell {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-icon {
+    color: #94a3b8;
+    transition: 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-icon:hover {
+    color: #2563eb;
+}
+
+.btn-icon.delete:hover {
+    color: #ef4444;
+}

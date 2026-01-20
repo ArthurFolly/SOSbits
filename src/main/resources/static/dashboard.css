@@ -62,6 +62,16 @@ body {
 .sidebar-nav a.active {
     background-color: #eff6ff;
     color: #2563eb;
+    font-weight: 600;
+}
+
+/* Bolinha vermelha de notificação no menu */
+.dot-alert {
+    width: 6px;
+    height: 6px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    margin-left: auto;
 }
 
 /* ==========================================================================
@@ -83,7 +93,6 @@ body {
 .header-left h1 { font-size: 1.75rem; font-weight: 700; }
 .header-left p { color: #64748b; font-size: 0.875rem; }
 
-/* Bloco do Usuário e Botão Sair */
 .user-info {
     display: flex;
     align-items: center;
@@ -98,7 +107,6 @@ body {
     font-weight: 700; font-size: 0.85rem;
 }
 
-/* DESIGN DO BOTÃO SAIR */
 .logout-link {
     text-decoration: none;
     color: #2563eb;
@@ -145,10 +153,11 @@ body {
 .solved .stat-icon   { background-color: #ecfdf5; color: #10b981; }
 .urgent .stat-icon   { background-color: #fef2f2; color: #ef4444; }
 
+.stat-data h3 { font-size: 0.85rem; color: #64748b; font-weight: 500; }
 .stat-data .value { font-size: 1.5rem; font-weight: 700; }
 
 /* ==========================================================================
-   5. SEÇÃO DA TABELA E BOTÃO VER TODOS
+   5. SEÇÃO DA TABELA E STATUS
    ========================================================================== */
 .section-header {
     display: flex;
@@ -157,7 +166,6 @@ body {
     margin-bottom: 16px;
 }
 
-/* DESIGN DO BOTÃO VER TODOS (ALINHADO COM O DESIGN DO SAIR) */
 .view-all {
     text-decoration: none;
     color: #2563eb;
@@ -170,8 +178,6 @@ body {
 
 .view-all:hover {
     background-color: #eff6ff;
-    color: #1d4ed8;
-    text-decoration: none; /* Remove underline para parecer botão */
 }
 
 .card-table {
@@ -205,3 +211,21 @@ td {
     color: #2563eb;
     font-weight: 700;
 }
+
+/* --- BADGES DE STATUS (Pílulas) --- */
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Cores das Badges baseadas no conteúdo */
+.badge-aberto { background-color: #eff6ff; color: #3b82f6; }
+.badge-progresso { background-color: #fffbeb; color: #f59e0b; }
+.badge-resolvido { background-color: #ecfdf5; color: #10b981; }
+
+/* Badges de Prioridade */
+.prio-alta { background-color: #fef2f2; color: #ef4444; }
+.prio-media { background-color: #fffbeb; color: #f59e0b; }
+.prio-baixa { background-color: #f1f5f9; color: #64748b; }
