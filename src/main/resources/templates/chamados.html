@@ -6,6 +6,7 @@
     <title>Todos os Chamados - Help Desk</title>
     <link rel="stylesheet" th:href="@{/dashboard.css}">
     <link rel="stylesheet" th:href="@{/chamados.css}">
+    <link rel="stylesheet" th:href="@{/modal.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -19,7 +20,7 @@
             <ul>
                 <li><a th:href="@{/dashboard}"><i class="fas fa-th-large"></i> Dashboard</a></li>
                 <li><a th:href="@{/chamados}" class="active"><i class="fas fa-ticket-alt"></i> Chamados</a></li>
-                <li><a th:href="@{/novo-chamado}"><i class="fas fa-plus-circle"></i> Abrir Chamado</a></li>
+                <li><a href="javascript:void(0)" onclick="abrirModal()"><i class="fas fa-plus-circle"></i> Abrir Chamado</a></li>
                 <li><a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="#"><i class="fas fa-users"></i> Usuários</a></li>
             </ul>
@@ -32,12 +33,22 @@
                 <h1>Todos os Chamados</h1>
                 <p>Gerenciamento completo de tickets</p>
             </div>
-            <div class="header-right">
-                <a th:href="@{/novo-chamado}" class="logout-link" style="background: #2563eb; color: white; border-radius: 8px;">
-                    <i class="fas fa-plus"></i> Novo Chamado
-                </a>
-            </div>
         </header>
+
+        <div class="filters-row">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por ID ou assunto..." class="search-input">
+            </div>
+
+            <button type="button" onclick="abrirModalFiltros()" class="btn-filter-trigger">
+                <i class="fas fa-sliders-h"></i> Filtros
+            </button>
+
+            <button type="button" onclick="abrirModal()" class="btn-novo-chamado">
+                <i class="fas fa-plus"></i> Novo Chamado
+            </button>
+        </div>
 
         <div class="card-table">
             <table>
@@ -51,19 +62,15 @@
                     <th>AÇÕES</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="chamadosTable">
                 <tr th:each="c : ${chamados}">
                     <td class="id-cell" th:text="'#' + ${c.id}"></td>
                     <td th:text="${c.assunto}"></td>
                     <td>
-                        <span class="badge"
-                              th:classappend="${c.status == 'Aberto' ? 'badge-aberto' : (c.status == 'Em Andamento' ? 'badge-progresso' : 'badge-resolvido')}"
-                              th:text="${c.status}"></span>
+                        <span class="badge" th:classappend="${c.status == 'Aberto' ? 'badge-aberto' : (c.status == 'Em Andamento' ? 'badge-progresso' : 'badge-resolvido')}" th:text="${c.status}"></span>
                     </td>
                     <td>
-                        <span class="badge"
-                              th:classappend="${c.prioridade == 'Alta' ? 'prio-alta' : (c.prioridade == 'Média' ? 'prio-media' : 'prio-baixa')}"
-                              th:text="${c.prioridade}"></span>
+                        <span class="badge" th:classappend="${c.prioridade == 'Alta' ? 'prio-alta' : (c.prioridade == 'Média' ? 'prio-media' : 'prio-baixa')}" th:text="${c.prioridade}"></span>
                     </td>
                     <td th:text="${#temporals.format(c.dataCriacao, 'dd/MM/yyyy')}"></td>
                     <td class="actions-cell">
@@ -71,16 +78,44 @@
                         <a href="#" class="btn-icon"><i class="fas fa-edit"></i></a>
                     </td>
                 </tr>
-
-                <tr th:if="${#lists.isEmpty(chamados)}">
-                    <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
-                        Nenhum chamado encontrado.
-                    </td>
-                </tr>
                 </tbody>
             </table>
         </div>
     </main>
 </div>
+
+<div id="modalFiltros" class="modal-overlay">
+    <div class="modal-box modal-filter-size">
+        <div class="modal-header">
+            <h2>Filtrar Chamados</h2>
+            <button type="button" onclick="fecharModalFiltros()" class="close-x">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="filter-group">
+                <label>Status</label>
+                <div class="chip-group">
+                    <button type="button" class="chip active">Tudo</button>
+                    <button type="button" class="chip">Aberto</button>
+                    <button type="button" class="chip">Em Andamento</button>
+                    <button type="button" class="chip">Resolvido</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Prioridade</label>
+                <div class="chip-group">
+                    <button type="button" class="chip prio-low">Baixa</button>
+                    <button type="button" class="chip prio-med">Média</button>
+                    <button type="button" class="chip prio-high">Alta</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer-flex">
+            <button type="button" class="btn-clear">Limpar</button>
+            <button type="button" class="btn-apply" onclick="fecharModalFiltros()">Aplicar</button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/modal.js}"></script>
 </body>
 </html>
