@@ -31,7 +31,7 @@ body {
 .cadastro-left {
     width: 50%;
     /* O caminho abaixo considera que a pasta images está em static */
-    background: #f8fafc url("images/SOSBitsImage-removebg-preview.png") no-repeat center center;
+    background: #f8fafc url("/images/SOSBitsImage-removebg-preview.png") no-repeat center center;
     background-size: contain;
     padding: 20px;
 }

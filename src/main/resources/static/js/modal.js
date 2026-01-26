@@ -1,73 +1,124 @@
-// --- MODAL NOVO CHAMADO ---
-window.abrirModal = function() {
-    console.log("Abrindo modal de novo chamado...");
+// --- CONTROLE DE ABERTURA E FECHAMENTO ---
+
+function abrirModal() {
     const modal = document.getElementById('modalChamado');
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-};
+    if(modal) modal.classList.add('active');
+}
 
-window.fecharModal = function() {
-    console.log("Fechando modal de novo chamado...");
+function fecharModal() {
     const modal = document.getElementById('modalChamado');
-    if (modal) {
-        modal.style.display = 'none';
+    if(modal) {
+        modal.classList.remove('active');
+
+        // RESET COMPLETO: Limpa campos e esconde o "Outros"
+        const form = modal.querySelector('form');
+        if(form) {
+            form.reset();
+            // Garante que o campo "Outros" suma ao fechar ou descartar
+            const otherField = document.getElementById('otherField');
+            if(otherField) otherField.classList.add('hidden-field');
+
+            // Reseta visualmente para o padrão (Baixa/Verde)
+            resetaPrioridadeVisual();
+        }
     }
-};
+}
 
-// --- MODAL DE FILTROS ---
-window.abrirModalFiltros = function() {
-    console.log("Abrindo modal de filtros...");
-    const modal = document.getElementById('modalFiltros');
-    if (modal) {
-        modal.style.display = 'flex';
+function abrirModalFiltros() {
+    const modalFiltros = document.getElementById('modalFiltros');
+    if(modalFiltros) {
+        modalFiltros.classList.add('active');
     }
-};
+}
 
-window.fecharModalFiltros = function() {
-    console.log("Fechando modal de filtros...");
-    const modal = document.getElementById('modalFiltros');
-    if (modal) {
-        modal.style.display = 'none';
+function fecharModalFiltros() {
+    const modalFiltros = document.getElementById('modalFiltros');
+    if(modalFiltros) modalFiltros.classList.remove('active');
+}
+
+// --- LÓGICA DO FORMULÁRIO DE CHAMADO ---
+
+function resetaPrioridadeVisual() {
+    const line = document.getElementById('priorityLine');
+    const iconBox = document.getElementById('headerIconBox');
+    const charCount = document.getElementById('charCount');
+
+    if(line) line.style.backgroundColor = '#10b981';
+    if(iconBox) iconBox.style.color = '#10b981';
+    if(charCount) charCount.innerText = '0';
+
+    document.querySelectorAll('.prio-card-elite').forEach(c => c.classList.remove('active'));
+    const lowPrio = document.querySelector('.prio-card-elite.low');
+    if(lowPrio) lowPrio.classList.add('active');
+}
+
+function setElitePriority(btn, value) {
+    document.querySelectorAll('.prio-card-elite').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+
+    const inputPrio = document.getElementById('prioridadeInput');
+    if(inputPrio) inputPrio.value = value;
+
+    const line = document.getElementById('priorityLine');
+    const iconBox = document.getElementById('headerIconBox');
+    const colors = { 'Baixa': '#10b981', 'Média': '#f59e0b', 'Alta': '#ef4444' };
+
+    if(line) line.style.backgroundColor = colors[value];
+    if(iconBox) iconBox.style.color = colors[value];
+}
+
+function checkOtherOption(select) {
+    const otherField = document.getElementById('otherField');
+    const inputOther = document.getElementById('inputOther');
+    if (select.value === 'Outros') {
+        otherField.classList.remove('hidden-field');
+        if(inputOther) inputOther.required = true;
+    } else {
+        otherField.classList.add('hidden-field');
+        if(inputOther) {
+            inputOther.required = false;
+            inputOther.value = "";
+        }
     }
-};
+}
 
-// --- LÓGICA DOS CHIPS (FILTROS) ---
-// Esta parte faz com que, ao clicar em um chip, ele fique ativo e os outros não
-document.addEventListener('DOMContentLoaded', () => {
-    const chips = document.querySelectorAll('.chip');
+function updateCharCount(textarea) {
+    const count = document.getElementById('charCount');
+    if(count) count.innerText = textarea.value.length;
+}
 
-    chips.forEach(chip => {
-        chip.addEventListener('click', function() {
-            // Seleciona apenas os chips do mesmo grupo (Status ou Prioridade)
-            const grupo = this.parentElement;
-            grupo.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+function handleFileSelection() {
+    const input = document.getElementById('fileInput');
+    const label = document.getElementById('fileNameText');
+    if (input && input.files.length > 0) {
+        label.innerHTML = `Selecionado: <strong>${input.files[0].name}</strong>`;
+    }
+}
 
-            // Adiciona a classe active no chip clicado
-            this.classList.add('active');
-        });
+// --- LÓGICA DE FILTROS (CHIPS) ---
+
+document.querySelectorAll('.chip-group').forEach(group => {
+    group.addEventListener('click', e => {
+        if (e.target.classList.contains('chip')) {
+            const siblings = group.querySelectorAll('.chip');
+            siblings.forEach(c => c.classList.remove('active'));
+            e.target.classList.add('active');
+        }
     });
 });
 
-// --- FECHAR AO CLICAR FORA ---
+function limparFiltros() {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.chip').forEach(c => {
+        if(c.innerText === 'Tudo') c.classList.add('active');
+    });
+}
+
+// Fechar ao clicar na parte escura (Overlay)
 window.onclick = function(event) {
     const modalChamado = document.getElementById('modalChamado');
     const modalFiltros = document.getElementById('modalFiltros');
 
-    if (event.target === modalChamado) {
-        fecharModal();
-    }
-    if (event.target === modalFiltros) {
-        fecharModalFiltros();
-    }
-};
-
-// --- FUNÇÃO LIMPAR FILTROS ---
-window.limparFiltros = function() {
-    // Volta todos os grupos para o primeiro chip (geralmente "Tudo" ou "Todas")
-    document.querySelectorAll('.chip-group').forEach(grupo => {
-        grupo.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        grupo.firstElementChild.classList.add('active');
-    });
-    console.log("Filtros resetados");
-};
+    if (event.target === modalChamado) fecharModal();
+    if (event.target === modalFiltros) fecharModalFiltros();
+}
