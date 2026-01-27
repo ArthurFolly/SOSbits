@@ -23,6 +23,11 @@ public class UsuarioController {
         return "cadastro"; // Abre o cadastro.html
     }
 
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "dashboard"; // Isso vai abrir o seu arquivo dashboard.html
+    }
+
     @PostMapping("/salvar")
     public String cadastrar(@ModelAttribute Usuario usuario) {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {

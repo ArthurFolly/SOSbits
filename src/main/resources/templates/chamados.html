@@ -18,7 +18,7 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a th:href="@{/dashboard}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a th:href="@{/chamados/dashboard}"><i class="fas fa-th-large"></i> Dashboard</a></li>
                 <li><a th:href="@{/chamados}" class="active"><i class="fas fa-ticket-alt"></i> Chamados</a></li>
                 <li><a href="javascript:void(0)" onclick="abrirModal()"><i class="fas fa-plus-circle"></i> Abrir Chamado</a></li>
                 <li><a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
@@ -40,8 +40,12 @@
                 <i class="fas fa-search"></i>
                 <input type="text" id="searchInput" placeholder="Buscar por ID ou assunto..." class="search-input">
             </div>
-            <button type="button" onclick="abrirModalFiltros()" class="btn-filter-trigger"><i class="fas fa-sliders-h"></i> Filtros</button>
-            <button type="button" onclick="abrirModal()" class="btn-novo-chamado"><i class="fas fa-plus"></i> Novo Chamado</button>
+            <button type="button" onclick="abrirModalFiltros()" class="btn-filter-trigger">
+                <i class="fas fa-sliders-h"></i> Filtros
+            </button>
+            <button type="button" onclick="abrirModal()" class="btn-novo-chamado">
+                <i class="fas fa-plus"></i> Novo Chamado
+            </button>
         </div>
 
         <div class="card-table">
@@ -60,12 +64,34 @@
                 <tr th:each="c : ${chamados}">
                     <td class="id-cell" th:text="'#' + ${c.id}"></td>
                     <td th:text="${c.assunto}"></td>
-                    <td><span class="badge" th:classappend="${c.status == 'Aberto' ? 'badge-aberto' : (c.status == 'Em Andamento' ? 'badge-progresso' : 'badge-resolvido')}" th:text="${c.status}"></span></td>
-                    <td><span class="badge" th:classappend="${c.prioridade == 'Alta' ? 'prio-alta' : (c.prioridade == 'Média' ? 'prio-media' : 'prio-baixa')}" th:text="${c.prioridade}"></span></td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${c.status == 'Aberto' ? 'badge-aberto' : (c.status == 'Em Andamento' ? 'badge-progresso' : 'badge-resolvido')}"
+                              th:text="${c.status}">
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${c.prioridade == 'Alta' ? 'prio-alta' : (c.prioridade == 'Média' ? 'prio-media' : 'prio-baixa')}"
+                              th:text="${c.prioridade}">
+                        </span>
+                    </td>
+
                     <td th:text="${#temporals.format(c.dataCriacao, 'dd/MM/yyyy')}"></td>
+
                     <td class="actions-cell">
-                        <a href="#" class="btn-icon"><i class="fas fa-eye"></i></a>
-                        <a href="#" class="btn-icon"><i class="fas fa-edit"></i></a>
+                        <a href="#" class="btn-icon" title="Visualizar"><i class="fas fa-eye"></i></a>
+                        <a href="#" class="btn-icon" title="Editar"><i class="fas fa-edit"></i></a>
+
+                        <!-- EXCLUIR (funciona com controller: /chamados/excluir/{id}) -->
+                        <a th:href="@{/chamados/excluir/{id}(id=${c.id})}"
+                           class="btn-icon"
+                           title="Excluir"
+                           onclick="return confirm('Deseja excluir este chamado?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
                     </td>
                 </tr>
                 </tbody>
@@ -74,6 +100,7 @@
     </main>
 </div>
 
+<!-- ========================= MODAL FILTROS ========================= -->
 <div id="modalFiltros" class="modal-overlay">
     <div class="modal-box elite-box" style="max-width: 480px;">
         <div class="modal-header-elite">
@@ -133,6 +160,7 @@
     </div>
 </div>
 
+<!-- ========================= MODAL CHAMADO ========================= -->
 <div id="modalChamado" class="modal-overlay">
     <div class="modal-box elite-box">
         <div class="priority-indicator-elite" id="priorityLine"></div>
@@ -150,24 +178,32 @@
             <button type="button" onclick="fecharModal()" class="btn-close-elite">&times;</button>
         </div>
 
+        <!-- ✅ THYMELEAF FORM (POST tradicional) -->
         <form th:action="@{/chamados/salvar}" method="POST" enctype="multipart/form-data">
             <div class="modal-body-elite">
+
+                <!-- Tipo -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-list-ul icon-blue"></i> Tipo de Ocorrência</label>
-                    <select name="assunto" id="selectOcorrencia" required class="modern-select-elite" onchange="checkOtherOption(this)">
+                    <select name="tipo" id="selectOcorrencia" required class="modern-select-elite" onchange="checkOtherOption(this)">
                         <option value="" disabled selected>Selecione uma ocorrência...</option>
-                        <th:block th:each="tipo : ${listaOcorrencias}">
-                            <option th:value="${tipo.nome}" th:text="${tipo.nome}"></option>
-                        </th:block>
+                        <option value="Problema em Sistema">Problema em Sistema</option>
+                        <option value="Problema de Hardware">Problema de Hardware</option>
+                        <option value="Problema de Rede / Internet">Problema de Rede / Internet</option>
+                        <option value="Acesso / Login">Acesso / Login</option>
+                        <option value="Solicitação de Acesso">Solicitação de Acesso</option>
+                        <option value="Dúvida / Orientação">Dúvida / Orientação</option>
                         <option value="Outros">Outros (Descrever abaixo)</option>
                     </select>
                 </div>
 
-                <div id="otherField" class="form-group-elite hidden-field">
-                    <label><i class="fas fa-pen-nib icon-purple"></i> Especifique o Assunto</label>
-                    <input type="text" id="inputOther" name="assuntoCustomizado" placeholder="Assunto específico" class="input-elite">
+                <!-- Assunto (sempre) -->
+                <div class="form-group-elite">
+                    <label><i class="fas fa-pen-nib icon-purple"></i> Assunto</label>
+                    <input type="text" name="assunto" required placeholder="Resumo do problema" class="input-elite">
                 </div>
 
+                <!-- Prioridade -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-layer-group icon-orange"></i> Nível de Urgência</label>
                     <div class="priority-elite-grid">
@@ -187,14 +223,16 @@
                     </div>
                 </div>
 
+                <!-- Descrição -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-align-left icon-gray"></i> Descrição Detalhada</label>
                     <div class="textarea-elite-box">
-                        <textarea name="descricao" rows="4" placeholder="Descreva o que aconteceu..." oninput="updateCharCount(this)"></textarea>
+                        <textarea name="descricao" rows="4" maxlength="500" placeholder="Descreva o que aconteceu..." oninput="updateCharCount(this)" required></textarea>
                         <div class="textarea-footer-elite"><span id="charCount">0</span> / 500</div>
                     </div>
                 </div>
 
+                <!-- Anexos -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-paperclip icon-teal"></i> Anexos (Opcional)</label>
                     <div class="file-dropzone-elite" onclick="document.getElementById('fileInput').click()">
@@ -203,6 +241,7 @@
                         <input type="file" name="anexo" id="fileInput" hidden onchange="handleFileSelection()">
                     </div>
                 </div>
+
             </div>
 
             <div class="modal-footer-elite">
@@ -212,6 +251,7 @@
         </form>
     </div>
 </div>
+
 
 <script th:src="@{/js/modal.js}"></script>
 </body>

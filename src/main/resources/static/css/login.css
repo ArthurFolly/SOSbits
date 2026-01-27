@@ -30,7 +30,7 @@ body {
 /* LADO ESQUERDO - IMAGEM */
 .login-left {
     width: 50%;
-    background: #f8fafc url("images/SOSBitsImage-removebg-preview.png") no-repeat center center;
+    background: #f8fafc url("/images/SOSBitsImage-removebg-preview.png") no-repeat center center;
     background-size: contain;
     padding: 20px;
 }
