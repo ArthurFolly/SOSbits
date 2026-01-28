@@ -1,4 +1,7 @@
-/* --- BARRA DE FILTROS E BUSCA (LADO A LADO) --- */
+/* =========================================================
+   BARRA DE FILTROS E BUSCA
+   ========================================================= */
+
 .filters-row {
     display: flex;
     align-items: center;
@@ -35,7 +38,7 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Botão de Filtro (Independente, ao lado da busca) */
+/* Botão filtro */
 .btn-filter-trigger {
     display: flex;
     align-items: center;
@@ -48,7 +51,7 @@
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
 .btn-filter-trigger:hover {
@@ -56,7 +59,7 @@
     border-color: #cbd5e1;
 }
 
-/* Botão Novo Chamado (Alinhado à Direita) */
+/* Botão novo chamado */
 .btn-novo-chamado {
     margin-left: auto;
     background: #2563eb;
@@ -75,57 +78,216 @@
     background: #1d4ed8;
 }
 
-/* --- TABELA E BADGES --- */
+/* =========================================================
+   TABELA
+   ========================================================= */
+
 .card-table {
     background: white;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
-    overflow: hidden;
+    overflow-x: auto;
 }
 
-table {
+.card-table .chamados-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 900px;
 }
 
-th {
+.card-table .chamados-table thead { display: table-header-group; }
+.card-table .chamados-table tbody { display: table-row-group; }
+.card-table .chamados-table tr    { display: table-row; }
+
+.card-table .chamados-table th,
+.card-table .chamados-table td {
+    display: table-cell;
+    vertical-align: middle;   /* 🔥 alinhamento vertical global */
+}
+
+/* Cabeçalho */
+.card-table .chamados-table th {
     background: #f8fafc;
-    padding: 12px 20px;
-    text-align: left;
+    padding: 14px 20px;
     font-size: 12px;
     color: #64748b;
     text-transform: uppercase;
+    letter-spacing: .04em;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
 }
 
-td {
+/* Centraliza título AÇÕES */
+.card-table .chamados-table th:last-child {
+    text-align: center;
+}
+
+/* Corpo */
+.card-table .chamados-table td {
     padding: 16px 20px;
     border-bottom: 1px solid #f1f5f9;
     font-size: 14px;
+    color: #111827;
+    line-height: 1.2;         /* 🔥 evita “afundar” os ícones */
+    white-space: nowrap;
 }
 
-.badge {
-    padding: 4px 10px;
-    border-radius: 6px;
+/* Assunto quebra linha */
+.card-table .chamados-table td:nth-child(2) {
+    white-space: normal;
+}
+
+/* Hover linha */
+.card-table .chamados-table tbody tr:hover {
+    background: #fbfdff;
+}
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.card-table .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 999px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
+    border: 1px solid transparent;
 }
 
-.badge-aberto { background: #dcfce7; color: #166534; }
-.badge-progresso { background: #fef9c3; color: #854d0e; }
-.badge-resolvido { background: #dbeafe; color: #1e40af; }
+/* STATUS */
+.card-table .badge-aberto {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+}
 
-.prio-alta { color: #dc2626; font-weight: 600; }
-.prio-media { color: #d97706; font-weight: 600; }
-.prio-baixa { color: #059669; font-weight: 600; }
+.card-table .badge-progresso {
+    background: #fef9c3;
+    color: #854d0e;
+    border-color: #fde047;
+}
 
-.id-cell { color: #2563eb; font-weight: 600; }
+.card-table .badge-resolvido {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #86efac;
+}
 
-.actions-cell .btn-icon {
-    color: #94a3b8;
-    margin-right: 10px;
+/* PRIORIDADE */
+.card-table .prio-baixa {
+    background: #ecfdf5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.card-table .prio-media {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.card-table .prio-alta {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+/* ID */
+.card-table .id-cell {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+/* =========================================================
+   AÇÕES
+   ========================================================= */
+
+.card-table .actions-cell {
+    text-align: center;        /* 🔥 alinhamento horizontal */
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.card-table .actions-cell .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #64748b;
+    margin: 0 4px;
+    text-decoration: none;
+    transition: all .2s ease;
+    vertical-align: middle;    /* 🔥 chave do alinhamento */
+}
+
+/* compatível com <button> */
+.card-table .actions-cell button.btn-icon {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0;
     cursor: pointer;
 }
 
-.actions-cell .btn-icon:hover {
+/* Hover geral */
+.card-table .actions-cell .btn-icon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+
+/* Editar */
+.card-table .actions-cell .btn-edit:hover {
+    background: #eff6ff;
+    border-color: #60a5fa;
     color: #2563eb;
+}
+
+/* Excluir */
+.card-table .actions-cell .btn-del:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #dc2626;
+}
+
+.card-table .actions-cell .btn-icon i {
+    line-height: 1;
+}
+/* =========================================================
+   ALINHAMENTO PERFEITO (TH x TD)
+   ========================================================= */
+
+/* Centraliza colunas: STATUS(3), PRIORIDADE(4), DATA(5), AÇÕES(6) */
+.card-table .chamados-table th:nth-child(3),
+.card-table .chamados-table td:nth-child(3),
+.card-table .chamados-table th:nth-child(4),
+.card-table .chamados-table td:nth-child(4),
+.card-table .chamados-table th:nth-child(5),
+.card-table .chamados-table td:nth-child(5),
+.card-table .chamados-table th:nth-child(6),
+.card-table .chamados-table td:nth-child(6) {
+    text-align: center;
+}
+
+/* (Opcional) se quiser ID centralizado também */
+.card-table .chamados-table th:nth-child(1),
+.card-table .chamados-table td:nth-child(1) {
+    text-align: center;
+}
+
+/* AÇÕES: centraliza os botões de verdade (sem depender do text-align) */
+.card-table .actions-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Remove margem que pode “puxar” pro lado */
+.card-table .actions-cell .btn-icon {
+    margin: 0;
 }

@@ -28,19 +28,44 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**").permitAll()
-                        .requestMatchers("/", "/index", "/cadastro", "/salvar").permitAll()
+                        // ✅ LIBERA TUDO QUE É ESTÁTICO (CSS/JS/IMAGENS/WEBJARS/FAVICON)
+                        .requestMatchers(
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/webjars/**",
+                                "/favicon.ico"
+                        ).permitAll()
+
+                        // ✅ LIBERA ROTAS PÚBLICAS (LOGIN/CADASTRO/ERRO)
+                        .requestMatchers(
+                                "/",
+                                "/index",
+                                "/login",
+                                "/cadastro",
+                                "/salvar",
+                                "/error"
+                        ).permitAll()
+
+                        // 🔒 O RESTO É PROTEGIDO
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
-                        .loginPage("/")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/?error") // Se falhar, volta com o parâmetro error na URL
+                        .loginPage("/")               // sua tela de login
+                        .loginProcessingUrl("/login") // endpoint do POST do login
+                        .defaultSuccessUrl("/chamados/dashboard", true) // ✅ ajuste aqui
+                        .failureUrl("/?error")
                         .permitAll()
                 )
-                .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .permitAll()
+                );
 
         return http.build();
     }
@@ -51,13 +76,14 @@ public class SecurityConfig {
                 .map(u -> new User(
                         u.getEmail(),
                         u.getSenha(),
-                        new ArrayList<>())) // Converte Usuario para UserDetails
+                        new ArrayList<>()
+                ))
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Aceita senhas sem criptografia (texto puro) por enquanto
+        // ⚠️ Só para testes (senha em texto puro). Depois trocamos para BCrypt.
         return NoOpPasswordEncoder.getInstance();
     }
 }

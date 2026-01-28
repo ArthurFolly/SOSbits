@@ -1,5 +1,5 @@
 /* ==========================================================================
-   1. RESET E ESTRUTURA GLOBAL
+   1. RESET E ESTRUTURA GLOBAL (OK GLOBAL)
    ========================================================================== */
 * {
     margin: 0;
@@ -100,11 +100,16 @@ body {
 }
 
 .user-avatar {
-    width: 38px; height: 38px;
-    background-color: #2563eb; color: white;
+    width: 38px;
+    height: 38px;
+    background-color: #2563eb;
+    color: white;
     border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
 }
 
 .logout-link {
@@ -143,8 +148,12 @@ body {
 }
 
 .stat-icon {
-    width: 48px; height: 48px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.25rem;
 }
 
@@ -157,16 +166,16 @@ body {
 .stat-data .value { font-size: 1.5rem; font-weight: 700; }
 
 /* ==========================================================================
-   5. SEÇÃO DA TABELA E STATUS
+   5. SEÇÃO DA TABELA E STATUS (ESCOPADA NO DASHBOARD)
    ========================================================================== */
-.section-header {
+#page-dashboard .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
 }
 
-.view-all {
+#page-dashboard .view-all {
     text-decoration: none;
     color: #2563eb;
     font-weight: 600;
@@ -176,20 +185,25 @@ body {
     transition: 0.2s;
 }
 
-.view-all:hover {
+#page-dashboard .view-all:hover {
     background-color: #eff6ff;
 }
 
-.card-table {
+/* ✅ card-table do dashboard NÃO pode vazar para outras páginas */
+#page-dashboard .card-table {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     overflow: hidden;
 }
 
-table { width: 100%; border-collapse: collapse; }
+/* ✅ tabelas do dashboard apenas (remove conflito com chamados) */
+#page-dashboard .card-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-th {
+#page-dashboard .card-table th {
     text-align: left;
     padding: 16px 20px;
     background-color: #fcfcfd;
@@ -200,32 +214,31 @@ th {
     border-bottom: 1px solid #e2e8f0;
 }
 
-td {
+#page-dashboard .card-table td {
     padding: 16px 20px;
     font-size: 0.875rem;
     color: #475569;
     border-bottom: 1px solid #f1f5f9;
 }
 
-.id-cell {
+/* ✅ id-cell do dashboard apenas */
+#page-dashboard .id-cell {
     color: #2563eb;
     font-weight: 700;
 }
 
-/* --- BADGES DE STATUS (Pílulas) --- */
-.badge {
+/* ✅ badges do dashboard apenas */
+#page-dashboard .badge {
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
 }
 
-/* Cores das Badges baseadas no conteúdo */
-.badge-aberto { background-color: #eff6ff; color: #3b82f6; }
-.badge-progresso { background-color: #fffbeb; color: #f59e0b; }
-.badge-resolvido { background-color: #ecfdf5; color: #10b981; }
+#page-dashboard .badge-aberto    { background-color: #eff6ff; color: #3b82f6; }
+#page-dashboard .badge-progresso { background-color: #fffbeb; color: #f59e0b; }
+#page-dashboard .badge-resolvido { background-color: #ecfdf5; color: #10b981; }
 
-/* Badges de Prioridade */
-.prio-alta { background-color: #fef2f2; color: #ef4444; }
-.prio-media { background-color: #fffbeb; color: #f59e0b; }
-.prio-baixa { background-color: #f1f5f9; color: #64748b; }
+#page-dashboard .prio-alta  { background-color: #fef2f2; color: #ef4444; }
+#page-dashboard .prio-media { background-color: #fffbeb; color: #f59e0b; }
+#page-dashboard .prio-baixa { background-color: #f1f5f9; color: #64748b; }

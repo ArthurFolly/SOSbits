@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body id="page-dashboard">
 
 <div class="app-container">
 
@@ -42,9 +42,10 @@
         </nav>
     </aside>
 
-    <main class="main-content">
+  <main class="main-content">
+      <div class="dashboard-page">
 
-        <header class="page-header">
+      <header class="page-header">
             <div class="header-left">
                 <h1>Dashboard</h1>
                 <p>Visão geral dos chamados</p>
@@ -57,10 +58,11 @@
                          ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))} : 'JS'">
                         JS
                     </div>
-                    <a th:href="@{/login}" class="logout-link">Sair</a>
+                    <a th:href="@{/logout}" class="logout-link">Sair</a>
                 </div>
             </div>
         </header>
+      </div>
 
         <section class="stats-grid">
             <div class="stat-card open">
@@ -77,7 +79,7 @@
                     <div class="value" th:text="${totalAndamento} ?: '12'"></div>
                 </div>
             </div>
-            <div class="stat-card solved">
+            <div class="stat-card x'solved">
                 <div class="stat-icon"><i class="far fa-check-circle"></i></div>
                 <div class="stat-data">
                     <h3>Resolvidos</h3>
@@ -114,14 +116,14 @@
                         <td>
                             <a href="#" class="id-cell" th:text="'#' + ${chamado.id}">#1245</a>
                         </td>
-                        <td th:text="${chamado.assunto}">Erro ao acessar sistema</td>
+                        <td th:text="${chamado.titulo}">Erro ao acessar sistema</td>
                         <td>
                                 <span class="badge"
                                       th:classappend="${chamado.status == 'Aberto' ? 'badge-aberto' :
                                                       (chamado.status == 'Em Andamento' ? 'badge-progresso' : 'badge-resolvido')}"
                                       th:text="${chamado.status}">Aberto</span>
                         </td>
-                        <td th:text="${#temporals.format(chamado.data, 'dd/MM/yyyy')}">15/01/2026</td>
+                        <td th:text="${chamado.dataCriacao != null ? #temporals.format(chamado.dataCriacao, 'dd/MM/yyyy') : '-'}">-</td>
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
