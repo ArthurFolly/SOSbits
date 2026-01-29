@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class LoginController {
 
-    @GetMapping("/")
+    @GetMapping({"/", "/login"})
     public String index() {
-        return "index"; // Abre o index.html (sua tela de login)
+        return "index"; // templates/index.html
     }
 }

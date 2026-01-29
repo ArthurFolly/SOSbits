@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todos os Chamados - Help Desk</title>
-   <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
     <link rel="stylesheet" th:href="@{/css/chamados.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -40,8 +40,11 @@
         <div class="filters-row">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Buscar por ID ou assunto..." class="search-input">
+
+                <!-- ✅ placeholder já estava ok -->
+                <input type="text" id="searchInput" placeholder="Buscar por ID, tipo ou assunto..." class="search-input">
             </div>
+
             <button type="button" onclick="abrirModalFiltros()" class="btn-filter-trigger">
                 <i class="fas fa-sliders-h"></i> Filtros
             </button>
@@ -53,9 +56,10 @@
         <div class="card-table">
             <table class="chamados-table">
 
-            <thead>
+                <thead>
                 <tr>
                     <th>ID</th>
+                    <th>TIPO</th>
                     <th>ASSUNTO</th>
                     <th>STATUS</th>
                     <th>PRIORIDADE</th>
@@ -63,21 +67,28 @@
                     <th>AÇÕES</th>
                 </tr>
                 </thead>
+
                 <tbody id="chamadosTable">
                 <tr th:each="chamado : ${chamados}">
+
                     <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
+
+
+                    <td th:text="${chamado.tipo}">Problema de Hardware</td>
+
+
                     <td th:text="${chamado.titulo}">Assunto</td>
 
                     <td>
-      <span class="badge"
-            th:classappend="${chamado.status == 'Aberto'} ? 'badge-aberto' : 'badge-pendente'"
-            th:text="${chamado.status}">Aberto</span>
+                        <span class="badge"
+                              th:classappend="${chamado.status == 'Aberto'} ? 'badge-aberto' : 'badge-pendente'"
+                              th:text="${chamado.status}">Aberto</span>
                     </td>
 
                     <td>
-      <span class="badge"
-            th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' : (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
-            th:text="${chamado.prioridade}">Média</span>
+                        <span class="badge"
+                              th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' : (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
+                              th:text="${chamado.prioridade}">Média</span>
                     </td>
 
                     <td th:text="${#temporals.format(chamado.dataCriacao,'dd/MM/yyyy')}">28/01/2026</td>
@@ -183,7 +194,7 @@
             <button type="button" onclick="fecharModal()" class="btn-close-elite">&times;</button>
         </div>
 
-        <!-- ✅ THYMELEAF FORM (POST tradicional) -->
+
         <form th:action="@{/chamados/salvar}" method="POST" enctype="multipart/form-data">
             <div class="modal-body-elite">
 
@@ -256,7 +267,6 @@
         </form>
     </div>
 </div>
-
 
 <script th:src="@{/js/modal.js}"></script>
 </body>

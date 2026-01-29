@@ -94,47 +94,75 @@
                 </div>
             </div>
         </section>
+      <section class="recent-tickets">
+          <div class="section-header">
+              <h2>Chamados Recentes</h2>
+              <a th:href="@{/chamados}" class="view-all">Ver todos</a>
+          </div>
 
-        <section class="recent-tickets">
-            <div class="section-header">
-                <h2>Chamados Recentes</h2>
-                <a th:href="@{/chamados}" class="view-all">Ver todos</a>
-            </div>
+          <div class="card-table">
 
-            <div class="card-table">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>TÍTULO</th>
-                        <th>STATUS</th>
-                        <th>DATA</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="chamado : ${chamadosRecentes}">
-                        <td>
-                            <a href="#" class="id-cell" th:text="'#' + ${chamado.id}">#1245</a>
-                        </td>
-                        <td th:text="${chamado.titulo}">Erro ao acessar sistema</td>
-                        <td>
-                                <span class="badge"
-                                      th:classappend="${chamado.status == 'Aberto' ? 'badge-aberto' :
-                                                      (chamado.status == 'Em Andamento' ? 'badge-progresso' : 'badge-resolvido')}"
-                                      th:text="${chamado.status}">Aberto</span>
-                        </td>
-                        <td th:text="${chamado.dataCriacao != null ? #temporals.format(chamado.dataCriacao, 'dd/MM/yyyy') : '-'}">-</td>
-                    </tr>
+              <table class="chamados-table">
+                  <thead>
+                  <tr>
+                      <th>ID</th>
+                      <th>TIPO</th>
+                      <th>ASSUNTO</th>
+                      <th>STATUS</th>
+                      <th>PRIORIDADE</th>
+                      <th>DATA</th>
+                      <th>AÇÕES</th>
+                  </tr>
+                  </thead>
 
-                    <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
-                        <td colspan="4" class="empty-msg" style="text-align: center; padding: 40px; color: #94a3b8;">
-                            Nenhum chamado recente encontrado.
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                  <tbody>
+                  <tr th:each="chamado : ${chamadosRecentes}">
+                      <td class="id-cell" th:text="'#' + ${chamado.id}">#1245</td>
+
+                      <td th:text="${chamado.tipo}">Problema de Hardware</td>
+
+                      <td th:text="${chamado.titulo}">Erro ao acessar sistema</td>
+
+                      <td>
+                    <span class="badge"
+                          th:classappend="${chamado.status == 'Aberto'} ? 'badge-aberto' : 'badge-pendente'"
+                          th:text="${chamado.status}">Aberto</span>
+                      </td>
+
+                      <td>
+                    <span class="badge"
+                          th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' : (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
+                          th:text="${chamado.prioridade}">Média</span>
+                      </td>
+
+                      <td th:text="${chamado.dataCriacao != null ? #temporals.format(chamado.dataCriacao,'dd/MM/yyyy') : '-'}">-</td>
+
+                      <td class="actions-cell">
+                          <a th:href="@{/chamados/editar/{id}(id=${chamado.id})}"
+                             class="btn-icon btn-edit"
+                             title="Editar">
+                              <i class="fas fa-edit"></i>
+                          </a>
+
+                          <a th:href="@{/chamados/excluir/{id}(id=${chamado.id})}"
+                             class="btn-icon btn-del"
+                             title="Excluir"
+                             onclick="return confirm('Deseja excluir este chamado?');">
+                              <i class="fas fa-trash"></i>
+                          </a>
+                      </td>
+                  </tr>
+
+                  <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
+                      <td colspan="7" class="empty-msg" style="text-align: center; padding: 40px; color: #94a3b8;">
+                          Nenhum chamado recente encontrado.
+                      </td>
+                  </tr>
+                  </tbody>
+              </table>
+          </div>
+      </section>
+
 
     </main>
 </div>

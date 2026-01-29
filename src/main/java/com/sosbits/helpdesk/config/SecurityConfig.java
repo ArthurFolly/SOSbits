@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/")               // sua tela de login
                         .loginProcessingUrl("/login") // endpoint do POST do login
-                        .defaultSuccessUrl("/chamados/dashboard", true) // ✅ ajuste aqui
+                        .defaultSuccessUrl("/dashboard", true) // ✅ ajuste aqui
                         .failureUrl("/?error")
                         .permitAll()
                 )

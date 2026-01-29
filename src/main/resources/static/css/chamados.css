@@ -133,9 +133,11 @@
 }
 
 /* Assunto quebra linha */
-.card-table .chamados-table td:nth-child(2) {
+/*
+.card-table .chamados-table td:nth-child(3) {
     white-space: normal;
 }
+*/
 
 /* Hover linha */
 .card-table .chamados-table tbody tr:hover {
@@ -257,11 +259,12 @@
 .card-table .actions-cell .btn-icon i {
     line-height: 1;
 }
-/* =========================================================
-   ALINHAMENTO PERFEITO (TH x TD)
-   ========================================================= */
 
-/* Centraliza colunas: STATUS(3), PRIORIDADE(4), DATA(5), AÇÕES(6) */
+
+.card-table .chamados-table th:nth-child(1),
+.card-table .chamados-table td:nth-child(1),
+.card-table .chamados-table th:nth-child(2),
+.card-table .chamados-table td:nth-child(2),
 .card-table .chamados-table th:nth-child(3),
 .card-table .chamados-table td:nth-child(3),
 .card-table .chamados-table th:nth-child(4),
@@ -269,15 +272,13 @@
 .card-table .chamados-table th:nth-child(5),
 .card-table .chamados-table td:nth-child(5),
 .card-table .chamados-table th:nth-child(6),
-.card-table .chamados-table td:nth-child(6) {
+.card-table .chamados-table td:nth-child(6),
+.card-table .chamados-table th:nth-child(7),
+.card-table .chamados-table td:nth-child(7) {
     text-align: center;
 }
 
-/* (Opcional) se quiser ID centralizado também */
-.card-table .chamados-table th:nth-child(1),
-.card-table .chamados-table td:nth-child(1) {
-    text-align: center;
-}
+
 
 /* AÇÕES: centraliza os botões de verdade (sem depender do text-align) */
 .card-table .actions-cell {
