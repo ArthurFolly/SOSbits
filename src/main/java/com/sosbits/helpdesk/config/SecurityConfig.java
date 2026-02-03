@@ -27,10 +27,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // ❌ CSRF desabilitado só pra facilitar no MVC
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ LIBERA TUDO QUE É ESTÁTICO (CSS/JS/IMAGENS/WEBJARS/FAVICON)
+
+                        // ✅ ARQUIVOS ESTÁTICOS
                         .requestMatchers(
                                 "/css/**",
                                 "/js/**",
@@ -39,7 +41,7 @@ public class SecurityConfig {
                                 "/favicon.ico"
                         ).permitAll()
 
-                        // ✅ LIBERA ROTAS PÚBLICAS (LOGIN/CADASTRO/ERRO)
+                        // ✅ ROTAS PÚBLICAS
                         .requestMatchers(
                                 "/",
                                 "/index",
@@ -49,18 +51,23 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // 🔒 O RESTO É PROTEGIDO
+                        // ✅ ADMIN (LIBERADO POR ENQUANTO)
+                        .requestMatchers("/admin/**").permitAll()
+
+                        // 🔒 TODO O RESTO PRECISA ESTAR LOGADO
                         .anyRequest().authenticated()
                 )
 
+                // ✅ LOGIN
                 .formLogin(form -> form
-                        .loginPage("/")               // sua tela de login
-                        .loginProcessingUrl("/login") // endpoint do POST do login
-                        .defaultSuccessUrl("/dashboard", true) // ✅ ajuste aqui
+                        .loginPage("/")                // tela de login
+                        .loginProcessingUrl("/login")  // POST do login
+                        .defaultSuccessUrl("/dashboard", true)
                         .failureUrl("/?error")
                         .permitAll()
                 )
 
+                // ✅ LOGOUT
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
@@ -70,20 +77,23 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // 🔐 BUSCA USUÁRIO NO BANCO
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> usuarioRepository.findByEmail(email)
                 .map(u -> new User(
                         u.getEmail(),
                         u.getSenha(),
-                        new ArrayList<>()
+                        new ArrayList<>() // sem roles por enquanto
                 ))
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Usuário não encontrado: " + email)
+                );
     }
 
+    // ⚠️ APENAS PARA TESTES
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // ⚠️ Só para testes (senha em texto puro). Depois trocamos para BCrypt.
         return NoOpPasswordEncoder.getInstance();
     }
 }
