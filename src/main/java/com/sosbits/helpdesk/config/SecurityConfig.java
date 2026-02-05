@@ -12,8 +12,6 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.ArrayList;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -26,13 +24,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-                // ❌ CSRF desabilitado só pra facilitar no MVC
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ ARQUIVOS ESTÁTICOS
+                        // arquivos estáticos
                         .requestMatchers(
                                 "/css/**",
                                 "/js/**",
@@ -41,7 +39,7 @@ public class SecurityConfig {
                                 "/favicon.ico"
                         ).permitAll()
 
-                        // ✅ ROTAS PÚBLICAS
+                        // rotas públicas
                         .requestMatchers(
                                 "/",
                                 "/index",
@@ -51,23 +49,20 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // ✅ ADMIN (LIBERADO POR ENQUANTO)
-                        .requestMatchers("/admin/**").permitAll()
-
-                        // 🔒 TODO O RESTO PRECISA ESTAR LOGADO
+                        // qualquer outra rota
                         .anyRequest().authenticated()
                 )
 
-                // ✅ LOGIN
                 .formLogin(form -> form
-                        .loginPage("/")                // tela de login
-                        .loginProcessingUrl("/login")  // POST do login
+                        .loginPage("/")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("username") // IMPORTANTE
+                        .passwordParameter("password")
                         .defaultSuccessUrl("/dashboard", true)
                         .failureUrl("/?error")
                         .permitAll()
                 )
 
-                // ✅ LOGOUT
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
@@ -77,21 +72,27 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🔐 BUSCA USUÁRIO NO BANCO
+    // 🔐 USUÁRIO + PERFIS VINDOS DO BANCO
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> usuarioRepository.findByEmail(email)
-                .map(u -> new User(
-                        u.getEmail(),
-                        u.getSenha(),
-                        new ArrayList<>() // sem roles por enquanto
-                ))
+        return username -> usuarioRepository.findByEmail(username)
+                .map(usuario -> User.builder()
+                        .username(usuario.getEmail())
+                        .password(usuario.getSenha())
+                        .disabled(!usuario.getAtivo())
+                        .authorities(
+                                usuario.getPerfis().stream()
+                                        .map(perfil -> "ROLE_" + perfil.getNome())
+                                        .toArray(String[]::new)
+                        )
+                        .build()
+                )
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("Usuário não encontrado: " + email)
+                        new UsernameNotFoundException("Usuário não encontrado")
                 );
     }
 
-    // ⚠️ APENAS PARA TESTES
+    // ⚠️ apenas para teste
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();

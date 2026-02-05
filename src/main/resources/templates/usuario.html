@@ -12,6 +12,7 @@
     <!-- CSS EXCLUSIVO -->
     <link rel="stylesheet" th:href="@{/css/usuario.css}">
 
+    <!-- ICONS -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -71,7 +72,7 @@
             </div>
 
             <div class="header-actions">
-                <button class="btn-primary" onclick="abrirModalUsuario()">
+                <button class="usuarios-btn-novo" onclick="abrirModalUsuario()">
                     <i class="fas fa-user-plus"></i>
                     Novo Usuário
                 </button>
@@ -79,24 +80,17 @@
         </header>
 
         <!-- ================= FILTROS ================= -->
-        <div class="filters-row">
-            <div class="search-wrapper">
+        <div class="usuarios-filters-row">
+            <div class="usuarios-search-wrapper">
                 <i class="fas fa-search"></i>
                 <input type="text"
-                       class="search-input"
-                       placeholder="Buscar por nome, email ou perfil">
+                       class="usuarios-search-input"
+                       placeholder="Buscar por nome ou email">
             </div>
-
-            <select class="filter-select">
-                <option value="">Todos os perfis</option>
-                <option value="ADMIN">Administrador</option>
-                <option value="SUPORTE">Suporte</option>
-                <option value="USUARIO">Usuário</option>
-            </select>
         </div>
 
         <!-- ================= TABELA ================= -->
-        <div class="card-table">
+        <div class="usuarios-card-table">
             <table class="usuarios-table">
                 <thead>
                 <tr>
@@ -111,43 +105,51 @@
 
                 <tbody>
                 <tr th:each="usuario : ${usuarios}">
-                    <td th:text="'#' + ${usuario.id}">#1</td>
 
-                    <td th:text="${usuario.nome}">João Silva</td>
+                    <!-- ID -->
+                    <td class="usuarios-id" th:text="'#' + ${usuario.id}"></td>
 
-                    <td th:text="${usuario.email}">joao@email.com</td>
+                    <!-- NOME -->
+                    <td th:text="${usuario.nome}"></td>
 
+                    <!-- EMAIL -->
+                    <td th:text="${usuario.email}"></td>
+
+                    <!-- PERFIL -->
                     <td>
-<!--                        <span class="badge"-->
-<!--                              th:classappend="-->
-<!--                                ${usuario.perfil} == 'ADMIN' ? 'perfil-admin' :-->
-<!--                                (${usuario.perfil} == 'SUPORTE' ? 'perfil-suporte' : 'perfil-usuario')"-->
-<!--                              th:text="${usuario.perfil}">-->
-<!--                            ADMIN-->
+                        <span class="usuarios-badge"
+                              th:classappend="
+                                ${usuario.perfis.?[nome=='ADMIN'] != null} ? 'usuarios-role-admin' :
+                                (${usuario.perfis.?[nome=='SUPORTE'] != null} ? 'usuarios-role-suporte' :
+                                 'usuarios-role-user')"
+                              th:text="${usuario.perfis.?[nome=='ADMIN'] != null} ? 'ADMIN' :
+                                       (${usuario.perfis.?[nome=='SUPORTE'] != null} ? 'SUPORTE' : 'USER')">
                         </span>
                     </td>
 
+                    <!-- STATUS -->
                     <td>
-                        <span class="badge"
-                              th:classappend="${usuario.ativo} ? 'status-ativo' : 'status-inativo'"
-                              th:text="${usuario.ativo ? 'Ativo' : 'Inativo'}">
-                            Ativo
+                        <span class="usuarios-badge"
+                              th:classappend="${usuario.ativo} ? 'usuarios-badge-ativo' : 'usuarios-badge-inativo'"
+                              th:text="${usuario.ativo} ? 'Ativo' : 'Inativo'">
                         </span>
                     </td>
 
-                    <td class="actions-cell">
+                    <!-- AÇÕES -->
+                    <td class="usuarios-actions">
                         <a th:href="@{/usuarios/editar/{id}(id=${usuario.id})}"
-                           class="btn-icon btn-edit"
+                           class="usuarios-btn-icon usuarios-btn-edit"
                            title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
 
                         <a th:href="@{/usuarios/desativar/{id}(id=${usuario.id})}"
-                           class="btn-icon btn-lock"
+                           class="usuarios-btn-icon usuarios-btn-del"
                            title="Desativar">
                             <i class="fas fa-user-lock"></i>
                         </a>
                     </td>
+
                 </tr>
                 </tbody>
             </table>
