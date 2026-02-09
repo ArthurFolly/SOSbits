@@ -1,4 +1,5 @@
-package com.sosbits.helpdesk.controller.admin;
+package com.sosbits.helpdesk.controller;
+
 
 import com.sosbits.helpdesk.model.Usuario;
 import com.sosbits.helpdesk.service.UsuarioService;

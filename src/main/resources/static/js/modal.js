@@ -144,3 +144,14 @@ function limparFiltros() {
         if (c.innerText.trim() === 'Tudo') c.classList.add('active');
     });
 }
+function abrirModalGenerico(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add("active");
+}
+
+function fecharModalGenerico(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove("active");
+}
+
+

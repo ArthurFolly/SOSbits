@@ -1,18 +1,28 @@
 /* =========================================================
-   USUÁRIOS — BARRA DE FILTROS E BUSCA
+   USUÁRIOS — BARRA DE FILTROS E BUSCA (PADRÃO CHAMADOS)
    ========================================================= */
 
 #page-usuarios .usuarios-filters-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between; /* 🔥 separa esquerda e direita */
+    gap: 16px;
     margin-bottom: 24px;
 }
 
+/* LADO ESQUERDO (BUSCA + FUTURO FILTRO) */
+#page-usuarios .usuarios-filters-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+/* BUSCA */
 #page-usuarios .usuarios-search-wrapper {
     position: relative;
-    flex: 1;
     max-width: 450px;
+    width: 100%;
 }
 
 #page-usuarios .usuarios-search-wrapper i {
@@ -38,44 +48,34 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Botão filtro */
-#page-usuarios .usuarios-btn-filter {
+/* LADO DIREITO (BOTÃO) */
+#page-usuarios .usuarios-filters-right {
+    display: flex;
+    align-items: center;
+}
+
+/* =========================================================
+   BOTÃO NOVO USUÁRIO (PADRÃO DO SISTEMA)
+   ========================================================= */
+
+#page-usuarios .usuarios-btn-novo {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 11px 20px;
-    color: #475569;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-}
-
-#page-usuarios .usuarios-btn-filter:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-}
-
-/* Botão novo usuário */
-#page-usuarios .usuarios-btn-novo {
-    margin-left: auto;
+    padding: 11px 18px;
+    height: 42px;
     background: #2563eb;
-    color: white;
+    color: #ffffff;
     border: none;
-    padding: 11px 20px;
     border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 #page-usuarios .usuarios-btn-novo:hover {
-    background: #1d4ed8;
+    background: #1e40af;
 }
 
 /* =========================================================
@@ -119,7 +119,6 @@
     border-bottom: 1px solid #f1f5f9;
     font-size: 14px;
     color: #111827;
-    line-height: 1.2;
     white-space: nowrap;
     text-align: center;
 }
@@ -143,7 +142,6 @@
     border: 1px solid transparent;
 }
 
-/* Status */
 #page-usuarios .usuarios-badge-ativo {
     background: #dcfce7;
     color: #166534;
@@ -154,25 +152,6 @@
     background: #fee2e2;
     color: #991b1b;
     border-color: #fecaca;
-}
-
-/* Perfil */
-#page-usuarios .usuarios-role-admin {
-    background: #ede9fe;
-    color: #5b21b6;
-    border-color: #c4b5fd;
-}
-
-#page-usuarios .usuarios-role-user {
-    background: #e0f2fe;
-    color: #075985;
-    border-color: #7dd3fc;
-}
-
-/* ID */
-#page-usuarios .usuarios-id {
-    color: #2563eb;
-    font-weight: 700;
 }
 
 /* =========================================================
@@ -194,11 +173,10 @@
     height: 34px;
     border-radius: 10px;
     border: 1px solid #e2e8f0;
-    background: #fff;
+    background: #ffffff;
     color: #64748b;
-    text-decoration: none;
-    transition: all .2s ease;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 #page-usuarios .usuarios-btn-icon:hover {
@@ -206,16 +184,58 @@
     box-shadow: 0 6px 14px rgba(0,0,0,.08);
 }
 
-/* Editar */
 #page-usuarios .usuarios-btn-edit:hover {
     background: #eff6ff;
     border-color: #60a5fa;
     color: #2563eb;
 }
 
-/* Excluir */
 #page-usuarios .usuarios-btn-del:hover {
     background: #fee2e2;
     border-color: #f87171;
     color: #dc2626;
 }
+/* =========================================================
+   BOTÃO FILTROS — USUÁRIOS
+   ========================================================= */
+
+#page-usuarios .usuarios-btn-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    height: 42px;              /* igual ao input e ao botão novo */
+    padding: 0 16px;
+
+    background: #ffffff;
+    color: #2563eb;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    white-space: nowrap;
+
+    transition: all 0.2s ease;
+}
+
+/* ÍCONE */
+#page-usuarios .usuarios-btn-filter i {
+    font-size: 14px;
+}
+
+/* HOVER */
+#page-usuarios .usuarios-btn-filter:hover {
+    background: #eff6ff;
+    border-color: #60a5fa;
+    color: #1e40af;
+}
+
+/* CLICK */
+#page-usuarios .usuarios-btn-filter:active {
+    transform: translateY(1px);
+}
+
