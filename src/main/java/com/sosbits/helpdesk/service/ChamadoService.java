@@ -17,6 +17,10 @@ public class ChamadoService {
         this.repository = repository;
     }
 
+    /* =========================
+       LISTAGENS
+       ========================= */
+
     public List<Chamado> listarTodos() {
         return repository.findAll();
     }
@@ -25,50 +29,70 @@ public class ChamadoService {
         return repository.findFirst5ByOrderByDataCriacaoDesc();
     }
 
-    /**
-     * Método principal (CREATE/UPDATE).
-     * - Se id == null: cria (status Aberto + dataCriacao agora)
-     * - Se id != null: atualiza mantendo dataCriacao original
-     */
+    /* =========================
+       CREATE / UPDATE
+       ========================= */
+
     public Chamado salvar(Chamado chamado) {
 
-        // CREATE
+        // ===== CREATE =====
         if (chamado.getId() == null) {
+
+            // STATUS padrão
             if (chamado.getStatus() == null || chamado.getStatus().isBlank()) {
                 chamado.setStatus("Aberto");
             }
+
+            // PRIORIDADE padrão
+            if (chamado.getPrioridade() == null || chamado.getPrioridade().isBlank()) {
+                chamado.setPrioridade("Baixa");
+            }
+
+            // DATA DE CRIAÇÃO
             if (chamado.getDataCriacao() == null) {
                 chamado.setDataCriacao(LocalDateTime.now());
             }
+
             return repository.save(chamado);
         }
 
-        // UPDATE (garante que existe e preserva dataCriacao)
+        // ===== UPDATE =====
         Chamado existente = repository.findById(chamado.getId())
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
 
-        // preserva a data de criação do registro
+        // preserva dados imutáveis
         chamado.setDataCriacao(existente.getDataCriacao());
 
-        // se não vier status, mantém o anterior
+        // mantém status se não vier do front
         if (chamado.getStatus() == null || chamado.getStatus().isBlank()) {
             chamado.setStatus(existente.getStatus());
+        }
+
+        // mantém prioridade se não vier do front
+        if (chamado.getPrioridade() == null || chamado.getPrioridade().isBlank()) {
+            chamado.setPrioridade(existente.getPrioridade());
         }
 
         return repository.save(chamado);
     }
 
-    // CREATE (para casar com o controller novo)
+    /* =========================
+       API (AJAX)
+       ========================= */
+
     public Chamado criar(Chamado chamado, UserDetails user) {
         chamado.setId(null);
         return salvar(chamado);
     }
 
-    // UPDATE (para casar com o controller novo)
     public Chamado atualizar(Long id, Chamado chamado, UserDetails user) {
         chamado.setId(id);
         return salvar(chamado);
     }
+
+    /* =========================
+       DELETE / BUSCA
+       ========================= */
 
     public void excluir(Long id) {
         repository.deleteById(id);
@@ -78,6 +102,7 @@ public class ChamadoService {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
     }
+
 
     public long contarPorStatus(String status) {
         return repository.countByStatus(status);

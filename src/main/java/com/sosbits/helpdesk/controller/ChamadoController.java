@@ -20,7 +20,7 @@ public class ChamadoController {
         this.service = service;
     }
 
-    // ---------------- DASHBOARD ----------------
+
     @GetMapping("/dashboard")
     public String dashboard(Model model, @AuthenticationPrincipal UserDetails user) {
         model.addAttribute("usuarioNome", user != null ? user.getUsername() : "Convidado");

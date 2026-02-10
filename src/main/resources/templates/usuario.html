@@ -73,24 +73,31 @@
         <!-- ================= FILTRO + BOTÕES ================= -->
         <div class="usuarios-filters-row">
 
-            <div class="usuarios-search-wrapper">
-                <i class="fas fa-search"></i>
-                <input type="text"
-                       class="usuarios-search-input"
-                       placeholder="Buscar por nome ou email">
+            <div class="usuarios-filters-left">
+
+                <div class="usuarios-search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text"
+                           class="usuarios-search-input"
+                           placeholder="Buscar por nome ou email">
+                </div>
+
+                <!-- BOTÃO FILTROS -->
+                <button class="usuarios-btn-filter"
+                        onclick="abrirModalGenerico('modalFiltroUsuarios')">
+                    <i class="fas fa-sliders-h"></i>
+                    Filtros
+                </button>
+
             </div>
 
-            <!-- BOTÃO FILTRO (ADICIONADO) -->
-            <button class="usuarios-btn-filter">
-                <i class="fas fa-sliders-h"></i>
-                Filtros
-            </button>
-
-            <button class="usuarios-btn-novo"
-                    onclick="abrirModalGenerico('modalNovoUsuario')">
-                <i class="fas fa-user-plus"></i>
-                Novo Usuário
-            </button>
+            <div class="usuarios-filters-right">
+                <button class="usuarios-btn-novo"
+                        onclick="abrirModalGenerico('modalNovoUsuario')">
+                    <i class="fas fa-user-plus"></i>
+                    Novo Usuário
+                </button>
+            </div>
 
         </div>
 
@@ -224,7 +231,69 @@
     </div>
 </div>
 
-<script th:src="@{/js/modal.js}"></script>
+<!-- ================= MODAL FILTROS USUÁRIOS ================= -->
+<div class="modal-overlay" id="modalFiltroUsuarios">
+    <div class="modal-box elite-box">
+
+        <div class="priority-indicator-elite"></div>
+
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Filtros de Usuários</h2>
+                    <p>Refine a listagem</p>
+                </div>
+            </div>
+
+            <button class="btn-close-elite"
+                    onclick="fecharModalGenerico('modalFiltroUsuarios')">
+                &times;
+            </button>
+        </div>
+
+        <form method="get" class="modal-body-elite">
+
+            <div class="form-group-elite">
+                <label>Status</label>
+                <select name="ativo" class="modern-select-elite">
+                    <option value="">Todos</option>
+                    <option value="true">Ativo</option>
+                    <option value="false">Inativo</option>
+                </select>
+            </div>
+
+            <div class="form-group-elite">
+                <label>Perfil</label>
+                <select name="perfilId" class="modern-select-elite">
+                    <option value="">Todos</option>
+                    <option th:each="perfil : ${perfis}"
+                            th:value="${perfil.id}"
+                            th:text="${perfil.nome}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="modal-footer-elite">
+                <button type="button"
+                        class="btn-ghost-elite"
+                        onclick="fecharModalGenerico('modalFiltroUsuarios')">
+                    Cancelar
+                </button>
+
+                <button type="submit"
+                        class="btn-primary-elite">
+                    Aplicar Filtros
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/usuario.js}"></script>
 
 </body>
 </html>

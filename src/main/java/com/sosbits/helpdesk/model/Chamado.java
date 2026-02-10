@@ -14,9 +14,8 @@ public class Chamado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "assunto", nullable = false)
+    @Column(nullable = false)
     private String titulo;
-
 
     @Column(nullable = false)
     private String tipo;        // EX: "Problema de Hardware"

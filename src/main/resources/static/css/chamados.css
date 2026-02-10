@@ -1,5 +1,5 @@
 /* =========================================================
-   BARRA DE FILTROS E BUSCA
+   BARRA DE FILTROS E BUSCA — CHAMADOS
    ========================================================= */
 
 .filters-row {
@@ -9,6 +9,7 @@
     margin-bottom: 24px;
 }
 
+/* BUSCA */
 .search-wrapper {
     position: relative;
     flex: 1;
@@ -38,52 +39,84 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Botão filtro */
+/* =========================================================
+   BOTÃO FILTROS — PADRÃO DO SISTEMA (IGUAL USUÁRIOS)
+   ========================================================= */
+
 .btn-filter-trigger {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: white;
+
+    height: 42px;
+    padding: 0 16px;
+
+    background: #ffffff;
+    color: #2563eb;
+
     border: 1px solid #e2e8f0;
     border-radius: 10px;
-    padding: 11px 20px;
-    color: #475569;
-    font-weight: 500;
+
+    font-size: 14px;
+    font-weight: 600;
+
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s;
+
+    transition: all 0.2s ease;
 }
 
+.btn-filter-trigger i {
+    font-size: 14px;
+}
+
+/* HOVER */
 .btn-filter-trigger:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+    background: #eff6ff;
+    border-color: #60a5fa;
+    color: #1e40af;
 }
 
-/* Botão novo chamado */
-.btn-novo-chamado {
-    margin-left: auto;
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 11px 20px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-novo-chamado:hover {
-    background: #1d4ed8;
+/* CLICK */
+.btn-filter-trigger:active {
+    transform: translateY(1px);
 }
 
 /* =========================================================
-   TABELA
+   BOTÃO NOVO CHAMADO
+   ========================================================= */
+
+.btn-novo-chamado {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    height: 42px;
+    padding: 0 18px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    border: none;
+    border-radius: 10px;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.btn-novo-chamado:hover {
+    background: #1e40af;
+}
+
+/* =========================================================
+   TABELA DE CHAMADOS
    ========================================================= */
 
 .card-table {
-    background: white;
+    background: #ffffff;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     overflow-x: auto;
@@ -95,16 +128,6 @@
     min-width: 900px;
 }
 
-.card-table .chamados-table thead { display: table-header-group; }
-.card-table .chamados-table tbody { display: table-row-group; }
-.card-table .chamados-table tr    { display: table-row; }
-
-.card-table .chamados-table th,
-.card-table .chamados-table td {
-    display: table-cell;
-    vertical-align: middle;   /* 🔥 alinhamento vertical global */
-}
-
 /* Cabeçalho */
 .card-table .chamados-table th {
     background: #f8fafc;
@@ -114,12 +137,8 @@
     text-transform: uppercase;
     letter-spacing: .04em;
     border-bottom: 1px solid #e2e8f0;
-    white-space: nowrap;
-}
-
-/* Centraliza título AÇÕES */
-.card-table .chamados-table th:last-child {
     text-align: center;
+    white-space: nowrap;
 }
 
 /* Corpo */
@@ -128,16 +147,9 @@
     border-bottom: 1px solid #f1f5f9;
     font-size: 14px;
     color: #111827;
-    line-height: 1.2;         /* 🔥 evita “afundar” os ícones */
+    text-align: center;
     white-space: nowrap;
 }
-
-/* Assunto quebra linha */
-/*
-.card-table .chamados-table td:nth-child(3) {
-    white-space: normal;
-}
-*/
 
 /* Hover linha */
 .card-table .chamados-table tbody tr:hover {
@@ -196,91 +208,10 @@
     border-color: #fecaca;
 }
 
-/* ID */
-.card-table .id-cell {
-    color: #2563eb;
-    font-weight: 700;
-}
-
 /* =========================================================
    AÇÕES
    ========================================================= */
 
-.card-table .actions-cell {
-    text-align: center;        /* 🔥 alinhamento horizontal */
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-.card-table .actions-cell .btn-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    background: #fff;
-    color: #64748b;
-    margin: 0 4px;
-    text-decoration: none;
-    transition: all .2s ease;
-    vertical-align: middle;    /* 🔥 chave do alinhamento */
-}
-
-/* compatível com <button> */
-.card-table .actions-cell button.btn-icon {
-    appearance: none;
-    -webkit-appearance: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-/* Hover geral */
-.card-table .actions-cell .btn-icon:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0,0,0,.08);
-}
-
-/* Editar */
-.card-table .actions-cell .btn-edit:hover {
-    background: #eff6ff;
-    border-color: #60a5fa;
-    color: #2563eb;
-}
-
-/* Excluir */
-.card-table .actions-cell .btn-del:hover {
-    background: #fee2e2;
-    border-color: #f87171;
-    color: #dc2626;
-}
-
-.card-table .actions-cell .btn-icon i {
-    line-height: 1;
-}
-
-
-.card-table .chamados-table th:nth-child(1),
-.card-table .chamados-table td:nth-child(1),
-.card-table .chamados-table th:nth-child(2),
-.card-table .chamados-table td:nth-child(2),
-.card-table .chamados-table th:nth-child(3),
-.card-table .chamados-table td:nth-child(3),
-.card-table .chamados-table th:nth-child(4),
-.card-table .chamados-table td:nth-child(4),
-.card-table .chamados-table th:nth-child(5),
-.card-table .chamados-table td:nth-child(5),
-.card-table .chamados-table th:nth-child(6),
-.card-table .chamados-table td:nth-child(6),
-.card-table .chamados-table th:nth-child(7),
-.card-table .chamados-table td:nth-child(7) {
-    text-align: center;
-}
-
-
-
-/* AÇÕES: centraliza os botões de verdade (sem depender do text-align) */
 .card-table .actions-cell {
     display: flex;
     justify-content: center;
@@ -288,7 +219,35 @@
     gap: 8px;
 }
 
-/* Remove margem que pode “puxar” pro lado */
 .card-table .actions-cell .btn-icon {
-    margin: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #64748b;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.card-table .actions-cell .btn-icon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+
+.card-table .actions-cell .btn-edit:hover {
+    background: #eff6ff;
+    border-color: #60a5fa;
+    color: #2563eb;
+}
+
+.card-table .actions-cell .btn-del:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #dc2626;
 }
