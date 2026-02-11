@@ -18,19 +18,23 @@ public class Chamado {
     private String titulo;
 
     @Column(nullable = false)
-    private String tipo;        // EX: "Problema de Hardware"
+    private String tipo;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String descricao;
 
     @Column(nullable = false)
-    private String status;      // "Aberto", "Em Andamento", "Resolvido"
+    private String status;
 
     @Column(nullable = false)
-    private String prioridade;  // "Baixa", "Média", "Alta"
+    private String prioridade;
 
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
+
+    // ✅ SOFT DELETE
+    @Column(nullable = false)
+    private boolean deletado = false;
 
     @PrePersist
     public void prePersist() {

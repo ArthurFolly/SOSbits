@@ -20,7 +20,6 @@ public class ChamadoController {
         this.service = service;
     }
 
-
     @GetMapping("/dashboard")
     public String dashboard(Model model, @AuthenticationPrincipal UserDetails user) {
         model.addAttribute("usuarioNome", user != null ? user.getUsername() : "Convidado");
@@ -34,46 +33,51 @@ public class ChamadoController {
         return "dashboard";
     }
 
-    // ---------------- VIEW (THYMELEAF) ----------------
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("chamados", service.listarTodos());
+    public String listar(@RequestParam(value = "deleted", required = false) Integer deleted,
+                         Model model) {
+
+        boolean modoExcluidos = (deleted != null && deleted == 1);
+
+        model.addAttribute("chamados", modoExcluidos ? service.listarDeletados() : service.listarTodos());
+        model.addAttribute("modoExcluidos", modoExcluidos);
+
         return "chamados";
     }
 
-    // ✅ SALVAR VIA FORM (THYMELEAF)  -> POST /chamados/salvar
+
     @PostMapping("/salvar")
     public String salvarForm(@ModelAttribute Chamado chamado) {
         service.salvar(chamado);
         return "redirect:/chamados";
     }
 
-    // ✅ EXCLUIR VIA LINK (THYMELEAF) -> GET /chamados/excluir/{id}
     @GetMapping("/excluir/{id}")
     public String excluirForm(@PathVariable Long id) {
         service.excluir(id);
         return "redirect:/chamados";
     }
 
-    // ---------------- API (AJAX) ----------------
+
+    @GetMapping("/restaurar/{id}")
+    public String restaurarForm(@PathVariable Long id) {
+        service.restaurar(id);
+        return "redirect:/chamados?deleted=1";
+    }
+
     @GetMapping("/api")
     @ResponseBody
-    public List<Chamado> listarApi() {
-        return service.listarTodos();
+    public List<Chamado> listarApi(@RequestParam(value = "deleted", required = false) Integer deleted) {
+        boolean modoExcluidos = (deleted != null && deleted == 1);
+        return modoExcluidos ? service.listarDeletados() : service.listarTodos();
     }
-    // Se você quiser manter o CREATE via AJAX em /chamados (POST JSON)
+
     @PostMapping(consumes = "application/json")
     @ResponseBody
     public Chamado criar(@RequestBody Chamado chamado,
                          @AuthenticationPrincipal UserDetails user) {
-
-        // Correção simples: não usa o "user" aqui (evita user null estourar no service.criar)
-        // Salva usando o mesmo fluxo do form
-        service.salvar(chamado);
-        return chamado;
+        return service.criar(chamado, user);
     }
-
-
 
     @GetMapping("/{id}")
     @ResponseBody
@@ -91,7 +95,13 @@ public class ChamadoController {
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public void excluir(@PathVariable Long id) {
+    public void excluirAjax(@PathVariable Long id) {
         service.excluir(id);
+    }
+
+    @PatchMapping("/{id}/restaurar")
+    @ResponseBody
+    public void restaurarAjax(@PathVariable Long id) {
+        service.restaurar(id);
     }
 }

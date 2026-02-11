@@ -21,12 +21,19 @@ public class ChamadoService {
        LISTAGENS
        ========================= */
 
+    // ✅ padrão: retorna SOMENTE ativos (deletado=false)
     public List<Chamado> listarTodos() {
-        return repository.findAll();
+        return repository.findAllByDeletadoFalseOrderByIdDesc();
     }
 
+    // ✅ lista SOMENTE excluídos (deletado=true)
+    public List<Chamado> listarDeletados() {
+        return repository.findAllByDeletadoTrueOrderByIdDesc();
+    }
+
+    // ✅ recentes SOMENTE ativos (pra dashboard não “contar” excluídos)
     public List<Chamado> listarRecentes() {
-        return repository.findFirst5ByOrderByDataCriacaoDesc();
+        return repository.findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
     }
 
     /* =========================
@@ -53,6 +60,9 @@ public class ChamadoService {
                 chamado.setDataCriacao(LocalDateTime.now());
             }
 
+            // ✅ nasce ativo
+            chamado.setDeletado(false);
+
             return repository.save(chamado);
         }
 
@@ -62,6 +72,9 @@ public class ChamadoService {
 
         // preserva dados imutáveis
         chamado.setDataCriacao(existente.getDataCriacao());
+
+        // ✅ NÃO deixa o front “mexer” no soft delete sem querer
+        chamado.setDeletado(existente.isDeletado());
 
         // mantém status se não vier do front
         if (chamado.getStatus() == null || chamado.getStatus().isBlank()) {
@@ -90,12 +103,22 @@ public class ChamadoService {
         return salvar(chamado);
     }
 
-    /* =========================
-       DELETE / BUSCA
-       ========================= */
 
+
+    // ✅ Soft delete (não apaga do banco)
     public void excluir(Long id) {
-        repository.deleteById(id);
+        Chamado c = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
+        c.setDeletado(true);
+        repository.save(c);
+    }
+
+    // ✅ Restaurar (volta a ficar ativo)
+    public void restaurar(Long id) {
+        Chamado c = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
+        c.setDeletado(false);
+        repository.save(c);
     }
 
     public Chamado buscarPorId(Long id) {
@@ -103,12 +126,15 @@ public class ChamadoService {
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
     }
 
+    /* =========================
+       DASHBOARD (somente ativos)
+       ========================= */
 
     public long contarPorStatus(String status) {
-        return repository.countByStatus(status);
+        return repository.countByStatusAndDeletadoFalse(status);
     }
 
     public long contarPorPrioridade(String prioridade) {
-        return repository.countByPrioridade(prioridade);
+        return repository.countByPrioridadeAndDeletadoFalse(prioridade);
     }
 }

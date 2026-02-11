@@ -7,12 +7,24 @@ import java.util.List;
 
 public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
-    // 5 chamados mais recentes
-    List<Chamado> findFirst5ByOrderByDataCriacaoDesc();
+    /* =========================
+       LISTAGENS
+       ========================= */
 
-    // Contagem por status
-    long countByStatus(String status);
+    // ✅ Ativos (deletado = false)
+    List<Chamado> findAllByDeletadoFalseOrderByIdDesc();
 
-    // Contagem por prioridade
-    long countByPrioridade(String prioridade);
+    // ✅ Excluídos (deletado = true)
+    List<Chamado> findAllByDeletadoTrueOrderByIdDesc();
+
+    // ✅ 5 mais recentes (somente ativos)
+    List<Chamado> findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
+
+    /* =========================
+       CONTADORES (somente ativos)
+       ========================= */
+
+    long countByStatusAndDeletadoFalse(String status);
+
+    long countByPrioridadeAndDeletadoFalse(String prioridade);
 }

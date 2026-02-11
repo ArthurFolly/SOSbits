@@ -40,14 +40,18 @@
         <div class="filters-row">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-
-                <!-- ✅ placeholder já estava ok -->
                 <input type="text" id="searchInput" placeholder="Buscar por ID, tipo ou assunto..." class="search-input">
             </div>
+
+            <!-- ✅ NOVO: botão abre MODAL de excluídos -->
+            <button type="button" onclick="abrirModalExcluidos()" class="btn-filter-trigger">
+                <i class="fas fa-trash-restore"></i> Excluídos
+            </button>
 
             <button type="button" onclick="abrirModalFiltros()" class="btn-filter-trigger">
                 <i class="fas fa-sliders-h"></i> Filtros
             </button>
+
             <button type="button" onclick="abrirModal()" class="btn-novo-chamado">
                 <i class="fas fa-plus"></i> Novo Chamado
             </button>
@@ -55,7 +59,6 @@
 
         <div class="card-table">
             <table class="chamados-table">
-
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -69,48 +72,65 @@
                 </thead>
 
                 <tbody id="chamadosTable">
-                <tr th:each="chamado : ${chamados}">
+                <tr th:each="chamado : ${chamados}" th:attr="data-id=${chamado.id}">
 
                     <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
 
+                    <td class="col-tipo" th:text="${chamado.tipo}">Problema de Hardware</td>
 
-                    <td th:text="${chamado.tipo}">Problema de Hardware</td>
+                    <td class="col-titulo" th:text="${chamado.titulo}">Assunto</td>
 
-
-                    <td th:text="${chamado.titulo}">Assunto</td>
-
-                    <td>
-                        <span class="badge"
-                              th:classappend="${chamado.status == 'Aberto'} ? 'badge-aberto' : 'badge-pendente'"
-                              th:text="${chamado.status}">Aberto</span>
+                    <td class="col-status">
+    <span class="badge"
+          th:classappend="
+            ${chamado.status == 'Aberto'} ? 'badge-aberto' :
+            (${chamado.status == 'Em Andamento'} ? 'badge-progresso' :
+            (${chamado.status == 'Resolvido'} ? 'badge-resolvido' :
+            'badge-pendente'))
+          "
+          th:text="${chamado.status}">
+        Aberto
+    </span>
                     </td>
 
-                    <td>
-                        <span class="badge"
-                              th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' : (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
-                              th:text="${chamado.prioridade}">Média</span>
                     </td>
 
-                    <td th:text="${#temporals.format(chamado.dataCriacao,'dd/MM/yyyy')}">28/01/2026</td>
+                    <td class="col-prio">
+        <span class="badge"
+              th:classappend="
+                ${chamado.prioridade == 'Alta'} ? 'prio-alta' :
+                (${chamado.prioridade == 'Média'} ? 'prio-media' :
+                'prio-baixa')
+              "
+              th:text="${chamado.prioridade}">
+            Média
+        </span>
+                    </td>
+
+                    <td class="col-data"
+                        th:text="${#temporals.format(chamado.dataCriacao,'dd/MM/yyyy')}">
+                        28/01/2026
+                    </td>
 
                     <td class="actions-cell">
-                        <a th:href="@{/chamados/editar/{id}(id=${chamado.id})}"
+
+                        <a href="javascript:void(0)"
                            class="btn-icon btn-edit"
+                           th:attr="data-id=${chamado.id}"
+                           onclick="abrirModalEditar(this)"
                            title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
 
                         <a th:href="@{/chamados/excluir/{id}(id=${chamado.id})}"
                            class="btn-icon btn-del"
-                           title="Excluir"
-                           onclick="return confirm('Deseja excluir este chamado?');">
+                           onclick="return confirm('Deseja excluir este chamado?');"
+                           title="Excluir">
                             <i class="fas fa-trash"></i>
                         </a>
                     </td>
-
                 </tr>
                 </tbody>
-
             </table>
         </div>
     </main>
@@ -118,8 +138,7 @@
 
 <!-- ========================= MODAL FILTROS ========================= -->
 <div id="modalFiltros" class="modal-overlay">
-    <div class="modal-box elite-box" style="max-width: 480px;"
-         onclick="event.stopPropagation()">
+    <div class="modal-box elite-box" style="max-width: 480px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
             <div class="header-main-content">
                 <div class="header-icon-elite" style="color: #3b82f6; background: #eff6ff;">
@@ -177,7 +196,122 @@
     </div>
 </div>
 
-<!-- ========================= MODAL CHAMADO ========================= -->
+<!-- ========================= MODAL EDITAR ========================= -->
+<div id="modalEditar" class="modal-overlay">
+    <div class="modal-box elite-box" style="max-width: 520px;" onclick="event.stopPropagation()">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite" style="color:#10b981; background:#ecfdf5;">
+                    <i class="fas fa-pen"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Editar Chamado</h2>
+                    <p>Atualize os dados do ticket.</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalEditar()" class="btn-close-elite">&times;</button>
+        </div>
+
+        <div class="modal-body-elite">
+            <input type="hidden" id="editId">
+
+            <div class="form-group-elite">
+                <label><i class="fas fa-list-ul icon-blue"></i> Tipo</label>
+                <input type="text" id="editTipo" class="input-elite" placeholder="Ex: Problema de Hardware">
+            </div>
+
+            <div class="form-group-elite">
+                <label><i class="fas fa-pen-nib icon-purple"></i> Assunto</label>
+                <input type="text" id="editTitulo" class="input-elite" placeholder="Resumo do problema">
+            </div>
+
+            <div class="form-group-elite">
+                <label><i class="fas fa-align-left icon-gray"></i> Descrição</label>
+                <div class="textarea-elite-box">
+                    <textarea id="editDescricao" rows="4" maxlength="500" placeholder="Descreva..." oninput="updateCharCountEditar(this)"></textarea>
+                    <div class="textarea-footer-elite"><span id="charCountEditar">0</span> / 500</div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-tasks icon-purple"></i> Status</label>
+                <select id="editStatus" class="modern-select-elite">
+                    <option value="Aberto">Aberto</option>
+                    <option value="Em Andamento">Em Andamento</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Resolvido">Resolvido</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-fire-extinguisher icon-orange"></i> Prioridade</label>
+                <select id="editPrioridade" class="modern-select-elite">
+                    <option value="Baixa">Baixa</option>
+                    <option value="Média">Média</option>
+                    <option value="Alta">Alta</option>
+                </select>
+            </div>
+
+            <div id="editErro" style="display:none;margin-top:10px;color:#ef4444;font-weight:600;"></div>
+        </div>
+
+        <div class="modal-footer-elite">
+            <button type="button" class="btn-ghost-elite" onclick="fecharModalEditar()">Cancelar</button>
+            <button type="button" class="btn-primary-elite" onclick="salvarEdicao()">
+                <i class="fas fa-save"></i> Salvar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= MODAL EXCLUÍDOS (RESTAURAR) ========================= -->
+<div id="modalExcluidos" class="modal-overlay">
+    <div class="modal-box elite-box" style="max-width: 820px;" onclick="event.stopPropagation()">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite" style="color:#f59e0b; background:#fffbeb;">
+                    <i class="fas fa-trash-restore"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Chamados Excluídos</h2>
+                    <p>Restaure chamados removidos (soft delete).</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalExcluidos()" class="btn-close-elite">&times;</button>
+        </div>
+
+        <div class="modal-body-elite">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;">
+                <div style="font-weight:700;" id="excluidosStatus">Carregando...</div>
+                <button type="button" class="btn-ghost-elite" onclick="carregarExcluidos()">
+                    <i class="fas fa-rotate"></i> Atualizar
+                </button>
+            </div>
+
+            <div class="card-table" style="box-shadow:none;border:1px solid #e2e8f0;">
+                <table class="chamados-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>TIPO</th>
+                        <th>ASSUNTO</th>
+                        <th>STATUS</th>
+                        <th>PRIORIDADE</th>
+                        <th>AÇÃO</th>
+                    </tr>
+                    </thead>
+                    <tbody id="excluidosTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-footer-elite">
+            <button type="button" class="btn-primary-elite" onclick="fecharModalExcluidos()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= MODAL CHAMADO (CRIAR) ========================= -->
 <div id="modalChamado" class="modal-overlay">
     <div class="modal-box elite-box">
         <div class="priority-indicator-elite" id="priorityLine"></div>
@@ -195,14 +329,12 @@
             <button type="button" onclick="fecharModal()" class="btn-close-elite">&times;</button>
         </div>
 
-
         <form th:action="@{/chamados/salvar}" method="POST" enctype="multipart/form-data">
             <div class="modal-body-elite">
 
-                <!-- Tipo -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-list-ul icon-blue"></i> Tipo de Ocorrência</label>
-                    <select name="tipo" id="selectOcorrencia" required class="modern-select-elite" onchange="checkOtherOption(this)">
+                    <select name="tipo" id="selectOcorrencia" required class="modern-select-elite">
                         <option value="" disabled selected>Selecione uma ocorrência...</option>
                         <option value="Problema em Sistema">Problema em Sistema</option>
                         <option value="Problema de Hardware">Problema de Hardware</option>
@@ -214,13 +346,11 @@
                     </select>
                 </div>
 
-                <!-- Assunto (sempre) -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-pen-nib icon-purple"></i> Assunto</label>
                     <input type="text" name="titulo" required placeholder="Resumo do problema" class="input-elite">
                 </div>
 
-                <!-- Prioridade -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-layer-group icon-orange"></i> Nível de Urgência</label>
                     <div class="priority-elite-grid">
@@ -240,7 +370,6 @@
                     </div>
                 </div>
 
-                <!-- Descrição -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-align-left icon-gray"></i> Descrição Detalhada</label>
                     <div class="textarea-elite-box">
@@ -249,7 +378,6 @@
                     </div>
                 </div>
 
-                <!-- Anexos -->
                 <div class="form-group-elite">
                     <label><i class="fas fa-paperclip icon-teal"></i> Anexos (Opcional)</label>
                     <div class="file-dropzone-elite" onclick="document.getElementById('fileInput').click()">

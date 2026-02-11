@@ -34,29 +34,30 @@ public class UsuarioController {
         return "cadastro";
     }
 
+
     @GetMapping("/dashboard")
     public String dashboard() {
-        return "dashboard";
+        return "redirect:/chamados/dashboard";
+    }
+
+
+    @GetMapping("/usuario")
+    public String paginaUsuarios() {
+        return "redirect:/admin/usuarios";
     }
 
     @PostMapping("/salvar")
     public String cadastrar(@ModelAttribute Usuario usuario) {
 
-        // ❌ email duplicado
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             return "redirect:/cadastro?error=email";
         }
 
-        // 🔐 criptografa senha
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
-        // ✅ busca perfil PADRÃO
         Perfil perfilUsuario = perfilRepository.findByNome("USER")
-                .orElseThrow(() ->
-                        new RuntimeException("Perfil USER não encontrado no banco")
-                );
+                .orElseThrow(() -> new RuntimeException("Perfil USER não encontrado no banco"));
 
-        // ✅ associa perfil ao usuário
         usuario.getPerfis().add(perfilUsuario);
         usuario.setAtivo(true);
 

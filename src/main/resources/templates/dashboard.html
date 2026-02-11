@@ -1,10 +1,17 @@
+<!-- dashboard.html (COMPLETO) -->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Help Desk</title>
+
+    <!-- ✅ mantém o visual do dashboard -->
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <!-- ✅ IMPORTANTE: reaproveita as BADGES e estilo da TABELA do chamados -->
+    <link rel="stylesheet" th:href="@{/css/chamados.css}">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body id="page-dashboard">
@@ -16,27 +23,34 @@
             <i class="fas fa-headset"></i>
             <h2>Help Desk</h2>
         </div>
+
         <nav class="sidebar-nav">
             <ul>
                 <li>
-                    <a th:href="@{/dashboard}" class="active">
+                    <!-- ✅ rota correta do seu controller -->
+                    <a th:href="@{/chamados/dashboard}" class="active">
                         <i class="fas fa-th-large"></i> Dashboard
                     </a>
                 </li>
+
                 <li>
                     <a th:href="@{/chamados}">
                         <i class="fas fa-ticket-alt"></i> Chamados
                         <span class="dot-alert"></span>
                     </a>
                 </li>
+
+
                 <li>
-                    <a th:href="@{/novo-chamado}">
+                    <a th:href="@{/chamados}">
                         <i class="fas fa-plus"></i> Abrir Chamado
                     </a>
                 </li>
+
                 <li><a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+
                 <li>
-                    <a th:href="@{/admin/usuarios}">
+                    <a th:href="@{/usuario}">
                         <i class="fas fa-users"></i> Usuários
                     </a>
                 </li>
@@ -47,127 +61,142 @@
         </nav>
     </aside>
 
-  <main class="main-content">
-      <div class="dashboard-page">
-
-      <header class="page-header">
-            <div class="header-left">
-                <h1>Dashboard</h1>
-                <p>Visão geral dos chamados</p>
-            </div>
-            <div class="header-right">
-                <div class="user-info">
-                    <span class="user-name" th:text="${usuarioNome} ?: 'João Silva'">João Silva</span>
-                    <div class="user-avatar"
-                         th:text="${usuarioNome != null and #strings.length(usuarioNome) >= 2}
-                         ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))} : 'JS'">
-                        JS
-                    </div>
-                    <a th:href="@{/logout}" class="logout-link">Sair</a>
+    <main class="main-content">
+        <div class="dashboard-page">
+            <header class="page-header">
+                <div class="header-left">
+                    <h1>Dashboard</h1>
+                    <p>Visão geral dos chamados</p>
                 </div>
-            </div>
-        </header>
-      </div>
 
+                <div class="header-right">
+                    <div class="user-info">
+                        <span class="user-name" th:text="${usuarioNome} ?: 'Convidado'">Convidado</span>
+
+                        <div class="user-avatar"
+                             th:text="${usuarioNome != null and #strings.length(usuarioNome) >= 2}
+                             ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))} : 'US'">
+                            US
+                        </div>
+
+                        <a th:href="@{/logout}" class="logout-link">Sair</a>
+                    </div>
+                </div>
+            </header>
+        </div>
+
+        <!-- ✅ CARDS (AGORA VAI MOSTRAR O QUE VOCÊ TEM DE VERDADE) -->
         <section class="stats-grid">
             <div class="stat-card open">
                 <div class="stat-icon"><i class="far fa-circle"></i></div>
                 <div class="stat-data">
                     <h3>Abertos</h3>
-                    <div class="value" th:text="${totalAbertos} ?: '24'"></div>
+                    <div class="value" th:text="${totalAbertos}">0</div>
                 </div>
             </div>
+
             <div class="stat-card progress">
                 <div class="stat-icon"><i class="far fa-clock"></i></div>
                 <div class="stat-data">
                     <h3>Em Andamento</h3>
-                    <div class="value" th:text="${totalAndamento} ?: '12'"></div>
+                    <div class="value" th:text="${totalAndamento}">0</div>
                 </div>
             </div>
-            <div class="stat-card x'solved">
+
+            <div class="stat-card solved">
                 <div class="stat-icon"><i class="far fa-check-circle"></i></div>
                 <div class="stat-data">
                     <h3>Resolvidos</h3>
-                    <div class="value" th:text="${totalResolvidos} ?: '89'"></div>
+                    <div class="value" th:text="${totalResolvidos}">0</div>
                 </div>
             </div>
-            <div class="stat-card urgent">
-                <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+
+            <div class="stat-card pending">
+                <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
                 <div class="stat-data">
-                    <h3>Urgentes</h3>
-                    <div class="value" th:text="${totalUrgentes} ?: '5'"></div>
+                    <h3>Pendentes</h3>
+                    <div class="value" th:text="${totalPendentes}">0</div>
                 </div>
             </div>
         </section>
-      <section class="recent-tickets">
-          <div class="section-header">
-              <h2>Chamados Recentes</h2>
-              <a th:href="@{/chamados}" class="view-all">Ver todos</a>
-          </div>
 
-          <div class="card-table">
+        <section class="recent-tickets">
+            <div class="section-header">
+                <h2>Chamados Recentes</h2>
+                <a th:href="@{/chamados}" class="view-all">Ver todos</a>
+            </div>
 
-              <table class="chamados-table">
-                  <thead>
-                  <tr>
-                      <th>ID</th>
-                      <th>TIPO</th>
-                      <th>ASSUNTO</th>
-                      <th>STATUS</th>
-                      <th>PRIORIDADE</th>
-                      <th>DATA</th>
-                      <th>AÇÕES</th>
-                  </tr>
-                  </thead>
+            <div class="card-table">
+                <table class="chamados-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>TIPO</th>
+                        <th>ASSUNTO</th>
+                        <th>STATUS</th>
+                        <th>PRIORIDADE</th>
+                        <th>DATA</th>
+                        <th>AÇÕES</th>
+                    </tr>
+                    </thead>
 
-                  <tbody>
-                  <tr th:each="chamado : ${chamadosRecentes}">
-                      <td class="id-cell" th:text="'#' + ${chamado.id}">#1245</td>
+                    <tbody>
+                    <tr th:each="chamado : ${chamadosRecentes}">
+                        <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
+                        <td th:text="${chamado.tipo}">Tipo</td>
+                        <td th:text="${chamado.titulo}">Assunto</td>
 
-                      <td th:text="${chamado.tipo}">Problema de Hardware</td>
+                        <!-- ✅ STATUS com 4 cores -->
+                        <td>
+                            <span class="badge"
+                                  th:with="st=${#strings.trim(chamado.status)}"
+                                  th:classappend="
+                                    ${#strings.equalsIgnoreCase(st,'Aberto')} ? 'badge-aberto' :
+                                    (${#strings.equalsIgnoreCase(st,'Em Andamento')} ? 'badge-progresso' :
+                                    (${#strings.equalsIgnoreCase(st,'Resolvido')} ? 'badge-resolvido' :
+                                    'badge-pendente'))
+                                  "
+                                  th:text="${st}">
+                                Aberto
+                            </span>
+                        </td>
 
-                      <td th:text="${chamado.titulo}">Erro ao acessar sistema</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' : (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
+                                  th:text="${chamado.prioridade}">
+                                Média
+                            </span>
+                        </td>
 
-                      <td>
-                    <span class="badge"
-                          th:classappend="${chamado.status == 'Aberto'} ? 'badge-aberto' : 'badge-pendente'"
-                          th:text="${chamado.status}">Aberto</span>
-                      </td>
+                        <td th:text="${chamado.dataCriacao != null ? #temporals.format(chamado.dataCriacao,'dd/MM/yyyy') : '-'}">-</td>
 
-                      <td>
-                    <span class="badge"
-                          th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' : (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
-                          th:text="${chamado.prioridade}">Média</span>
-                      </td>
+                        <td class="actions-cell">
+                            <!-- ✅ editar: manda pra tela de chamados (seu editar é modal lá) -->
+                            <a th:href="@{/chamados}"
+                               class="btn-icon btn-edit"
+                               title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
 
-                      <td th:text="${chamado.dataCriacao != null ? #temporals.format(chamado.dataCriacao,'dd/MM/yyyy') : '-'}">-</td>
+                            <a th:href="@{/chamados/excluir/{id}(id=${chamado.id})}"
+                               class="btn-icon btn-del"
+                               title="Excluir"
+                               onclick="return confirm('Deseja excluir este chamado?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
 
-                      <td class="actions-cell">
-                          <a th:href="@{/chamados/editar/{id}(id=${chamado.id})}"
-                             class="btn-icon btn-edit"
-                             title="Editar">
-                              <i class="fas fa-edit"></i>
-                          </a>
-
-                          <a th:href="@{/chamados/excluir/{id}(id=${chamado.id})}"
-                             class="btn-icon btn-del"
-                             title="Excluir"
-                             onclick="return confirm('Deseja excluir este chamado?');">
-                              <i class="fas fa-trash"></i>
-                          </a>
-                      </td>
-                  </tr>
-
-                  <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
-                      <td colspan="7" class="empty-msg" style="text-align: center; padding: 40px; color: #94a3b8;">
-                          Nenhum chamado recente encontrado.
-                      </td>
-                  </tr>
-                  </tbody>
-              </table>
-          </div>
-      </section>
-
+                    <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
+                        <td colspan="7" class="empty-msg" style="text-align:center;padding:40px;color:#94a3b8;">
+                            Nenhum chamado recente encontrado.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
     </main>
 </div>
