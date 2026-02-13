@@ -239,3 +239,65 @@
     transform: translateY(1px);
 }
 
+/* =========================================================
+   BOTÃO EXCLUÍDOS — USUÁRIOS
+   (mesmo padrão do botão filtro)
+   ========================================================= */
+
+#page-usuarios .usuarios-btn-excluidos {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    height: 42px;
+    padding: 0 16px;
+
+    background: #ffffff;
+    color: #b91c1c;                 /* vermelho elegante (alerta) */
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    white-space: nowrap;
+
+    transition: all 0.2s ease;
+}
+
+/* ÍCONE */
+#page-usuarios .usuarios-btn-excluidos i {
+    font-size: 14px;
+}
+
+/* HOVER */
+#page-usuarios .usuarios-btn-excluidos:hover {
+    background: #fff1f2;            /* rosado bem leve */
+    border-color: #fda4af;          /* borda suave */
+    color: #991b1b;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+
+/* CLICK */
+#page-usuarios .usuarios-btn-excluidos:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+#page-usuarios .usuarios-btn-excluidos.is-active {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #7f1d1d;
+}
+
+/* opcional: foco acessível */
+#page-usuarios .usuarios-btn-excluidos:focus {
+    outline: none;
+}
+#page-usuarios .usuarios-btn-excluidos:focus-visible {
+    box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.18);
+    border-color: #fca5a5;
+}
