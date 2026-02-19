@@ -32,7 +32,12 @@ public class Chamado {
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 
-    // ✅ SOFT DELETE
+    // 🔥 NOVO CAMPO: SOLICITANTE
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_usuario_solicitante", nullable = false)
+    private Usuario solicitante;
+
+    // SOFT DELETE
     @Column(nullable = false)
     private boolean deletado = false;
 
