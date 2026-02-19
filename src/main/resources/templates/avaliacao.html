@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avaliações - Help Desk</title>
 
-    <!-- CSS GLOBAL -->
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
-    <!-- CSS DA PÁGINA -->
     <link rel="stylesheet" th:href="@{/css/avaliacao.css}">
 
-    <!-- ICONS -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -44,14 +41,14 @@
                 </li>
 
                 <li>
-                    <a th:href="@{/admin/usuarios}">
+                    <a th:href="@{/usuarios}">
                         <i class="fas fa-users"></i>
                         <span>Usuários</span>
                     </a>
                 </li>
 
                 <li>
-                    <a th:href="@{/admin/avaliacoes}" class="active">
+                    <a th:href="@{/avaliacoes}" class="active">
                         <i class="fas fa-star"></i>
                         <span>Avaliações</span>
                     </a>
@@ -85,15 +82,21 @@
 
                 <div class="avaliacoes-search-wrapper">
                     <i class="fas fa-search"></i>
-                    <input
-                            type="text"
-                            id="avaliacoesSearchInput"
-                            class="avaliacoes-search-input"
-                            placeholder="Buscar por chamado, avaliador ou comentário">
+                    <input type="text"
+                           id="avaliacoesSearchInput"
+                           class="avaliacoes-search-input"
+                           placeholder="Buscar por chamado, avaliador ou comentário">
                 </div>
 
-                <button
-                        type="button"
+                <!-- ✅ BOTÃO EXCLUÍDAS -->
+                <button type="button"
+                        class="avaliacoes-btn-excluidas"
+                        onclick="abrirModalGenerico('modalAvaliacoesExcluidas')">
+                    <i class="fas fa-trash-restore"></i>
+                    Excluídas
+                </button>
+
+                <button type="button"
                         class="avaliacoes-btn-filter"
                         onclick="abrirModalGenerico('modalFiltroAvaliacoes')">
                     <i class="fas fa-sliders-h"></i>
@@ -103,8 +106,8 @@
             </div>
 
             <div class="avaliacoes-filters-right">
-                <button
-                        type="button"
+                <!-- ✅ Mantém MODAL (e não muda tamanho) -->
+                <button type="button"
                         class="avaliacoes-btn-novo"
                         onclick="abrirModalGenerico('modalNovaAvaliacao')">
                     <i class="fas fa-plus"></i>
@@ -134,14 +137,12 @@
                 <tr th:each="av : ${avaliacoes}">
                     <td th:text="'#' + ${av.id}">#1</td>
 
-                    <!-- Ajuste conforme seu modelo: av.chamado.id / av.chamado.titulo -->
                     <td>
-                        <span style="font-weight:700;" th:text="${av.chamadoId != null ? ('#' + av.chamadoId) : '-'}">#10</span>
-                        <span style="opacity:.75;" th:text="${av.chamadoTitulo != null ? av.chamadoTitulo : ''}"></span>
+                        <span style="font-weight:700;" th:text="'#' + ${av.chamado.id}">#10</span>
+                        <span style="opacity:.75;" th:text="${av.chamado.titulo}">Título</span>
                     </td>
 
-                    <!-- Ajuste conforme seu modelo: av.usuario.nome / av.avaliador.nome -->
-                    <td th:text="${av.avaliadorNome != null ? av.avaliadorNome : '-'}">Fulano</td>
+                    <td th:text="${av.usuario.nome}">Fulano</td>
 
                     <td>
                         <span class="avaliacoes-badge"
@@ -151,36 +152,42 @@
 
                     <td>
                         <span class="avaliacoes-badge"
-                              th:classappend="${av.ativo} ? ' avaliacoes-badge-ativo' : ' avaliacoes-badge-inativo'"
-                              th:text="${av.ativo} ? 'Ativo' : 'Inativo'">Ativo</span>
+                              th:classappend="${av.ativa} ? ' avaliacoes-badge-ativo' : ' avaliacoes-badge-inativo'"
+                              th:text="${av.ativa} ? 'Ativo' : 'Inativo'">Ativo</span>
                     </td>
 
-                    <td th:text="${av.dataCriacao != null ? #temporals.format(av.dataCriacao, 'dd/MM/yyyy HH:mm') : '-'}">
-                        19/02/2026 10:00
+                    <td th:text="${av.dataAvaliacao != null ? #temporals.format(av.dataAvaliacao, 'dd/MM/yyyy HH:mm') : '-'}">
+                        -
                     </td>
 
                     <td class="avaliacoes-actions">
 
+                        <!-- ✅ Ver detalhe via JS externo -->
                         <button type="button"
                                 class="avaliacoes-btn-icon avaliacoes-btn-view"
                                 title="Ver"
-                                th:attr="data-id=${av.id}"
+                                th:attr="
+                                    data-id=${av.id},
+                                    data-chamado=${'#' + av.chamado.id + ' - ' + av.chamado.titulo},
+                                    data-avaliador=${av.usuario.nome},
+                                    data-nota=${av.nota},
+                                    data-comentario=${av.comentario}
+                                "
                                 onclick="abrirModalDetalheAvaliacao(this)">
                             <i class="fas fa-eye"></i>
                         </button>
 
-                        <a th:href="@{/admin/avaliacoes/editar/{id}(id=${av.id})}"
-                           class="avaliacoes-btn-icon avaliacoes-btn-edit"
-                           title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </a>
-
-                        <a th:href="@{/admin/avaliacoes/desativar/{id}(id=${av.id})}"
-                           class="avaliacoes-btn-icon avaliacoes-btn-del"
-                           onclick="return confirm('Deseja desativar esta avaliação?');"
-                           title="Desativar">
-                            <i class="fas fa-ban"></i>
-                        </a>
+                        <!-- ✅ Soft delete (POST) -->
+                        <form th:action="@{/avaliacoes/{id}/desativar(id=${av.id})}"
+                              method="post"
+                              style="display:inline;">
+                            <button type="submit"
+                                    class="avaliacoes-btn-icon avaliacoes-btn-del"
+                                    onclick="return confirm('Deseja desativar esta avaliação?');"
+                                    title="Desativar">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </form>
 
                     </td>
                 </tr>
@@ -209,7 +216,7 @@
                 </div>
                 <div class="header-text-elite">
                     <h2>Nova Avaliação</h2>
-                    <p>Registre a avaliação do atendimento</p>
+                    <p>Avalie um chamado fechado</p>
                 </div>
             </div>
 
@@ -219,30 +226,27 @@
             </button>
         </div>
 
-        <form th:action="@{/admin/avaliacoes/salvar}" method="post" class="modal-body-elite">
+        <!-- ✅ action será definida pelo JS ao escolher o chamado -->
+        <form id="formNovaAvaliacao" method="post" class="modal-body-elite">
 
             <div class="form-group-elite">
                 <label>Chamado</label>
-                <select name="chamadoId" class="modern-select-elite" required>
+                <select id="selectChamadoAvaliacao"
+                        class="modern-select-elite"
+                        required
+                        onchange="setActionAvaliacao(this)">
                     <option value="">Selecione</option>
-                    <!-- Ajuste: lista de chamados -->
-                    <option th:each="c : ${chamados}"
+
+                    <!-- ✅ O controller deve enviar: chamadosParaAvaliar -->
+                    <option th:each="c : ${chamadosParaAvaliar}"
                             th:value="${c.id}"
                             th:text="${'#' + c.id + ' - ' + c.titulo}">
                     </option>
                 </select>
-            </div>
 
-            <div class="form-group-elite">
-                <label>Avaliador</label>
-                <select name="avaliadorId" class="modern-select-elite" required>
-                    <option value="">Selecione</option>
-                    <!-- Ajuste: lista de usuários -->
-                    <option th:each="u : ${usuarios}"
-                            th:value="${u.id}"
-                            th:text="${u.nome}">
-                    </option>
-                </select>
+                <small style="display:block;margin-top:6px;opacity:.75;">
+                    * Apenas chamados fechados e ainda não avaliados.
+                </small>
             </div>
 
             <div class="form-group-elite">
@@ -278,7 +282,7 @@
     </div>
 </div>
 
-<!-- ================= MODAL: FILTROS ================= -->
+<!-- ================= MODAL: FILTROS (VISUAL) ================= -->
 <div class="modal-overlay" id="modalFiltroAvaliacoes" onclick="fecharModalGenerico('modalFiltroAvaliacoes')">
     <div class="modal-box elite-box" onclick="event.stopPropagation()">
 
@@ -291,7 +295,7 @@
                 </div>
                 <div class="header-text-elite">
                     <h2>Filtros de Avaliações</h2>
-                    <p>Refine a listagem</p>
+                    <p>Refine a listagem (visual)</p>
                 </div>
             </div>
 
@@ -301,11 +305,10 @@
             </button>
         </div>
 
-        <form method="get" class="modal-body-elite" th:action="@{/admin/avaliacoes}">
-
+        <form method="get" class="modal-body-elite" th:action="@{/avaliacoes}">
             <div class="form-group-elite">
                 <label>Status</label>
-                <select name="ativo" class="modern-select-elite">
+                <select name="ativa" class="modern-select-elite">
                     <option value="">Todos</option>
                     <option value="true">Ativo</option>
                     <option value="false">Inativo</option>
@@ -324,17 +327,6 @@
                 </select>
             </div>
 
-            <div class="form-group-elite">
-                <label>Chamado</label>
-                <select name="chamadoId" class="modern-select-elite">
-                    <option value="">Todos</option>
-                    <option th:each="c : ${chamados}"
-                            th:value="${c.id}"
-                            th:text="${'#' + c.id + ' - ' + c.titulo}">
-                    </option>
-                </select>
-            </div>
-
             <div class="modal-footer-elite">
                 <button type="button" class="btn-ghost-elite"
                         onclick="fecharModalGenerico('modalFiltroAvaliacoes')">
@@ -345,12 +337,108 @@
                     Aplicar Filtros
                 </button>
             </div>
-
         </form>
     </div>
 </div>
 
-<!-- ================= MODAL: DETALHE (VIEW) ================= -->
+<!-- ================= MODAL: EXCLUÍDAS ================= -->
+<div class="modal-overlay" id="modalAvaliacoesExcluidas" onclick="fecharModalGenerico('modalAvaliacoesExcluidas')">
+    <div class="modal-box elite-box" style="max-width: 920px;" onclick="event.stopPropagation()">
+
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite" style="color:#f59e0b; background:#fffbeb;">
+                    <i class="fas fa-trash-restore"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Avaliações Excluídas</h2>
+                    <p>Restaure avaliações desativadas (soft delete).</p>
+                </div>
+            </div>
+
+            <button type="button" class="btn-close-elite"
+                    onclick="fecharModalGenerico('modalAvaliacoesExcluidas')">
+                &times;
+            </button>
+        </div>
+
+        <div class="modal-body-elite">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;">
+                <div style="font-weight:700;"
+                     th:text="${avaliacoesExcluidas == null or #lists.isEmpty(avaliacoesExcluidas)}
+                     ? 'Nenhuma avaliação excluída.' : (${#lists.size(avaliacoesExcluidas)} + ' avaliação(ões) excluída(s).')">
+                    -
+                </div>
+
+                <a th:href="@{/avaliacoes}" class="btn-ghost-elite" style="text-decoration:none;">
+                    <i class="fas fa-rotate"></i> Recarregar página
+                </a>
+            </div>
+
+            <div class="avaliacoes-card-table" style="box-shadow:none;border:1px solid #e2e8f0;">
+                <table class="avaliacoes-table" style="min-width: 880px;">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Chamado</th>
+                        <th>Avaliador</th>
+                        <th>Nota</th>
+                        <th>Data</th>
+                        <th>Ação</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="av : ${avaliacoesExcluidas}">
+                        <td th:text="'#' + ${av.id}">#1</td>
+
+                        <td>
+                            <span style="font-weight:700;" th:text="'#' + ${av.chamado.id}">#10</span>
+                            <span style="opacity:.75;" th:text="${av.chamado.titulo}">Título</span>
+                        </td>
+
+                        <td th:text="${av.usuario.nome}">Fulano</td>
+
+                        <td>
+                            <span class="avaliacoes-badge"
+                                  th:classappend="${av.nota} >= 4 ? ' avaliacoes-badge-ok' : ' avaliacoes-badge-nok'"
+                                  th:text="${av.nota}">5</span>
+                        </td>
+
+                        <td th:text="${av.dataAvaliacao != null ? #temporals.format(av.dataAvaliacao, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
+
+                        <td class="avaliacoes-actions">
+                            <form th:action="@{/avaliacoes/{id}/restaurar(id=${av.id})}"
+                                  method="post"
+                                  style="display:inline;">
+                                <button type="submit"
+                                        class="avaliacoes-btn-icon avaliacoes-btn-edit"
+                                        onclick="return confirm('Deseja restaurar esta avaliação?');"
+                                        title="Restaurar">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${avaliacoesExcluidas == null or #lists.isEmpty(avaliacoesExcluidas)}">
+                        <td colspan="6" style="padding:14px;">Nenhuma avaliação excluída.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-footer-elite">
+            <button type="button" class="btn-primary-elite"
+                    onclick="fecharModalGenerico('modalAvaliacoesExcluidas')">
+                Fechar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL: DETALHE ================= -->
 <div class="modal-overlay" id="modalDetalheAvaliacao" onclick="fecharModalGenerico('modalDetalheAvaliacao')">
     <div class="modal-box elite-box" style="max-width: 820px;" onclick="event.stopPropagation()">
 
@@ -372,7 +460,6 @@
         </div>
 
         <div class="modal-body-elite">
-            <!-- Preenchido via JS (sem fetch obrigatório; pode pegar do DOM) -->
             <div class="avaliacao-detalhe-grid">
                 <div class="avaliacao-detalhe-item">
                     <div class="avaliacao-detalhe-label">ID</div>

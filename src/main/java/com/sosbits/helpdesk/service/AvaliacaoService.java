@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,6 @@ public class AvaliacaoService {
 
     private final AvaliacaoRepository avaliacaoRepository;
     private final ChamadoRepository chamadoRepository;
-
 
     @Transactional
     public Avaliacao avaliarChamado(Long idChamado, Usuario usuarioLogado, Integer nota, String comentario) {
@@ -33,11 +33,9 @@ public class AvaliacaoService {
         Chamado chamado = chamadoRepository.findById(idChamado)
                 .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
 
-
         if (!isChamadoFechado(chamado)) {
             throw new IllegalStateException("Só é possível avaliar um chamado FECHADO.");
         }
-
 
         Usuario solicitante = getSolicitanteDoChamado(chamado);
         if (solicitante == null || solicitante.getId() == null) {
@@ -48,11 +46,9 @@ public class AvaliacaoService {
             throw new IllegalStateException("Somente o solicitante pode avaliar este chamado.");
         }
 
-
-        if (avaliacaoRepository.findByChamadoId(idChamado).isPresent()) {
+        if (avaliacaoRepository.findByChamadoIdAndAtivaTrue(idChamado).isPresent()) {
             throw new IllegalStateException("Este chamado já foi avaliado.");
         }
-
 
         Avaliacao a = new Avaliacao();
         a.setChamado(chamado);
@@ -61,41 +57,72 @@ public class AvaliacaoService {
         a.setComentario(comentario);
         a.setDataAvaliacao(LocalDateTime.now());
 
+        // ✅ Soft delete default
+        a.setAtiva(true);
+        a.setDataDesativacao(null);
+        a.setDesativadaPor(null);
+
         return avaliacaoRepository.save(a);
     }
-
     @Transactional(readOnly = true)
-    public java.util.List<Avaliacao> listarTodas() {
-        return avaliacaoRepository.findAll();
+    public List<Avaliacao> listarTodas() {
+        // ✅ Só ativas (padrão)
+        return avaliacaoRepository.findByAtivaTrueOrderByDataAvaliacaoDesc();
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<Avaliacao> listarPorUsuario(Long idUsuario) {
-        return avaliacaoRepository.findByUsuarioIdOrderByDataAvaliacaoDesc(idUsuario);
+    public List<Avaliacao> listarExcluidas() {
+        return avaliacaoRepository.findByAtivaFalseOrderByDataAvaliacaoDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Avaliacao> listarPorUsuario(Long idUsuario) {
+        return avaliacaoRepository.findByUsuarioIdAndAtivaTrueOrderByDataAvaliacaoDesc(idUsuario);
     }
 
     @Transactional
-    public void excluir(Long id) {
-        avaliacaoRepository.deleteById(id);
+    public void desativar(Long id, Usuario usuarioLogado) {
+        Avaliacao av = avaliacaoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada."));
+
+        if (Boolean.FALSE.equals(av.getAtiva())) {
+            throw new IllegalStateException("Esta avaliação já está desativada.");
+        }
+
+        av.setAtiva(false);
+        av.setDataDesativacao(LocalDateTime.now());
+        av.setDesativadaPor(usuarioLogado);
+
+        avaliacaoRepository.save(av);
     }
 
+    @Transactional
+    public void restaurar(Long id) {
+        Avaliacao av = avaliacaoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada."));
 
+        if (Boolean.TRUE.equals(av.getAtiva())) {
+            throw new IllegalStateException("Esta avaliação já está ativa.");
+        }
+
+        av.setAtiva(true);
+        av.setDataDesativacao(null);
+        av.setDesativadaPor(null);
+
+        avaliacaoRepository.save(av);
+    }
 
     private Usuario getSolicitanteDoChamado(Chamado chamado) {
         return chamado.getSolicitante();
-
-
     }
 
     private Object getStatusDoChamado(Chamado chamado) {
-
         return chamado.getStatus();
     }
 
     private boolean isChamadoFechado(Chamado chamado) {
         Object status = getStatusDoChamado(chamado);
         if (status == null) return false;
-
 
         if (status instanceof String s) {
             String v = s.trim().toUpperCase();
@@ -106,6 +133,7 @@ public class AvaliacaoService {
             String v = e.name().trim().toUpperCase();
             return v.equals("FECHADO") || v.equals("ENCERRADO") || v.equals("FINALIZADO");
         }
+
         String v = status.toString().trim().toUpperCase();
         return v.equals("FECHADO") || v.equals("ENCERRADO") || v.equals("FINALIZADO");
     }

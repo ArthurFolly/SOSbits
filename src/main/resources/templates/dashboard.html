@@ -1,4 +1,3 @@
-<!-- dashboard.html (COMPLETO) -->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -6,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Help Desk</title>
 
-    <!-- ✅ mantém o visual do dashboard -->
+    <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
-
-    <!-- ✅ IMPORTANTE: reaproveita as BADGES e estilo da TABELA do chamados -->
     <link rel="stylesheet" th:href="@{/css/chamados.css}">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body id="page-dashboard">
 
 <div class="app-container">
 
+    <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-headset"></i>
@@ -26,44 +26,80 @@
 
         <nav class="sidebar-nav">
             <ul>
+
+                <!-- Dashboard -->
                 <li>
-                    <!-- ✅ rota correta do seu controller -->
                     <a th:href="@{/chamados/dashboard}" class="active">
-                        <i class="fas fa-th-large"></i> Dashboard
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
                     </a>
                 </li>
 
+                <!-- Chamados -->
                 <li>
                     <a th:href="@{/chamados}">
-                        <i class="fas fa-ticket-alt"></i> Chamados
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Chamados</span>
                         <span class="dot-alert"></span>
                     </a>
                 </li>
 
-
+                <!-- Abrir Chamado -->
                 <li>
                     <a th:href="@{/chamados}">
-                        <i class="fas fa-plus"></i> Abrir Chamado
+                        <i class="fas fa-plus"></i>
+                        <span>Abrir Chamado</span>
                     </a>
                 </li>
 
-                <li><a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <!-- ✅ NOVO ITEM: Avaliações -->
+                <li>
+                    <a th:href="@{/avaliacoes}">
+                        <i class="fas fa-star"></i>
+                        <span>Avaliações</span>
+                    </a>
+                </li>
+
+                <!-- Usuários -->
+                <li>
+                    <a th:href="@{/usuarios}">
+                        <i class="fas fa-users"></i>
+                        <span>Usuários</span>
+                    </a>
+                </li>
+
+                <!-- Outros -->
+                <li>
+                    <a href="#">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
 
                 <li>
-                    <a th:href="@{/usuario}">
-                        <i class="fas fa-users"></i> Usuários
+                    <a href="#">
+                        <i class="fas fa-tags"></i>
+                        <span>Categorias</span>
                     </a>
                 </li>
 
-                <li><a href="#"><i class="fas fa-tags"></i> Categorias</a></li>
-                <li><a href="#"><i class="fas fa-exclamation-triangle"></i> Prioridades</a></li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Prioridades</span>
+                    </a>
+                </li>
+
             </ul>
         </nav>
     </aside>
 
+    <!-- ================= CONTEÚDO ================= -->
     <main class="main-content">
+
         <div class="dashboard-page">
             <header class="page-header">
+
                 <div class="header-left">
                     <h1>Dashboard</h1>
                     <p>Visão geral dos chamados</p>
@@ -71,24 +107,32 @@
 
                 <div class="header-right">
                     <div class="user-info">
-                        <span class="user-name" th:text="${usuarioNome} ?: 'Convidado'">Convidado</span>
+                        <span class="user-name"
+                              th:text="${usuarioNome} ?: 'Convidado'">
+                            Convidado
+                        </span>
 
                         <div class="user-avatar"
                              th:text="${usuarioNome != null and #strings.length(usuarioNome) >= 2}
-                             ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))} : 'US'">
+                             ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))}
+                             : 'US'">
                             US
                         </div>
 
                         <a th:href="@{/logout}" class="logout-link">Sair</a>
                     </div>
                 </div>
+
             </header>
         </div>
 
-        <!-- ✅ CARDS (AGORA VAI MOSTRAR O QUE VOCÊ TEM DE VERDADE) -->
+        <!-- ================= CARDS ================= -->
         <section class="stats-grid">
+
             <div class="stat-card open">
-                <div class="stat-icon"><i class="far fa-circle"></i></div>
+                <div class="stat-icon">
+                    <i class="far fa-circle"></i>
+                </div>
                 <div class="stat-data">
                     <h3>Abertos</h3>
                     <div class="value" th:text="${totalAbertos}">0</div>
@@ -96,7 +140,9 @@
             </div>
 
             <div class="stat-card progress">
-                <div class="stat-icon"><i class="far fa-clock"></i></div>
+                <div class="stat-icon">
+                    <i class="far fa-clock"></i>
+                </div>
                 <div class="stat-data">
                     <h3>Em Andamento</h3>
                     <div class="value" th:text="${totalAndamento}">0</div>
@@ -104,7 +150,9 @@
             </div>
 
             <div class="stat-card solved">
-                <div class="stat-icon"><i class="far fa-check-circle"></i></div>
+                <div class="stat-icon">
+                    <i class="far fa-check-circle"></i>
+                </div>
                 <div class="stat-data">
                     <h3>Resolvidos</h3>
                     <div class="value" th:text="${totalResolvidos}">0</div>
@@ -112,15 +160,20 @@
             </div>
 
             <div class="stat-card pending">
-                <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                <div class="stat-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
                 <div class="stat-data">
                     <h3>Pendentes</h3>
                     <div class="value" th:text="${totalPendentes}">0</div>
                 </div>
             </div>
+
         </section>
 
+        <!-- ================= CHAMADOS RECENTES ================= -->
         <section class="recent-tickets">
+
             <div class="section-header">
                 <h2>Chamados Recentes</h2>
                 <a th:href="@{/chamados}" class="view-all">Ver todos</a>
@@ -128,6 +181,7 @@
 
             <div class="card-table">
                 <table class="chamados-table">
+
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -142,11 +196,11 @@
 
                     <tbody>
                     <tr th:each="chamado : ${chamadosRecentes}">
-                        <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
+
+                        <td th:text="'#' + ${chamado.id}">#1</td>
                         <td th:text="${chamado.tipo}">Tipo</td>
                         <td th:text="${chamado.titulo}">Assunto</td>
 
-                        <!-- ✅ STATUS com 4 cores -->
                         <td>
                             <span class="badge"
                                   th:with="st=${#strings.trim(chamado.status)}"
@@ -163,16 +217,20 @@
 
                         <td>
                             <span class="badge"
-                                  th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' : (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
+                                  th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' :
+                                  (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
                                   th:text="${chamado.prioridade}">
                                 Média
                             </span>
                         </td>
 
-                        <td th:text="${chamado.dataCriacao != null ? #temporals.format(chamado.dataCriacao,'dd/MM/yyyy') : '-'}">-</td>
+                        <td th:text="${chamado.dataCriacao != null ?
+                                     #temporals.format(chamado.dataCriacao,'dd/MM/yyyy') : '-'}">
+                            -
+                        </td>
 
                         <td class="actions-cell">
-                            <!-- ✅ editar: manda pra tela de chamados (seu editar é modal lá) -->
+
                             <a th:href="@{/chamados}"
                                class="btn-icon btn-edit"
                                title="Editar">
@@ -185,17 +243,22 @@
                                onclick="return confirm('Deseja excluir este chamado?');">
                                 <i class="fas fa-trash"></i>
                             </a>
+
                         </td>
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
-                        <td colspan="7" class="empty-msg" style="text-align:center;padding:40px;color:#94a3b8;">
+                        <td colspan="7"
+                            style="text-align:center;padding:40px;color:#94a3b8;">
                             Nenhum chamado recente encontrado.
                         </td>
                     </tr>
+
                     </tbody>
+
                 </table>
             </div>
+
         </section>
 
     </main>

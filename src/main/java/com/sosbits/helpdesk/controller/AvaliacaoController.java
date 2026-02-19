@@ -21,10 +21,14 @@ public class AvaliacaoController {
 
     @GetMapping
     public String listar(Model model) {
-        model.addAttribute("avaliacoes", avaliacaoService.listarTodas());
-        return "avaliacoes";
-    }
 
+
+        model.addAttribute("avaliacoes", avaliacaoService.listarTodas());
+
+        model.addAttribute("avaliacoesExcluidas", avaliacaoService.listarExcluidas());
+
+        return "avaliacao"; // templates/avaliacao.html
+    }
 
     @PostMapping("/chamado/{idChamado}")
     public String avaliarChamado(@PathVariable Long idChamado,
@@ -44,21 +48,22 @@ public class AvaliacaoController {
             );
 
             ra.addFlashAttribute("sucesso", "Avaliação registrada com sucesso!");
-
         } catch (Exception e) {
             ra.addFlashAttribute("erro", e.getMessage());
         }
 
         return "redirect:/chamados/meus";
     }
-
-
-    @PostMapping("/{id}/excluir")
-    public String excluir(@PathVariable Long id, RedirectAttributes ra) {
+    @PostMapping("/{id}/desativar")
+    public String desativar(@PathVariable Long id,
+                            Principal principal,
+                            RedirectAttributes ra) {
 
         try {
-            avaliacaoService.excluir(id);
-            ra.addFlashAttribute("sucesso", "Avaliação excluída!");
+            Usuario usuarioLogado = getUsuarioLogado(principal);
+
+            avaliacaoService.desativar(id, usuarioLogado);
+            ra.addFlashAttribute("sucesso", "Avaliação desativada!");
         } catch (Exception e) {
             ra.addFlashAttribute("erro", e.getMessage());
         }
@@ -66,17 +71,28 @@ public class AvaliacaoController {
         return "redirect:/avaliacoes";
     }
 
+    @PostMapping("/{id}/restaurar")
+    public String restaurar(@PathVariable Long id,
+                            RedirectAttributes ra) {
+
+        try {
+            avaliacaoService.restaurar(id);
+            ra.addFlashAttribute("sucesso", "Avaliação restaurada!");
+        } catch (Exception e) {
+            ra.addFlashAttribute("erro", e.getMessage());
+        }
+
+        return "redirect:/avaliacoes";
+    }
 
     private Usuario getUsuarioLogado(Principal principal) {
-
         if (principal == null) {
             throw new IllegalStateException("Usuário não autenticado.");
         }
 
-        String email = principal.getName(); // Spring Security retorna username/email
+        String email = principal.getName();
 
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new IllegalStateException("Usuário logado não encontrado."));
+                .orElseThrow(() -> new IllegalStateException("Usuário logado não encontrado."));
     }
 }

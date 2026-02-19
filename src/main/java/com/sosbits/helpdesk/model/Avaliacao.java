@@ -35,4 +35,27 @@ public class Avaliacao {
 
     @Column(name = "data_avaliacao", nullable = false)
     private LocalDateTime dataAvaliacao;
+
+    /* =========================
+       SOFT DELETE
+       ========================= */
+    @Column(name = "ativa", nullable = false)
+    private Boolean ativa = true;
+
+    @Column(name = "data_desativacao")
+    private LocalDateTime dataDesativacao;
+
+    @ManyToOne
+    @JoinColumn(name = "desativada_por")
+    private Usuario desativadaPor;
+
+    @PrePersist
+    public void prePersist() {
+        if (dataAvaliacao == null) {
+            dataAvaliacao = LocalDateTime.now();
+        }
+        if (ativa == null) {
+            ativa = true;
+        }
+    }
 }
