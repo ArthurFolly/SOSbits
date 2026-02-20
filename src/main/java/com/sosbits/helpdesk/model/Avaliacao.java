@@ -19,8 +19,12 @@ public class Avaliacao {
     @Column(name = "id_avaliacao")
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_chamado", nullable = false)
+    @OneToOne(optional = false)
+    @JoinColumn(
+            name = "id_chamado",
+            nullable = false,
+            unique = true
+    )
     private Chamado chamado;
 
     @ManyToOne(optional = false)
@@ -30,15 +34,12 @@ public class Avaliacao {
     @Column(nullable = false)
     private Integer nota;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "TEXT")
     private String comentario;
 
     @Column(name = "data_avaliacao", nullable = false)
     private LocalDateTime dataAvaliacao;
 
-    /* =========================
-       SOFT DELETE
-       ========================= */
     @Column(name = "ativa", nullable = false)
     private Boolean ativa = true;
 

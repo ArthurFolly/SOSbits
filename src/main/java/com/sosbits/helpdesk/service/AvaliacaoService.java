@@ -19,6 +19,16 @@ public class AvaliacaoService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final ChamadoRepository chamadoRepository;
 
+    @Transactional(readOnly = true)
+    public boolean chamadoJaAvaliado(Long idChamado) {
+        return avaliacaoRepository.existsByChamadoIdAndAtivaTrue(idChamado);
+    }
+    @Transactional(readOnly = true)
+    public Chamado buscarChamadoParaAvaliacao(Long idChamado) {
+        return chamadoRepository.findByIdComUsuarios(idChamado)
+                .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
+    }
+
     @Transactional
     public Avaliacao avaliarChamado(Long idChamado, Usuario usuarioLogado, Integer nota, String comentario) {
 
@@ -30,14 +40,17 @@ public class AvaliacaoService {
             throw new IllegalArgumentException("A nota deve estar entre 1 e 5.");
         }
 
+        // ✅ Para salvar, não precisa fetch; mas pode usar findByIdComUsuarios também, se quiser padronizar
         Chamado chamado = chamadoRepository.findById(idChamado)
                 .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
 
-        if (!isChamadoFechado(chamado)) {
-            throw new IllegalStateException("Só é possível avaliar um chamado FECHADO.");
+        // ✅ Regra: só pode avaliar se estiver finalizado/fechado/encerrado
+        if (!isChamadoFechado(chamado.getStatus())) {
+            throw new IllegalStateException("Só é possível avaliar um chamado FECHADO/FINALIZADO.");
         }
 
-        Usuario solicitante = getSolicitanteDoChamado(chamado);
+        // ✅ Regra: só o solicitante avalia
+        Usuario solicitante = chamado.getSolicitante();
         if (solicitante == null || solicitante.getId() == null) {
             throw new IllegalStateException("Chamado sem solicitante definido. Não é possível avaliar.");
         }
@@ -46,7 +59,8 @@ public class AvaliacaoService {
             throw new IllegalStateException("Somente o solicitante pode avaliar este chamado.");
         }
 
-        if (avaliacaoRepository.findByChamadoIdAndAtivaTrue(idChamado).isPresent()) {
+        // ✅ Regra: impedir duplicidade
+        if (avaliacaoRepository.existsByChamadoIdAndAtivaTrue(idChamado)) {
             throw new IllegalStateException("Este chamado já foi avaliado.");
         }
 
@@ -64,9 +78,13 @@ public class AvaliacaoService {
 
         return avaliacaoRepository.save(a);
     }
+
+    /* =========================
+       LISTAGENS
+       ========================= */
+
     @Transactional(readOnly = true)
     public List<Avaliacao> listarTodas() {
-        // ✅ Só ativas (padrão)
         return avaliacaoRepository.findByAtivaTrueOrderByDataAvaliacaoDesc();
     }
 
@@ -79,6 +97,10 @@ public class AvaliacaoService {
     public List<Avaliacao> listarPorUsuario(Long idUsuario) {
         return avaliacaoRepository.findByUsuarioIdAndAtivaTrueOrderByDataAvaliacaoDesc(idUsuario);
     }
+
+    /* =========================
+       SOFT DELETE
+       ========================= */
 
     @Transactional
     public void desativar(Long id, Usuario usuarioLogado) {
@@ -112,29 +134,9 @@ public class AvaliacaoService {
         avaliacaoRepository.save(av);
     }
 
-    private Usuario getSolicitanteDoChamado(Chamado chamado) {
-        return chamado.getSolicitante();
-    }
-
-    private Object getStatusDoChamado(Chamado chamado) {
-        return chamado.getStatus();
-    }
-
-    private boolean isChamadoFechado(Chamado chamado) {
-        Object status = getStatusDoChamado(chamado);
+    private boolean isChamadoFechado(String status) {
         if (status == null) return false;
-
-        if (status instanceof String s) {
-            String v = s.trim().toUpperCase();
-            return v.equals("FECHADO") || v.equals("ENCERRADO") || v.equals("FINALIZADO");
-        }
-
-        if (status instanceof Enum<?> e) {
-            String v = e.name().trim().toUpperCase();
-            return v.equals("FECHADO") || v.equals("ENCERRADO") || v.equals("FINALIZADO");
-        }
-
-        String v = status.toString().trim().toUpperCase();
+        String v = status.trim().toUpperCase();
         return v.equals("FECHADO") || v.equals("ENCERRADO") || v.equals("FINALIZADO");
     }
 }

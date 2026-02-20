@@ -1,4 +1,3 @@
-
 function abrirModalGenerico(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
@@ -13,26 +12,42 @@ function fecharModalGenerico(modalId) {
     document.body.classList.remove("modal-open");
 }
 
+/* =========================================================
+   ✅ NOVO: define a action do form "Nova Avaliação"
+   ========================================================= */
+function setActionAvaliacao(select) {
+    const idChamado = (select && select.value) ? select.value.trim() : "";
+    const form = document.getElementById("formNovaAvaliacao");
+    if (!form) return;
+
+    // Se não selecionou, remove action para não postar errado
+    if (!idChamado) {
+        form.removeAttribute("action");
+        return;
+    }
+
+    // Define para o endpoint do seu controller
+    form.setAttribute("action", `/avaliacoes/chamado/${idChamado}`);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("avaliacoesSearchInput");
     const tbody = document.getElementById("avaliacoesTableBody");
 
-    if (!input || !tbody) return;
+    if (input && tbody) {
+        input.addEventListener("input", () => {
+            const termo = (input.value || "").trim().toLowerCase();
 
-    input.addEventListener("input", () => {
-        const termo = (input.value || "").trim().toLowerCase();
+            const linhas = tbody.querySelectorAll("tr");
+            linhas.forEach((tr) => {
+                // Ignora linha "Nenhuma avaliação encontrada"
+                if (tr.querySelector("td[colspan]")) return;
 
-        const linhas = tbody.querySelectorAll("tr");
-        linhas.forEach((tr) => {
-            // Ignora linha "Nenhuma avaliação encontrada"
-            if (tr.querySelector("td[colspan]")) return;
-
-            const textoLinha = (tr.innerText || "").toLowerCase();
-            tr.style.display = textoLinha.includes(termo) ? "" : "none";
+                const textoLinha = (tr.innerText || "").toLowerCase();
+                tr.style.display = textoLinha.includes(termo) ? "" : "none";
+            });
         });
-    });
-
+    }
 
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
@@ -46,10 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function abrirModalDetalheAvaliacao(btn) {
-    // btn é o botão que foi clicado
     const tr = btn.closest("tr");
     if (!tr) return;
-
 
     const tds = tr.querySelectorAll("td");
     if (!tds || tds.length < 6) return;
@@ -58,7 +71,6 @@ function abrirModalDetalheAvaliacao(btn) {
     const chamado = (tds[1].innerText || "").trim();
     const avaliador = (tds[2].innerText || "").trim();
     const nota = (tds[3].innerText || "").trim();
-
 
     const comentario = (btn.getAttribute("data-comentario") || "—").trim();
 

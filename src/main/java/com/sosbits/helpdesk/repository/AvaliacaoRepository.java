@@ -19,4 +19,8 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     List<Avaliacao> findByUsuarioIdAndAtivaTrueOrderByDataAvaliacaoDesc(Long idUsuario);
 
     List<Avaliacao> findByUsuarioIdAndAtivaFalseOrderByDataAvaliacaoDesc(Long idUsuario);
+
+    boolean existsByChamadoIdAndAtivaTrue(Long idChamado);
+
+    boolean existsByChamadoId(Long idChamado);
 }

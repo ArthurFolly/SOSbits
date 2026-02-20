@@ -32,12 +32,17 @@ public class Chamado {
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 
-    // 🔥 NOVO CAMPO: SOLICITANTE
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_solicitante", nullable = false)
     private Usuario solicitante;
 
-    // SOFT DELETE
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario_atendente")
+    private Usuario atendente;
+
+    @Column(name = "data_atendimento")
+    private LocalDateTime dataAtendimento;
+
     @Column(nullable = false)
     private boolean deletado = false;
 
@@ -47,4 +52,5 @@ public class Chamado {
         if (status == null) status = "Aberto";
         if (prioridade == null) prioridade = "Baixa";
     }
+
 }
