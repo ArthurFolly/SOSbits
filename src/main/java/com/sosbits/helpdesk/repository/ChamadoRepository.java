@@ -10,18 +10,14 @@ import java.util.Optional;
 
 public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
-
     List<Chamado> findAllByDeletadoFalseOrderByIdDesc();
 
     List<Chamado> findAllByDeletadoTrueOrderByIdDesc();
 
     List<Chamado> findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
-
-
     long countByStatusAndDeletadoFalse(String status);
 
     long countByPrioridadeAndDeletadoFalse(String prioridade);
-
     @Query("""
            select c from Chamado c
            left join fetch c.solicitante
@@ -30,12 +26,11 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
            """)
     Optional<Chamado> findByIdComUsuarios(@Param("id") Long id);
 
-
     @Query("""
         select c from Chamado c
         where c.deletado = false
-          and lower(c.status) = lower(:statusFechado)
           and c.solicitante.id = :idUsuario
+          and upper(trim(c.status)) in ('FECHADO','ENCERRADO','FINALIZADO')
           and not exists (
               select 1 from Avaliacao a
               where a.chamado.id = c.id
@@ -43,13 +38,6 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
           )
         order by c.dataCriacao desc
     """)
-    List<Chamado> listarFechadosNaoAvaliadosDoSolicitante(
-            @Param("idUsuario") Long idUsuario,
-            @Param("statusFechado") String statusFechado
-    );
-
-
-
+    List<Chamado> listarFechadosNaoAvaliadosDoSolicitante(@Param("idUsuario") Long idUsuario);
     List<Chamado> findBySolicitanteIdAndDeletadoFalseOrderByDataCriacaoDesc(Long idUsuario);
-
 }

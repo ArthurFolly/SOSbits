@@ -106,7 +106,6 @@
             </div>
 
             <div class="avaliacoes-filters-right">
-                <!-- ✅ Mantém MODAL (e não muda tamanho) -->
                 <button type="button"
                         class="avaliacoes-btn-novo"
                         onclick="abrirModalGenerico('modalNovaAvaliacao')">
@@ -162,7 +161,6 @@
 
                     <td class="avaliacoes-actions">
 
-                        <!-- ✅ Ver detalhe via JS externo -->
                         <button type="button"
                                 class="avaliacoes-btn-icon avaliacoes-btn-view"
                                 title="Ver"
@@ -177,7 +175,6 @@
                             <i class="fas fa-eye"></i>
                         </button>
 
-                        <!-- ✅ Soft delete (POST) -->
                         <form th:action="@{/avaliacoes/{id}/desativar(id=${av.id})}"
                               method="post"
                               style="display:inline;">
@@ -226,18 +223,22 @@
             </button>
         </div>
 
-        <!-- ✅ action será definida pelo JS ao escolher o chamado -->
-        <form id="formNovaAvaliacao" method="post" class="modal-body-elite">
+        <!-- ✅ PADRÃO A: action fixo /avaliacoes/salvar -->
+        <form id="formNovaAvaliacao"
+              th:action="@{/avaliacoes/salvar}"
+              method="post"
+              class="modal-body-elite">
 
             <div class="form-group-elite">
                 <label>Chamado</label>
+
+                <!-- ✅ name="chamadoId" (vai para @RequestParam Long chamadoId) -->
                 <select id="selectChamadoAvaliacao"
+                        name="chamadoId"
                         class="modern-select-elite"
-                        required
-                        onchange="setActionAvaliacao(this)">
+                        required>
                     <option value="">Selecione</option>
 
-                    <!-- ✅ O controller deve enviar: chamadosParaAvaliar -->
                     <option th:each="c : ${chamadosParaAvaliar}"
                             th:value="${c.id}"
                             th:text="${'#' + c.id + ' - ' + c.titulo}">
@@ -248,6 +249,8 @@
                     * Apenas chamados fechados e ainda não avaliados.
                 </small>
             </div>
+
+            <!-- ❌ REMOVIDO: previewChamadoBox (sem fetch ele não funciona) -->
 
             <div class="form-group-elite">
                 <label>Nota (1 a 5)</label>

@@ -12,24 +12,6 @@ function fecharModalGenerico(modalId) {
     document.body.classList.remove("modal-open");
 }
 
-/* =========================================================
-   ✅ NOVO: define a action do form "Nova Avaliação"
-   ========================================================= */
-function setActionAvaliacao(select) {
-    const idChamado = (select && select.value) ? select.value.trim() : "";
-    const form = document.getElementById("formNovaAvaliacao");
-    if (!form) return;
-
-    // Se não selecionou, remove action para não postar errado
-    if (!idChamado) {
-        form.removeAttribute("action");
-        return;
-    }
-
-    // Define para o endpoint do seu controller
-    form.setAttribute("action", `/avaliacoes/chamado/${idChamado}`);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("avaliacoesSearchInput");
     const tbody = document.getElementById("avaliacoesTableBody");
@@ -87,3 +69,58 @@ function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const select = document.getElementById("selectChamadoAvaliacao");
+    const previewBox = document.getElementById("previewChamadoBox");
+    const pvErro = document.getElementById("pvErro");
+
+    if (!select) return;
+
+    select.addEventListener("change", async () => {
+        const id = (select.value || "").trim();
+
+        // reset visual
+        if (pvErro) {
+            pvErro.style.display = "none";
+            pvErro.innerText = "";
+        }
+        if (previewBox) previewBox.style.display = "none";
+
+        if (!id) return;
+
+        try {
+            const resp = await fetch(`/avaliacoes/chamados/${id}/resumo`, {
+                headers: { "Accept": "application/json" }
+            });
+
+            if (!resp.ok) throw new Error("Falha ao buscar resumo.");
+
+            const data = await resp.json();
+
+            const elTitulo = document.getElementById("pvTitulo");
+            const elStatus = document.getElementById("pvStatus");
+            const elTipo = document.getElementById("pvTipo");
+            const elPri = document.getElementById("pvPrioridade");
+            const elAt = document.getElementById("pvAtendente");
+            const elDesc = document.getElementById("pvDescricao");
+
+            if (elTitulo) elTitulo.innerText = `#${data.id} - ${data.titulo ?? "-"}`;
+            if (elStatus) elStatus.innerText = data.status ?? "-";
+            if (elTipo) elTipo.innerText = data.tipo ?? "-";
+            if (elPri) elPri.innerText = data.prioridade ?? "-";
+            if (elAt) elAt.innerText = data.nomeAtendente ?? "Não atribuído";
+            if (elDesc) elDesc.innerText = data.descricao ?? "-";
+
+            if (previewBox) previewBox.style.display = "block";
+        } catch (e) {
+
+            if (pvErro) {
+                pvErro.innerText =
+                    "Não foi possível carregar os dados do chamado (pode já ter sido avaliado ou você não tem permissão).";
+                pvErro.style.display = "block";
+            }
+            if (previewBox) previewBox.style.display = "block";
+        }
+    });
+});

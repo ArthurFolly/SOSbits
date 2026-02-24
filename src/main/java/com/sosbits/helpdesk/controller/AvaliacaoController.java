@@ -1,15 +1,13 @@
 package com.sosbits.helpdesk.controller;
 
 import com.sosbits.helpdesk.model.Usuario;
-import com.sosbits.helpdesk.repository.UsuarioRepository;
 import com.sosbits.helpdesk.service.AvaliacaoService;
+import com.sosbits.helpdesk.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.security.Principal;
 
 @Controller
 @RequestMapping("/avaliacoes")
@@ -17,52 +15,44 @@ import java.security.Principal;
 public class AvaliacaoController {
 
     private final AvaliacaoService avaliacaoService;
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     @GetMapping
     public String listar(Model model) {
 
+        Usuario logado = usuarioService.getUsuarioLogado();
 
         model.addAttribute("avaliacoes", avaliacaoService.listarTodas());
-
         model.addAttribute("avaliacoesExcluidas", avaliacaoService.listarExcluidas());
+
+        model.addAttribute("chamadosParaAvaliar",
+                avaliacaoService.listarChamadosFechadosNaoAvaliados(logado.getId()));
 
         return "avaliacao"; // templates/avaliacao.html
     }
 
-    @PostMapping("/chamado/{idChamado}")
-    public String avaliarChamado(@PathVariable Long idChamado,
-                                 @RequestParam Integer nota,
-                                 @RequestParam(required = false) String comentario,
-                                 Principal principal,
-                                 RedirectAttributes ra) {
+    // ✅ PADRÃO A: form fixo em /avaliacoes/salvar
+    @PostMapping("/salvar")
+    public String salvar(@RequestParam Long chamadoId,
+                         @RequestParam Integer nota,
+                         @RequestParam(required = false) String comentario,
+                         RedirectAttributes ra) {
 
         try {
-            Usuario usuarioLogado = getUsuarioLogado(principal);
-
-            avaliacaoService.avaliarChamado(
-                    idChamado,
-                    usuarioLogado,
-                    nota,
-                    comentario
-            );
-
+            avaliacaoService.salvarAvaliacao(chamadoId, nota, comentario);
             ra.addFlashAttribute("sucesso", "Avaliação registrada com sucesso!");
         } catch (Exception e) {
             ra.addFlashAttribute("erro", e.getMessage());
         }
 
-        return "redirect:/chamados/meus";
+        return "redirect:/avaliacoes";
     }
+
     @PostMapping("/{id}/desativar")
-    public String desativar(@PathVariable Long id,
-                            Principal principal,
-                            RedirectAttributes ra) {
+    public String desativar(@PathVariable Long id, RedirectAttributes ra) {
 
         try {
-            Usuario usuarioLogado = getUsuarioLogado(principal);
-
-            avaliacaoService.desativar(id, usuarioLogado);
+            avaliacaoService.desativar(id);
             ra.addFlashAttribute("sucesso", "Avaliação desativada!");
         } catch (Exception e) {
             ra.addFlashAttribute("erro", e.getMessage());
@@ -72,8 +62,7 @@ public class AvaliacaoController {
     }
 
     @PostMapping("/{id}/restaurar")
-    public String restaurar(@PathVariable Long id,
-                            RedirectAttributes ra) {
+    public String restaurar(@PathVariable Long id, RedirectAttributes ra) {
 
         try {
             avaliacaoService.restaurar(id);
@@ -83,16 +72,5 @@ public class AvaliacaoController {
         }
 
         return "redirect:/avaliacoes";
-    }
-
-    private Usuario getUsuarioLogado(Principal principal) {
-        if (principal == null) {
-            throw new IllegalStateException("Usuário não autenticado.");
-        }
-
-        String email = principal.getName();
-
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Usuário logado não encontrado."));
     }
 }

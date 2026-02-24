@@ -18,17 +18,47 @@ public class AvaliacaoService {
 
     private final AvaliacaoRepository avaliacaoRepository;
     private final ChamadoRepository chamadoRepository;
+    private final UsuarioService usuarioService;
+
+    // ✅ Ajuste se seu status fechado no banco for outro
+    private static final String STATUS_FECHADO_PADRAO = "Fechado";
+
+    // =========================
+    // LISTAGENS
+    // =========================
 
     @Transactional(readOnly = true)
-    public boolean chamadoJaAvaliado(Long idChamado) {
-        return avaliacaoRepository.existsByChamadoIdAndAtivaTrue(idChamado);
-    }
-    @Transactional(readOnly = true)
-    public Chamado buscarChamadoParaAvaliacao(Long idChamado) {
-        return chamadoRepository.findByIdComUsuarios(idChamado)
-                .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
+    public List<Avaliacao> listarTodas() {
+        return avaliacaoRepository.findByAtivaTrueOrderByDataAvaliacaoDesc();
     }
 
+    @Transactional(readOnly = true)
+    public List<Avaliacao> listarExcluidas() {
+        return avaliacaoRepository.findByAtivaFalseOrderByDataAvaliacaoDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Avaliacao> listarPorUsuario(Long idUsuario) {
+        return avaliacaoRepository.findByUsuarioIdAndAtivaTrueOrderByDataAvaliacaoDesc(idUsuario);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Chamado> listarChamadosFechadosNaoAvaliados(Long idUsuario) {
+        return chamadoRepository.listarFechadosNaoAvaliadosDoSolicitante(idUsuario);
+    }
+
+    // =========================
+    // SALVAR (PADRÃO A)
+    // =========================
+    @Transactional
+    public Avaliacao salvarAvaliacao(Long idChamado, Integer nota, String comentario) {
+        Usuario usuarioLogado = usuarioService.getUsuarioLogado();
+        return avaliarChamado(idChamado, usuarioLogado, nota, comentario);
+    }
+
+    // =========================
+    // MOTOR DE AVALIAÇÃO (sua lógica)
+    // =========================
     @Transactional
     public Avaliacao avaliarChamado(Long idChamado, Usuario usuarioLogado, Integer nota, String comentario) {
 
@@ -40,11 +70,10 @@ public class AvaliacaoService {
             throw new IllegalArgumentException("A nota deve estar entre 1 e 5.");
         }
 
-        // ✅ Para salvar, não precisa fetch; mas pode usar findByIdComUsuarios também, se quiser padronizar
-        Chamado chamado = chamadoRepository.findById(idChamado)
+        Chamado chamado = chamadoRepository.findByIdComUsuarios(idChamado)
                 .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
 
-        // ✅ Regra: só pode avaliar se estiver finalizado/fechado/encerrado
+        // ✅ Regra: só pode avaliar se estiver fechado/finalizado/encerrado
         if (!isChamadoFechado(chamado.getStatus())) {
             throw new IllegalStateException("Só é possível avaliar um chamado FECHADO/FINALIZADO.");
         }
@@ -79,31 +108,13 @@ public class AvaliacaoService {
         return avaliacaoRepository.save(a);
     }
 
-    /* =========================
-       LISTAGENS
-       ========================= */
-
-    @Transactional(readOnly = true)
-    public List<Avaliacao> listarTodas() {
-        return avaliacaoRepository.findByAtivaTrueOrderByDataAvaliacaoDesc();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Avaliacao> listarExcluidas() {
-        return avaliacaoRepository.findByAtivaFalseOrderByDataAvaliacaoDesc();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Avaliacao> listarPorUsuario(Long idUsuario) {
-        return avaliacaoRepository.findByUsuarioIdAndAtivaTrueOrderByDataAvaliacaoDesc(idUsuario);
-    }
-
-    /* =========================
-       SOFT DELETE
-       ========================= */
-
+    // =========================
+    // SOFT DELETE
+    // =========================
     @Transactional
-    public void desativar(Long id, Usuario usuarioLogado) {
+    public void desativar(Long id) {
+        Usuario usuarioLogado = usuarioService.getUsuarioLogado();
+
         Avaliacao av = avaliacaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada."));
 
@@ -132,6 +143,20 @@ public class AvaliacaoService {
         av.setDesativadaPor(null);
 
         avaliacaoRepository.save(av);
+    }
+
+    // =========================
+    // UTILS
+    // =========================
+    @Transactional(readOnly = true)
+    public boolean chamadoJaAvaliado(Long idChamado) {
+        return avaliacaoRepository.existsByChamadoIdAndAtivaTrue(idChamado);
+    }
+
+    @Transactional(readOnly = true)
+    public Chamado buscarChamadoParaAvaliacao(Long idChamado) {
+        return chamadoRepository.findByIdComUsuarios(idChamado)
+                .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
     }
 
     private boolean isChamadoFechado(String status) {
