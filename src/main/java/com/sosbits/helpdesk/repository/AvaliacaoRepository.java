@@ -9,18 +9,15 @@ import java.util.Optional;
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
 
     List<Avaliacao> findByAtivaTrueOrderByDataAvaliacaoDesc();
-
     List<Avaliacao> findByAtivaFalseOrderByDataAvaliacaoDesc();
-
     Optional<Avaliacao> findByChamadoIdAndAtivaTrue(Long idChamado);
-
     List<Avaliacao> findByChamadoIdAndAtivaFalseOrderByDataAvaliacaoDesc(Long idChamado);
-
     List<Avaliacao> findByUsuarioIdAndAtivaTrueOrderByDataAvaliacaoDesc(Long idUsuario);
-
     List<Avaliacao> findByUsuarioIdAndAtivaFalseOrderByDataAvaliacaoDesc(Long idUsuario);
 
+
     boolean existsByChamadoIdAndAtivaTrue(Long idChamado);
+
 
     boolean existsByChamadoId(Long idChamado);
 }
