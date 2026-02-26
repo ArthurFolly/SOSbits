@@ -7,7 +7,13 @@
 
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
+
+    <!-- ✅ OPÇÃO A (RECOMENDADA): use seu categorias.css MAS ele precisa ter o CSS que você mandou -->
     <link rel="stylesheet" th:href="@{/css/categorias.css}">
+
+    <!-- ✅ OPÇÃO B (se você ainda não criou categorias.css com o estilo): descomente e use o chamados.css -->
+    <!-- <link rel="stylesheet" th:href="@{/css/chamados.css}"> -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -42,18 +48,28 @@
         <div class="filters-row">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="categoriasSearchInput" placeholder="Buscar por ID ou nome..." class="search-input">
+                <input type="text"
+                       id="categoriasSearchInput"
+                       placeholder="Buscar por ID ou nome..."
+                       class="search-input">
             </div>
 
-            <button type="button" onclick="abrirModalCategoriasExcluidas()" class="btn-filter-trigger">
+            <!-- ✅ Se quiser o botão vermelho, adicione btn-excluidos -->
+            <button type="button"
+                    onclick="abrirModalCategoriasExcluidas()"
+                    class="btn-filter-trigger btn-excluidos">
                 <i class="fas fa-trash-restore"></i> Excluídas
             </button>
 
-            <button type="button" onclick="abrirModalCategoriasFiltros()" class="btn-filter-trigger">
+            <button type="button"
+                    onclick="abrirModalCategoriasFiltros()"
+                    class="btn-filter-trigger">
                 <i class="fas fa-sliders-h"></i> Filtros
             </button>
 
-            <button type="button" onclick="abrirModalCategoriaCriar()" class="btn-novo-chamado">
+            <button type="button"
+                    onclick="abrirModalCategoriaCriar()"
+                    class="btn-novo-chamado">
                 <i class="fas fa-plus"></i> Nova Categoria
             </button>
         </div>
@@ -80,9 +96,13 @@
 
                     <td class="col-nome" th:text="${cat.nome}">Hardware</td>
 
-                    <td class="col-desc" th:text="${cat.descricao}">Categoria para problemas de hardware</td>
+                    <td class="col-desc" th:text="${cat.descricao} ?: '-'">-</td>
 
-                    <td class="col-data" th:text="${#temporals.format(cat.dataCriacao,'dd/MM/yyyy')}">28/01/2026</td>
+                    <!-- ✅ Protege se dataCriacao vier null -->
+                    <td class="col-data"
+                        th:text="${cat.dataCriacao != null ? #temporals.format(cat.dataCriacao,'dd/MM/yyyy') : '-'}">
+                        28/01/2026
+                    </td>
 
                     <td class="actions-cell">
                         <a href="javascript:void(0)"
@@ -93,7 +113,8 @@
                             <i class="fas fa-edit"></i>
                         </a>
 
-                        <a th:href="@{/categorias/{id}/excluir(id=${cat.id})}"
+                        <!-- ✅ CORREÇÃO DO LINK (estava errado) -->
+                        <a th:href="@{/categorias/excluir/{id}(id=${cat.id})}"
                            class="btn-icon btn-del"
                            onclick="return confirm('Deseja excluir esta categoria?');"
                            title="Excluir">

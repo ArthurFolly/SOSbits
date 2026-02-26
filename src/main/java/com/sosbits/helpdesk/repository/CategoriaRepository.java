@@ -4,13 +4,12 @@ import com.sosbits.helpdesk.model.Categoria;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
-    List<Categoria> findByDeletadoFalseOrderByNomeAsc();
+    List<Categoria> findByDeletadoFalseOrderByIdDesc();
 
-    Optional<Categoria> findByIdAndDeletadoFalse(Long id);
+    List<Categoria> findByDeletadoTrueOrderByIdDesc();
 
     boolean existsByNomeIgnoreCaseAndDeletadoFalse(String nome);
 }

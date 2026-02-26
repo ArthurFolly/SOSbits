@@ -1,3 +1,11 @@
+/* =========================================================
+   CATEGORIAS.CSS — PADRÃO DO SISTEMA (baseado em chamados)
+   ========================================================= */
+
+/* =========================================================
+   BARRA DE FILTROS E BUSCA
+   ========================================================= */
+
 .filters-row {
     display: flex;
     align-items: center;
@@ -34,6 +42,10 @@
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
+
+/* =========================================================
+   BOTÃO FILTROS — PADRÃO DO SISTEMA
+   ========================================================= */
 
 .btn-filter-trigger {
     display: flex;
@@ -74,6 +86,9 @@
     transform: translateY(1px);
 }
 
+/* =========================================================
+   BOTÃO EXCLUÍDOS — VERMELHO (FORÇADO)
+   ========================================================= */
 
 button.btn-excluidos,
 .btn-excluidos {
@@ -105,7 +120,7 @@ button.btn-excluidos i,
     color: #b91c1c !important;
 }
 
-
+/* HOVER */
 button.btn-excluidos:hover,
 .btn-excluidos:hover {
     background: #fff1f2 !important;
@@ -116,14 +131,14 @@ button.btn-excluidos:hover,
     box-shadow: 0 6px 14px rgba(0,0,0,.08);
 }
 
-
+/* CLICK */
 button.btn-excluidos:active,
 .btn-excluidos:active {
     transform: translateY(1px);
     box-shadow: none;
 }
 
-
+/* ESTADO ATIVO (se você marcar via JS) */
 button.btn-excluidos.is-active,
 .btn-excluidos.is-active {
     background: #fee2e2 !important;
@@ -136,6 +151,9 @@ button.btn-excluidos.is-active i,
     color: #7f1d1d !important;
 }
 
+/* =========================================================
+   BOTÃO NOVA CATEGORIA (usa a mesma classe do chamado)
+   ========================================================= */
 
 .btn-novo-chamado {
     margin-left: auto;
@@ -162,6 +180,33 @@ button.btn-excluidos.is-active i,
     background: #1e40af;
 }
 
+/* =========================================================
+   ALERTAS (sucesso / erro) — CATEGORIAS
+   ========================================================= */
+
+.alert-sucesso {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin: 0 0 14px 0;
+}
+
+.alert-erro {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin: 0 0 14px 0;
+}
+
+/* =========================================================
+   TABELA — CATEGORIAS (reutiliza classes do chamados)
+   ========================================================= */
 
 .card-table {
     background: #ffffff;
@@ -176,6 +221,7 @@ button.btn-excluidos.is-active i,
     min-width: 900px;
 }
 
+/* Cabeçalho */
 .card-table .chamados-table th {
     background: #f8fafc;
     padding: 14px 20px;
@@ -188,6 +234,7 @@ button.btn-excluidos.is-active i,
     white-space: nowrap;
 }
 
+/* Corpo */
 .card-table .chamados-table td {
     padding: 16px 20px;
     border-bottom: 1px solid #f1f5f9;
@@ -197,50 +244,34 @@ button.btn-excluidos.is-active i,
     white-space: nowrap;
 }
 
+/* Hover linha */
 .card-table .chamados-table tbody tr:hover {
     background: #fbfdff;
 }
 
+/* Coluna ID (#1) */
+.id-cell {
+    font-weight: 800;
+    color: #0f172a;
+}
 
+/* Descrição pode ser longa: quebra linha + limita largura */
+.col-desc {
+    white-space: normal !important;
+    max-width: 520px;
+    line-height: 1.35;
+}
+
+/* Linha vazia */
 .empty-row {
     text-align: center;
-    padding: 18px;
-    color: #64748b;
-    font-weight: 600;
+    padding: 40px !important;
+    color: #94a3b8 !important;
 }
 
-.alert-sucesso{
-    margin: 10px 0 14px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    color: #065f46;
-    font-weight: 700;
-}
-
-.alert-erro{
-    margin: 10px 0 14px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #991b1b;
-    font-weight: 700;
-}
-
-
-.card-table .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    border: 1px solid transparent;
-}
-
-
+/* =========================================================
+   AÇÕES
+   ========================================================= */
 
 .card-table .actions-cell {
     display: flex;
@@ -280,13 +311,4 @@ button.btn-excluidos.is-active i,
     background: #fee2e2;
     border-color: #f87171;
     color: #dc2626;
-}
-
-
-.col-nome {
-    font-weight: 700;
-}
-
-.col-desc {
-    color: #475569;
 }

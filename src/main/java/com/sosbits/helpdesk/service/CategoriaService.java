@@ -6,64 +6,118 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CategoriaService {
 
-    private final CategoriaRepository categoriaRepository;
+    private final CategoriaRepository repository;
+
+    // =========================
+    // LISTAGENS
+    // =========================
 
     @Transactional(readOnly = true)
     public List<Categoria> listarAtivas() {
-        return categoriaRepository.findByDeletadoFalseOrderByNomeAsc();
+        return repository.findByDeletadoFalseOrderByIdDesc();
     }
 
     @Transactional(readOnly = true)
-    public Categoria buscarPorId(Long id) {
-        return categoriaRepository.findByIdAndDeletadoFalse(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada: " + id));
+    public List<Categoria> listarDeletadas() {
+        return repository.findByDeletadoTrueOrderByIdDesc();
+    }
+
+    // =========================
+    // CRUD
+    // =========================
+
+    @Transactional
+    public Categoria salvar(Categoria categoria) {
+        // salvar via FORM
+        validarCategoria(categoria);
+
+        // se o seu Model Categoria tiver @PrePersist, pode remover isso daqui.
+        if (categoria.getDataCriacao() == null) {
+            categoria.setDataCriacao(LocalDateTime.now());
+        }
+        categoria.setDeletado(false);
+
+        return repository.save(categoria);
     }
 
     @Transactional
     public Categoria criar(Categoria categoria) {
-        validarNome(categoria.getNome(), null);
-        categoria.setId(null);
-        categoria.setDeletado(false);
-        return categoriaRepository.save(categoria);
+        // criar via API (JSON)
+        return salvar(categoria);
+    }
+
+    @Transactional(readOnly = true)
+    public Categoria buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada (ID: " + id + ")"));
     }
 
     @Transactional
     public Categoria atualizar(Long id, Categoria dados) {
-        Categoria existente = buscarPorId(id);
-        validarNome(dados.getNome(), id);
+        Categoria atual = buscarPorId(id);
 
-        existente.setNome(dados.getNome());
-        existente.setDescricao(dados.getDescricao());
-        return categoriaRepository.save(existente);
+        // valida dados mínimos
+        if (dados == null) throw new RuntimeException("Dados inválidos.");
+        String nome = dados.getNome() != null ? dados.getNome().trim() : "";
+        String descricao = dados.getDescricao() != null ? dados.getDescricao().trim() : null;
+
+        if (nome.isEmpty()) throw new RuntimeException("O nome da categoria é obrigatório.");
+
+        // se mudou o nome, checa duplicidade entre as ativas
+        if (!nome.equalsIgnoreCase(atual.getNome())) {
+            if (repository.existsByNomeIgnoreCaseAndDeletadoFalse(nome)) {
+                throw new RuntimeException("Já existe uma categoria ativa com esse nome.");
+            }
+        }
+
+        atual.setNome(nome);
+        atual.setDescricao(descricao);
+
+        return repository.save(atual);
     }
 
     @Transactional
     public void excluir(Long id) {
-        Categoria existente = buscarPorId(id);
-        existente.setDeletado(true);
-        categoriaRepository.save(existente);
+        Categoria cat = buscarPorId(id);
+
+        // soft delete
+        cat.setDeletado(true);
+        repository.save(cat);
     }
 
-    private void validarNome(String nome, Long idEdicao) {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new RuntimeException("Nome da categoria é obrigatório.");
+    @Transactional
+    public void restaurar(Long id) {
+        Categoria cat = buscarPorId(id);
+
+        cat.setDeletado(false);
+        repository.save(cat);
+    }
+
+    // =========================
+    // VALIDAÇÕES
+    // =========================
+
+    private void validarCategoria(Categoria categoria) {
+        if (categoria == null) throw new RuntimeException("Categoria inválida.");
+
+        String nome = categoria.getNome() != null ? categoria.getNome().trim() : "";
+        if (nome.isEmpty()) throw new RuntimeException("O nome da categoria é obrigatório.");
+
+        if (repository.existsByNomeIgnoreCaseAndDeletadoFalse(nome)) {
+            throw new RuntimeException("Já existe uma categoria ativa com esse nome.");
         }
 
-        // Para criar: se já existir ativo com esse nome, bloqueia
-        // Para editar: se trocar para um nome que já existe ativo, bloqueia
-        boolean existe = categoriaRepository.existsByNomeIgnoreCaseAndDeletadoFalse(nome.trim());
-        if (existe) {
-            // se for edição e o nome atual for o mesmo da própria categoria, a verificação acima pode bloquear.
-            // solução simples: só bloqueia se for criação. Para ficar perfeito, me mande seu padrão de validação.
-            if (idEdicao == null) {
-                throw new RuntimeException("Já existe uma categoria com esse nome.");
-            }
+        categoria.setNome(nome);
+
+        if (categoria.getDescricao() != null) {
+            categoria.setDescricao(categoria.getDescricao().trim());
         }
     }
 }

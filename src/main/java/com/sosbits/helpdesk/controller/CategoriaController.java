@@ -2,56 +2,105 @@ package com.sosbits.helpdesk.controller;
 
 import com.sosbits.helpdesk.model.Categoria;
 import com.sosbits.helpdesk.service.CategoriaService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/categorias")
 public class CategoriaController {
 
-    private final CategoriaService categoriaService;
+    private final CategoriaService service;
+
+    public CategoriaController(CategoriaService service) {
+        this.service = service;
+    }
+
+    // =========================
+    // VIEW (THYMELEAF)
+    // =========================
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("categorias", categoriaService.listarAtivas());
-        model.addAttribute("categoria", new Categoria()); // para formulário/modal
-        return "categorias/categorias";
+    public String listar(@RequestParam(value = "deleted", required = false) Integer deleted,
+                         Model model) {
+
+        boolean modoExcluidos = (deleted != null && deleted == 1);
+
+        model.addAttribute("categorias",
+                modoExcluidos ? service.listarDeletadas() : service.listarAtivas());
+
+        model.addAttribute("modoExcluidos", modoExcluidos);
+        model.addAttribute("categoria", new Categoria());
+
+        // ✅ Arquivo: templates/categoria.html
+        return "categoria";
     }
 
-    @PostMapping("/criar")
-    public String criar(@ModelAttribute Categoria categoria, RedirectAttributes ra) {
-        try {
-            categoriaService.criar(categoria);
-            ra.addFlashAttribute("sucesso", "Categoria criada com sucesso!");
-        } catch (Exception e) {
-            ra.addFlashAttribute("erro", e.getMessage());
-        }
+    // =========================
+    // FORM (REDIRECT)
+    // =========================
+
+    @PostMapping("/salvar")
+    public String salvarForm(@ModelAttribute Categoria categoria) {
+        service.salvar(categoria);
         return "redirect:/categorias";
     }
 
-    @PostMapping("/{id}/atualizar")
-    public String atualizar(@PathVariable Long id, @ModelAttribute Categoria categoria, RedirectAttributes ra) {
-        try {
-            categoriaService.atualizar(id, categoria);
-            ra.addFlashAttribute("sucesso", "Categoria atualizada com sucesso!");
-        } catch (Exception e) {
-            ra.addFlashAttribute("erro", e.getMessage());
-        }
+    @GetMapping("/excluir/{id}")
+    public String excluirForm(@PathVariable Long id) {
+        service.excluir(id);
         return "redirect:/categorias";
     }
 
-    @PostMapping("/{id}/excluir")
-    public String excluir(@PathVariable Long id, RedirectAttributes ra) {
-        try {
-            categoriaService.excluir(id);
-            ra.addFlashAttribute("sucesso", "Categoria excluída com sucesso!");
-        } catch (Exception e) {
-            ra.addFlashAttribute("erro", e.getMessage());
-        }
-        return "redirect:/categorias";
+    @GetMapping("/restaurar/{id}")
+    public String restaurarForm(@PathVariable Long id) {
+        service.restaurar(id);
+        return "redirect:/categorias?deleted=1";
+    }
+
+    // =========================
+    // API (JSON)
+    // =========================
+
+    @GetMapping("/api")
+    @ResponseBody
+    public List<Categoria> listarApi(
+            @RequestParam(value = "deleted", required = false) Integer deleted) {
+
+        boolean modoExcluidos = (deleted != null && deleted == 1);
+        return modoExcluidos ? service.listarDeletadas() : service.listarAtivas();
+    }
+
+    @PostMapping(consumes = "application/json")
+    @ResponseBody
+    public Categoria criar(@RequestBody Categoria categoria) {
+        return service.criar(categoria);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public Categoria buscar(@PathVariable Long id) {
+        return service.buscarPorId(id);
+    }
+
+    @PutMapping(value = "/{id}", consumes = "application/json")
+    @ResponseBody
+    public Categoria atualizar(@PathVariable Long id,
+                               @RequestBody Categoria categoria) {
+        return service.atualizar(id, categoria);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public void excluirAjax(@PathVariable Long id) {
+        service.excluir(id);
+    }
+
+    @PatchMapping("/{id}/restaurar")
+    @ResponseBody
+    public void restaurarAjax(@PathVariable Long id) {
+        service.restaurar(id);
     }
 }
