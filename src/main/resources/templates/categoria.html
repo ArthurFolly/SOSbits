@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categorias - Help Desk</title>
+    <title>Categoria - Help Desk</title>
 
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/categoria.css}">
 
-    <!-- ✅ OPÇÃO A (RECOMENDADA): use seu categorias.css MAS ele precisa ter o CSS que você mandou -->
-    <link rel="stylesheet" th:href="@{/css/categorias.css}">
-
-    <!-- ✅ OPÇÃO B (se você ainda não criou categorias.css com o estilo): descomente e use o chamados.css -->
-    <!-- <link rel="stylesheet" th:href="@{/css/chamados.css}"> -->
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body id="page-categorias">
+<body id="page-categoria">
 
 <div class="app-container">
+    <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-headset"></i>
@@ -37,14 +34,16 @@
         </nav>
     </aside>
 
+    <!-- ================= CONTEÚDO ================= -->
     <main class="main-content">
         <header class="page-header">
             <div class="header-left">
-                <h1>Categorias</h1>
-                <p>Gerenciamento de categorias de chamados</p>
+                <h1>Categoria</h1>
+                <p>Gerenciamento de categoria de chamados</p>
             </div>
         </header>
 
+        <!-- ================= BARRA BUSCA / BOTÕES ================= -->
         <div class="filters-row">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
@@ -54,10 +53,10 @@
                        class="search-input">
             </div>
 
-            <!-- ✅ Se quiser o botão vermelho, adicione btn-excluidos -->
+            <!-- ✅ singular + estilo correto -->
             <button type="button"
                     onclick="abrirModalCategoriasExcluidas()"
-                    class="btn-filter-trigger btn-excluidos">
+                    class="btn-filter-trigger btn-excluidas">
                 <i class="fas fa-trash-restore"></i> Excluídas
             </button>
 
@@ -69,17 +68,18 @@
 
             <button type="button"
                     onclick="abrirModalCategoriaCriar()"
-                    class="btn-novo-chamado">
+                    class="btn-nova-categoria">
                 <i class="fas fa-plus"></i> Nova Categoria
             </button>
         </div>
 
-        <!-- mensagens -->
+        <!-- ================= ALERTAS ================= -->
         <div th:if="${sucesso}" class="alert-sucesso" th:text="${sucesso}"></div>
         <div th:if="${erro}" class="alert-erro" th:text="${erro}"></div>
 
+        <!-- ================= TABELA PRINCIPAL ================= -->
         <div class="card-table">
-            <table class="chamados-table">
+            <table class="categoria-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -98,7 +98,6 @@
 
                     <td class="col-desc" th:text="${cat.descricao} ?: '-'">-</td>
 
-                    <!-- ✅ Protege se dataCriacao vier null -->
                     <td class="col-data"
                         th:text="${cat.dataCriacao != null ? #temporals.format(cat.dataCriacao,'dd/MM/yyyy') : '-'}">
                         28/01/2026
@@ -113,7 +112,6 @@
                             <i class="fas fa-edit"></i>
                         </a>
 
-                        <!-- ✅ CORREÇÃO DO LINK (estava errado) -->
                         <a th:href="@{/categorias/excluir/{id}(id=${cat.id})}"
                            class="btn-icon btn-del"
                            onclick="return confirm('Deseja excluir esta categoria?');"
@@ -133,7 +131,7 @@
 </div>
 
 <!-- ========================= MODAL FILTROS ========================= -->
-<div id="modalCategoriasFiltros" class="modal-overlay">
+<div id="modalCategoriasFiltros" class="modal-overlay" onclick="fecharModalCategoriasFiltros()">
     <div class="modal-box elite-box" style="max-width: 480px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
             <div class="header-main-content">
@@ -167,7 +165,7 @@
 </div>
 
 <!-- ========================= MODAL EDITAR ========================= -->
-<div id="modalCategoriaEditar" class="modal-overlay">
+<div id="modalCategoriaEditar" class="modal-overlay" onclick="fecharModalCategoriaEditar()">
     <div class="modal-box elite-box" style="max-width: 520px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
             <div class="header-main-content">
@@ -210,8 +208,8 @@
     </div>
 </div>
 
-<!-- ========================= MODAL EXCLUÍDAS (RESTAURAR) ========================= -->
-<div id="modalCategoriasExcluidas" class="modal-overlay">
+<!-- ========================= MODAL EXCLUÍDAS ========================= -->
+<div id="modalCategoriasExcluidas" class="modal-overlay" onclick="fecharModalCategoriasExcluidas()">
     <div class="modal-box elite-box" style="max-width: 820px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
             <div class="header-main-content">
@@ -235,7 +233,7 @@
             </div>
 
             <div class="card-table" style="box-shadow:none;border:1px solid #e2e8f0;">
-                <table class="chamados-table">
+                <table class="categoria-table">
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -256,7 +254,7 @@
 </div>
 
 <!-- ========================= MODAL CRIAR ========================= -->
-<div id="modalCategoriaCriar" class="modal-overlay">
+<div id="modalCategoriaCriar" class="modal-overlay" onclick="fecharModalCategoriaCriar()">
     <div class="modal-box elite-box" style="max-width: 520px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
             <div class="header-main-content">
@@ -271,7 +269,7 @@
             <button type="button" onclick="fecharModalCategoriaCriar()" class="btn-close-elite">&times;</button>
         </div>
 
-        <form th:action="@{/categorias/criar}" method="POST">
+        <form th:action="@{/categorias/salvar}" method="POST">
             <div class="modal-body-elite">
                 <div class="form-group-elite">
                     <label><i class="fas fa-tag icon-purple"></i> Nome</label>
@@ -295,6 +293,6 @@
     </div>
 </div>
 
-<script th:src="@{/js/categorias.js}"></script>
+<script th:src="@{/js/categoria.js}"></script>
 </body>
 </html>

@@ -1,16 +1,16 @@
 /* =========================================================
-   CATEGORIAS.CSS — PADRÃO DO SISTEMA (baseado em chamados)
+   CATEGORIA — PADRÃO DO SISTEMA (SINGULAR)
    ========================================================= */
 
 /* =========================================================
-   BARRA DE FILTROS E BUSCA
+   BARRA DE FILTROS / BUSCA
    ========================================================= */
-
 .filters-row {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 24px;
+    flex-wrap: wrap;
 }
 
 /* BUSCA */
@@ -18,6 +18,7 @@
     position: relative;
     flex: 1;
     max-width: 450px;
+    min-width: 240px;
 }
 
 .search-wrapper i {
@@ -36,6 +37,7 @@
     font-size: 14px;
     outline: none;
     transition: all 0.2s;
+    background: #ffffff;
 }
 
 .search-input:focus {
@@ -44,11 +46,10 @@
 }
 
 /* =========================================================
-   BOTÃO FILTROS — PADRÃO DO SISTEMA
+   BOTÃO FILTROS — PADRÃO
    ========================================================= */
-
 .btn-filter-trigger {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
 
@@ -74,25 +75,22 @@
     font-size: 14px;
 }
 
-/* HOVER */
 .btn-filter-trigger:hover {
     background: #eff6ff;
     border-color: #60a5fa;
     color: #1e40af;
 }
 
-/* CLICK */
 .btn-filter-trigger:active {
     transform: translateY(1px);
 }
 
 /* =========================================================
-   BOTÃO EXCLUÍDOS — VERMELHO (FORÇADO)
+   BOTÃO EXCLUÍDAS — VERMELHO (FORÇADO)
    ========================================================= */
-
-button.btn-excluidos,
-.btn-excluidos {
-    display: flex;
+button.btn-excluidas,
+.btn-excluidas {
+    display: inline-flex;
     align-items: center;
     gap: 8px;
 
@@ -114,50 +112,35 @@ button.btn-excluidos,
     transition: all 0.2s ease;
 }
 
-button.btn-excluidos i,
-.btn-excluidos i {
+button.btn-excluidas i,
+.btn-excluidas i {
     font-size: 14px;
     color: #b91c1c !important;
 }
 
-/* HOVER */
-button.btn-excluidos:hover,
-.btn-excluidos:hover {
+button.btn-excluidas:hover,
+.btn-excluidas:hover {
     background: #fff1f2 !important;
     border-color: #fda4af !important;
     color: #991b1b !important;
 
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0,0,0,.08);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
 }
 
-/* CLICK */
-button.btn-excluidos:active,
-.btn-excluidos:active {
+button.btn-excluidas:active,
+.btn-excluidas:active {
     transform: translateY(1px);
     box-shadow: none;
 }
 
-/* ESTADO ATIVO (se você marcar via JS) */
-button.btn-excluidos.is-active,
-.btn-excluidos.is-active {
-    background: #fee2e2 !important;
-    border-color: #fca5a5 !important;
-    color: #7f1d1d !important;
-}
-
-button.btn-excluidos.is-active i,
-.btn-excluidos.is-active i {
-    color: #7f1d1d !important;
-}
-
 /* =========================================================
-   BOTÃO NOVA CATEGORIA (usa a mesma classe do chamado)
+   BOTÃO NOVA CATEGORIA
    ========================================================= */
-
-.btn-novo-chamado {
+.btn-nova-categoria {
     margin-left: auto;
-    display: flex;
+
+    display: inline-flex;
     align-items: center;
     gap: 8px;
 
@@ -176,38 +159,37 @@ button.btn-excluidos.is-active i,
     transition: all 0.2s ease;
 }
 
-.btn-novo-chamado:hover {
+.btn-nova-categoria:hover {
     background: #1e40af;
 }
 
 /* =========================================================
-   ALERTAS (sucesso / erro) — CATEGORIAS
+   ALERTAS
    ========================================================= */
+.alert-sucesso,
+.alert-erro {
+    margin: 0 0 18px 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
 
 .alert-sucesso {
     background: #ecfdf5;
-    border: 1px solid #a7f3d0;
     color: #065f46;
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-weight: 600;
-    margin: 0 0 14px 0;
+    border-color: #a7f3d0;
 }
 
 .alert-erro {
     background: #fef2f2;
-    border: 1px solid #fecaca;
     color: #991b1b;
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-weight: 600;
-    margin: 0 0 14px 0;
+    border-color: #fecaca;
 }
 
 /* =========================================================
-   TABELA — CATEGORIAS (reutiliza classes do chamados)
+   TABELA — CATEGORIA
    ========================================================= */
-
 .card-table {
     background: #ffffff;
     border-radius: 12px;
@@ -215,14 +197,14 @@ button.btn-excluidos.is-active i,
     overflow-x: auto;
 }
 
-.card-table .chamados-table {
+.card-table .categoria-table {
     width: 100%;
     border-collapse: collapse;
     min-width: 900px;
 }
 
 /* Cabeçalho */
-.card-table .chamados-table th {
+.card-table .categoria-table th {
     background: #f8fafc;
     padding: 14px 20px;
     font-size: 12px;
@@ -235,7 +217,7 @@ button.btn-excluidos.is-active i,
 }
 
 /* Corpo */
-.card-table .chamados-table td {
+.card-table .categoria-table td {
     padding: 16px 20px;
     border-bottom: 1px solid #f1f5f9;
     font-size: 14px;
@@ -244,35 +226,38 @@ button.btn-excluidos.is-active i,
     white-space: nowrap;
 }
 
-/* Hover linha */
-.card-table .chamados-table tbody tr:hover {
+.card-table .categoria-table tbody tr:hover {
     background: #fbfdff;
 }
 
-/* Coluna ID (#1) */
-.id-cell {
+/* Ajustes por coluna */
+.card-table .categoria-table .id-cell {
     font-weight: 800;
     color: #0f172a;
 }
 
-/* Descrição pode ser longa: quebra linha + limita largura */
-.col-desc {
-    white-space: normal !important;
+.card-table .categoria-table .col-nome,
+.card-table .categoria-table .col-desc {
+    text-align: left;
+}
+
+.card-table .categoria-table .col-desc {
     max-width: 520px;
-    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Linha vazia */
-.empty-row {
-    text-align: center;
-    padding: 40px !important;
-    color: #94a3b8 !important;
+.card-table .empty-row {
+    text-align: center !important;
+    color: #64748b;
+    padding: 18px 20px !important;
+    font-weight: 700;
 }
 
 /* =========================================================
    AÇÕES
    ========================================================= */
-
 .card-table .actions-cell {
     display: flex;
     justify-content: center;
@@ -294,11 +279,12 @@ button.btn-excluidos.is-active i,
 
     cursor: pointer;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .card-table .actions-cell .btn-icon:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0,0,0,.08);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
 }
 
 .card-table .actions-cell .btn-edit:hover {
@@ -311,4 +297,30 @@ button.btn-excluidos.is-active i,
     background: #fee2e2;
     border-color: #f87171;
     color: #dc2626;
+}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+@media (max-width: 900px) {
+    .filters-row {
+        gap: 10px;
+    }
+
+    .btn-nova-categoria {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-filter-trigger,
+    .btn-excluidas {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .search-wrapper {
+        max-width: none;
+        width: 100%;
+    }
 }

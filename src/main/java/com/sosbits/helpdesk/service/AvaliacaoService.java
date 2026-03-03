@@ -73,7 +73,7 @@ public class AvaliacaoService {
         Chamado chamado = chamadoRepository.findByIdComUsuarios(idChamado)
                 .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
 
-        // ✅ Regra: só pode avaliar se estiver fechado/finalizado/encerrado
+        // ✅ Regra: só pode avaliar se estiver fechado/finalizado/encerrado/resolvido
         if (!isChamadoFechado(chamado.getStatus())) {
             throw new IllegalStateException("Só é possível avaliar um chamado FECHADO/FINALIZADO.");
         }
@@ -159,9 +159,13 @@ public class AvaliacaoService {
                 .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
     }
 
+    // ✅ AQUI ESTÁ A CORREÇÃO
     private boolean isChamadoFechado(String status) {
         if (status == null) return false;
         String v = status.trim().toUpperCase();
-        return v.equals("FECHADO") || v.equals("ENCERRADO") || v.equals("FINALIZADO");
+        return v.equals("FECHADO")
+                || v.equals("ENCERRADO")
+                || v.equals("FINALIZADO")
+                || v.equals("RESOLVIDO");
     }
 }

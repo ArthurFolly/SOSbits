@@ -18,9 +18,13 @@ public class AvaliacaoController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    public String listar(Model model) {
+    public String listar(Model model, RedirectAttributes ra) {
 
         Usuario logado = usuarioService.getUsuarioLogado();
+        if (logado == null || logado.getId() == null) {
+            ra.addFlashAttribute("erro", "Usuário logado não encontrado. Faça login novamente.");
+            return "redirect:/login";
+        }
 
         model.addAttribute("avaliacoes", avaliacaoService.listarTodas());
         model.addAttribute("avaliacoesExcluidas", avaliacaoService.listarExcluidas());
@@ -28,14 +32,13 @@ public class AvaliacaoController {
         model.addAttribute("chamadosParaAvaliar",
                 avaliacaoService.listarChamadosFechadosNaoAvaliados(logado.getId()));
 
-        return "avaliacao"; // templates/avaliacao.html
+        return "avaliacao";
     }
 
-    // ✅ PADRÃO A: form fixo em /avaliacoes/salvar
     @PostMapping("/salvar")
-    public String salvar(@RequestParam Long chamadoId,
-                         @RequestParam Integer nota,
-                         @RequestParam(required = false) String comentario,
+    public String salvar(@RequestParam(name = "chamadoId") Long chamadoId,
+                         @RequestParam(name = "nota") Integer nota,
+                         @RequestParam(name = "comentario", required = false) String comentario,
                          RedirectAttributes ra) {
 
         try {
@@ -50,27 +53,23 @@ public class AvaliacaoController {
 
     @PostMapping("/{id}/desativar")
     public String desativar(@PathVariable Long id, RedirectAttributes ra) {
-
         try {
             avaliacaoService.desativar(id);
             ra.addFlashAttribute("sucesso", "Avaliação desativada!");
         } catch (Exception e) {
             ra.addFlashAttribute("erro", e.getMessage());
         }
-
         return "redirect:/avaliacoes";
     }
 
     @PostMapping("/{id}/restaurar")
     public String restaurar(@PathVariable Long id, RedirectAttributes ra) {
-
         try {
             avaliacaoService.restaurar(id);
             ra.addFlashAttribute("sucesso", "Avaliação restaurada!");
         } catch (Exception e) {
             ra.addFlashAttribute("erro", e.getMessage());
         }
-
         return "redirect:/avaliacoes";
     }
 }
