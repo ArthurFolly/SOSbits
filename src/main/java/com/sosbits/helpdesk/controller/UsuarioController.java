@@ -34,12 +34,10 @@ public class UsuarioController {
         return "cadastro";
     }
 
-
     @GetMapping("/dashboard")
     public String dashboard() {
         return "redirect:/chamados/dashboard";
     }
-
 
     @GetMapping("/usuario")
     public String paginaUsuarios() {
@@ -53,15 +51,22 @@ public class UsuarioController {
             return "redirect:/cadastro?error=email";
         }
 
+        // Criptografa senha
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-
-        Perfil perfilUsuario = perfilRepository.findByNome("USER")
-                .orElseThrow(() -> new RuntimeException("Perfil USER não encontrado no banco"));
-
-        usuario.getPerfis().add(perfilUsuario);
         usuario.setAtivo(true);
 
-        usuarioRepository.save(usuario);
+        // 1️⃣ SALVA PRIMEIRO PARA GERAR ID
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        // 2️⃣ BUSCA PERFIL
+        Perfil perfilUsuario = perfilRepository.findByNome("USUARIO")
+                .orElseThrow(() -> new RuntimeException("Perfil USUARIO não encontrado no banco"));
+
+        // 3️⃣ ADICIONA PERFIL
+        usuarioSalvo.getPerfis().add(perfilUsuario);
+
+        // 4️⃣ SALVA NOVAMENTE PARA GRAVAR NA TABELA usuario_perfil
+        usuarioRepository.save(usuarioSalvo);
 
         return "redirect:/?success";
     }

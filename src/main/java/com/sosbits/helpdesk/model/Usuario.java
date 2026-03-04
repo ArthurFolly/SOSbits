@@ -31,14 +31,17 @@ public class Usuario {
     private Boolean ativo = true;
 
     @Column(nullable = false, unique = true, length = 20)
-    private String cpf; // ✅ Campo adicionado para existsByCpf funcionar
+    private String cpf;
 
-    // 🔥 RELACIONAMENTO COM PERFIS
+    @Column(length = 30)
+    private String telefone;
+
+    // ✅ AJUSTADO para usuario_id / perfil_id (como o banco está pedindo)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_perfil",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "perfil_id")
+            joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "perfil_id", referencedColumnName = "id_perfil")
     )
     private Set<Perfil> perfis = new HashSet<>();
 }

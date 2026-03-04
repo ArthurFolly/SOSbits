@@ -10,6 +10,10 @@ import java.util.Optional;
 
 public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
+    // =========================
+    // LISTAGENS PADRÃO
+    // =========================
+
     List<Chamado> findAllByDeletadoFalseOrderByIdDesc();
 
     List<Chamado> findAllByDeletadoTrueOrderByIdDesc();
@@ -20,28 +24,46 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
     long countByPrioridadeAndDeletadoFalse(String prioridade);
 
+    // =========================
+    // BUSCAR COM RELACIONAMENTOS
+    // =========================
+
     @Query("""
-           select c from Chamado c
-           left join fetch c.solicitante
-           left join fetch c.atendente
-           where c.id = :id and c.deletado = false
+           SELECT c
+           FROM Chamado c
+           LEFT JOIN FETCH c.solicitante
+           LEFT JOIN FETCH c.atendente
+           WHERE c.id = :id
+             AND c.deletado = false
            """)
     Optional<Chamado> findByIdComUsuarios(@Param("id") Long id);
 
-    // ✅ AGORA INCLUI "RESOLVIDO" COMO FINALIZADO
+    // =========================
+    // CHAMADOS FECHADOS E NÃO AVALIADOS
+    // =========================
+    // usado no combo do modal Avaliação
+
     @Query("""
-        select c from Chamado c
-        where c.deletado = false
-          and c.solicitante.id = :idUsuario
-          and upper(trim(c.status)) in ('FECHADO','ENCERRADO','FINALIZADO','RESOLVIDO')
-          and not exists (
-              select 1 from Avaliacao a
-              where a.chamado.id = c.id
-                and a.ativa = true
+        SELECT c
+        FROM Chamado c
+        WHERE c.deletado = false
+          AND c.solicitante.id = :idUsuario
+          AND UPPER(TRIM(c.status)) IN ('FECHADO','ENCERRADO','FINALIZADO','RESOLVIDO')
+          AND NOT EXISTS (
+              SELECT 1
+              FROM Avaliacao a
+              WHERE a.chamado.id = c.id
+                AND a.ativa = true
           )
-        order by c.dataCriacao desc
+        ORDER BY c.dataCriacao DESC
     """)
-    List<Chamado> listarFechadosNaoAvaliadosDoSolicitante(@Param("idUsuario") Long idUsuario);
+    List<Chamado> listarFechadosNaoAvaliadosDoSolicitante(
+            @Param("idUsuario") Long idUsuario
+    );
+
+    // =========================
+    // CHAMADOS POR SOLICITANTE
+    // =========================
 
     List<Chamado> findBySolicitanteIdAndDeletadoFalseOrderByDataCriacaoDesc(Long idUsuario);
 }

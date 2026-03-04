@@ -43,13 +43,13 @@
                     </a>
                 </li>
 
+                <!-- Ajuste aqui se você tiver rota específica para abrir chamado -->
                 <li>
-                    <a th:href="@{/chamados}">
+                    <a th:href="@{/chamados/novo}">
                         <i class="fas fa-plus"></i>
                         <span>Abrir Chamado</span>
                     </a>
                 </li>
-
 
                 <li>
                     <a th:href="@{/avaliacoes}">
@@ -58,14 +58,13 @@
                     </a>
                 </li>
 
-
+                <!-- ✅ CORRIGIDO: era /usuarios e dava 404 -->
                 <li>
-                    <a th:href="@{/usuarios}">
+                    <a th:href="@{/admin/usuarios}">
                         <i class="fas fa-users"></i>
                         <span>Usuários</span>
                     </a>
                 </li>
-
 
                 <li>
                     <a href="#">
@@ -76,9 +75,9 @@
 
                 <li>
                     <a th:href="@{/categorias}">
-                        <i class="fas fa-tags"></i> Categorias
+                        <i class="fas fa-tags"></i>
+                        <span>Categorias</span>
                     </a>
-
                 </li>
 
                 <li>

@@ -1,140 +1,152 @@
 package com.sosbits.helpdesk.service;
 
 import com.sosbits.helpdesk.model.Chamado;
+import com.sosbits.helpdesk.model.Usuario;
 import com.sosbits.helpdesk.repository.ChamadoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ChamadoService {
 
-    private final ChamadoRepository repository;
+    private final ChamadoRepository chamadoRepository;
+    private final UsuarioService usuarioService;
 
-    public ChamadoService(ChamadoRepository repository) {
-        this.repository = repository;
-    }
-
-    /* =========================
-       LISTAGENS
-       ========================= */
-
-    // ✅ padrão: retorna SOMENTE ativos (deletado=false)
+    // =========================
+    // LISTAGENS
+    // =========================
+    @Transactional(readOnly = true)
     public List<Chamado> listarTodos() {
-        return repository.findAllByDeletadoFalseOrderByIdDesc();
+        return chamadoRepository.findAllByDeletadoFalseOrderByIdDesc();
     }
 
-    // ✅ lista SOMENTE excluídos (deletado=true)
+    @Transactional(readOnly = true)
+    public List<Chamado> listarExcluidos() {
+        return chamadoRepository.findAllByDeletadoTrueOrderByIdDesc();
+    }
+
+    // ✅ PARA COMPATIBILIDADE COM SEU CONTROLLER (que chama listarDeletados)
+    @Transactional(readOnly = true)
     public List<Chamado> listarDeletados() {
-        return repository.findAllByDeletadoTrueOrderByIdDesc();
+        return listarExcluidos();
     }
 
-    // ✅ recentes SOMENTE ativos (pra dashboard não “contar” excluídos)
+    @Transactional(readOnly = true)
     public List<Chamado> listarRecentes() {
-        return repository.findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
+        return chamadoRepository.findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
     }
 
-    /* =========================
-       CREATE / UPDATE
-       ========================= */
+    // ✅ usado no combo do modal (Avaliação)
+    @Transactional(readOnly = true)
+    public List<Chamado> listarChamadosFechadosNaoAvaliados() {
+        Long idUsuario = usuarioService.getIdUsuarioLogado();
+        return chamadoRepository.listarFechadosNaoAvaliadosDoSolicitante(idUsuario);
+    }
 
+    // =========================
+    // CREATE / UPDATE
+    // =========================
+    @Transactional
     public Chamado salvar(Chamado chamado) {
 
-        // ===== CREATE =====
+        // CREATE
         if (chamado.getId() == null) {
+            Usuario usuarioLogado = usuarioService.getUsuarioLogado();
+            chamado.setSolicitante(usuarioLogado);
 
-            // STATUS padrão
-            if (chamado.getStatus() == null || chamado.getStatus().isBlank()) {
-                chamado.setStatus("Aberto");
-            }
-
-            // PRIORIDADE padrão
-            if (chamado.getPrioridade() == null || chamado.getPrioridade().isBlank()) {
-                chamado.setPrioridade("Baixa");
-            }
-
-            // DATA DE CRIAÇÃO
             if (chamado.getDataCriacao() == null) {
                 chamado.setDataCriacao(LocalDateTime.now());
             }
 
-            // ✅ nasce ativo
-            chamado.setDeletado(false);
+            if (chamado.getStatus() == null || chamado.getStatus().trim().isEmpty()) {
+                chamado.setStatus("Aberto");
+            }
 
-            return repository.save(chamado);
+            if (chamado.getPrioridade() == null || chamado.getPrioridade().trim().isEmpty()) {
+                chamado.setPrioridade("Baixa");
+            }
+
+            chamado.setDeletado(false);
+            return chamadoRepository.save(chamado);
         }
 
-        // ===== UPDATE =====
-        Chamado existente = repository.findById(chamado.getId())
-                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
+        // UPDATE (preserva dataCriacao e solicitante)
+        Chamado existente = chamadoRepository.findById(chamado.getId())
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + chamado.getId()));
 
-        // preserva dados imutáveis
         chamado.setDataCriacao(existente.getDataCriacao());
-
-        // ✅ NÃO deixa o front “mexer” no soft delete sem querer
+        chamado.setSolicitante(existente.getSolicitante());
         chamado.setDeletado(existente.isDeletado());
 
-        // mantém status se não vier do front
-        if (chamado.getStatus() == null || chamado.getStatus().isBlank()) {
+        if (chamado.getStatus() == null || chamado.getStatus().trim().isEmpty()) {
             chamado.setStatus(existente.getStatus());
         }
 
-        // mantém prioridade se não vier do front
-        if (chamado.getPrioridade() == null || chamado.getPrioridade().isBlank()) {
+        if (chamado.getPrioridade() == null || chamado.getPrioridade().trim().isEmpty()) {
             chamado.setPrioridade(existente.getPrioridade());
         }
 
-        return repository.save(chamado);
+        return chamadoRepository.save(chamado);
     }
 
-    /* =========================
-       API (AJAX)
-       ========================= */
+    // =========================
+    // SOFT DELETE
+    // =========================
+    @Transactional
+    public void excluir(Long id) {
+        Chamado chamado = chamadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + id));
 
+        chamado.setDeletado(true);
+        chamadoRepository.save(chamado);
+    }
+
+    @Transactional
+    public void restaurar(Long id) {
+        Chamado chamado = chamadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + id));
+
+        chamado.setDeletado(false);
+        chamadoRepository.save(chamado);
+    }
+
+    // =========================
+    // API (AJAX) - COMPATIBILIDADE
+    // =========================
+    @Transactional
     public Chamado criar(Chamado chamado, UserDetails user) {
         chamado.setId(null);
         return salvar(chamado);
     }
 
+    @Transactional
     public Chamado atualizar(Long id, Chamado chamado, UserDetails user) {
         chamado.setId(id);
         return salvar(chamado);
     }
 
-
-
-    // ✅ Soft delete (não apaga do banco)
-    public void excluir(Long id) {
-        Chamado c = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
-        c.setDeletado(true);
-        repository.save(c);
-    }
-
-    // ✅ Restaurar (volta a ficar ativo)
-    public void restaurar(Long id) {
-        Chamado c = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
-        c.setDeletado(false);
-        repository.save(c);
-    }
-
+    @Transactional(readOnly = true)
     public Chamado buscarPorId(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
+        return chamadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + id));
     }
 
-    /* =========================
-       DASHBOARD (somente ativos)
-       ========================= */
-
+    // =========================
+    // DASHBOARD
+    // =========================
+    @Transactional(readOnly = true)
     public long contarPorStatus(String status) {
-        return repository.countByStatusAndDeletadoFalse(status);
+        return chamadoRepository.countByStatusAndDeletadoFalse(status);
     }
 
+    @Transactional(readOnly = true)
     public long contarPorPrioridade(String prioridade) {
-        return repository.countByPrioridadeAndDeletadoFalse(prioridade);
+        return chamadoRepository.countByPrioridadeAndDeletadoFalse(prioridade);
     }
 }

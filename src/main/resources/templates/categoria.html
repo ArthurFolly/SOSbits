@@ -53,7 +53,6 @@
                        class="search-input">
             </div>
 
-            <!-- ✅ singular + estilo correto -->
             <button type="button"
                     onclick="abrirModalCategoriasExcluidas()"
                     class="btn-filter-trigger btn-excluidas">
@@ -91,8 +90,9 @@
                 </thead>
 
                 <tbody id="categoriasTableBody">
-                <tr th:each="cat : ${categorias}" th:attr="data-id=${cat.id}">
-                    <td class="id-cell" th:text="'#' + ${cat.id}">#1</td>
+                <!-- ✅ CORRIGIDO: usar idCategoria (PK) -->
+                <tr th:each="cat : ${categorias}" th:attr="data-id=${cat.idCategoria}">
+                    <td class="id-cell" th:text="'#' + ${cat.idCategoria}">#1</td>
 
                     <td class="col-nome" th:text="${cat.nome}">Hardware</td>
 
@@ -106,13 +106,13 @@
                     <td class="actions-cell">
                         <a href="javascript:void(0)"
                            class="btn-icon btn-edit"
-                           th:attr="data-id=${cat.id}"
+                           th:attr="data-id=${cat.idCategoria}"
                            onclick="abrirModalCategoriaEditar(this)"
                            title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
 
-                        <a th:href="@{/categorias/excluir/{id}(id=${cat.id})}"
+                        <a th:href="@{/categorias/excluir/{id}(id=${cat.idCategoria})}"
                            class="btn-icon btn-del"
                            onclick="return confirm('Deseja excluir esta categoria?');"
                            title="Excluir">

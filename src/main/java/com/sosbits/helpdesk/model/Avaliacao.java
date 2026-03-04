@@ -2,8 +2,8 @@ package com.sosbits.helpdesk.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +19,7 @@ public class Avaliacao {
     @Column(name = "id_avaliacao")
     private Long id;
 
+    // 1 avaliação por chamado
     @OneToOne(optional = false)
     @JoinColumn(
             name = "id_chamado",
@@ -47,16 +48,12 @@ public class Avaliacao {
     private LocalDateTime dataDesativacao;
 
     @ManyToOne
-    @JoinColumn(name = "desativada_por")
+    @JoinColumn(name = "desativada_por", referencedColumnName = "id_usuario")
     private Usuario desativadaPor;
 
     @PrePersist
     public void prePersist() {
-        if (dataAvaliacao == null) {
-            dataAvaliacao = LocalDateTime.now();
-        }
-        if (ativa == null) {
-            ativa = true;
-        }
+        if (dataAvaliacao == null) dataAvaliacao = LocalDateTime.now();
+        if (ativa == null) ativa = true;
     }
 }

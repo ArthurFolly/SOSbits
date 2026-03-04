@@ -2,6 +2,7 @@ package com.sosbits.helpdesk.service;
 
 import com.sosbits.helpdesk.model.Usuario;
 import com.sosbits.helpdesk.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -9,13 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-
-    public UsuarioService(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
 
     public Usuario getUsuarioLogado() {
 
@@ -25,29 +23,45 @@ public class UsuarioService {
             throw new RuntimeException("Usuário não autenticado");
         }
 
-        // ✅ No seu SecurityConfig, o username é o EMAIL
+        // No seu SecurityConfig, o username é o EMAIL
         String email = auth.getName();
 
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado no banco"));
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado no banco: " + email));
     }
 
+    // ✅ PARA USAR NO HEADER (Thymeleaf): ${usuarioNome}
+    public String getNomeUsuarioLogado() {
+        Usuario u = getUsuarioLogado();
 
+        if (u.getNome() != null && !u.getNome().trim().isEmpty()) {
+            return u.getNome().trim();
+        }
+        return u.getEmail(); // fallback
+    }
+
+    public Long getIdUsuarioLogado() {
+        return getUsuarioLogado().getId();
+    }
+
+    // =========================
+    // CRUD / LISTAGENS
+    // =========================
     public List<Usuario> listarAtivos() {
-        return usuarioRepository.findByAtivoTrue();
+        return usuarioRepository.findByAtivoTrueOrderByIdAsc();
     }
 
     public List<Usuario> listarExcluidos() {
-        return usuarioRepository.findByAtivoFalse();
+        return usuarioRepository.findByAtivoFalseOrderByIdAsc();
     }
 
     public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
+        return usuarioRepository.findAllByOrderByIdAsc();
     }
 
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + id));
     }
 
     public void salvar(Usuario usuario) {
@@ -57,12 +71,14 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    // ✅ Soft delete (admin)
     public void desativar(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(false);
         usuarioRepository.save(usuario);
     }
 
+    // ✅ Restore (admin)
     public void restaurar(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(true);

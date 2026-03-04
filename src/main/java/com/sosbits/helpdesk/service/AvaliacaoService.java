@@ -20,152 +20,95 @@ public class AvaliacaoService {
     private final ChamadoRepository chamadoRepository;
     private final UsuarioService usuarioService;
 
-    // ✅ Ajuste se seu status fechado no banco for outro
-    private static final String STATUS_FECHADO_PADRAO = "Fechado";
+    private static final String STATUS_FECHADO = "Fechado";
 
-    // =========================
-    // LISTAGENS
-    // =========================
-
+    // LISTAR
     @Transactional(readOnly = true)
-    public List<Avaliacao> listarTodas() {
+    public List<Avaliacao> listarAtivas() {
         return avaliacaoRepository.findByAtivaTrueOrderByDataAvaliacaoDesc();
     }
 
     @Transactional(readOnly = true)
     public List<Avaliacao> listarExcluidas() {
-        return avaliacaoRepository.findByAtivaFalseOrderByDataAvaliacaoDesc();
+        return avaliacaoRepository.findByAtivaFalseOrderByDataDesativacaoDesc();
     }
 
     @Transactional(readOnly = true)
-    public List<Avaliacao> listarPorUsuario(Long idUsuario) {
-        return avaliacaoRepository.findByUsuarioIdAndAtivaTrueOrderByDataAvaliacaoDesc(idUsuario);
+    public Avaliacao buscarPorId(Long id) {
+        return avaliacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
     }
 
-    @Transactional(readOnly = true)
-    public List<Chamado> listarChamadosFechadosNaoAvaliados(Long idUsuario) {
-        return chamadoRepository.listarFechadosNaoAvaliadosDoSolicitante(idUsuario);
-    }
-
-    // =========================
-    // SALVAR (PADRÃO A)
-    // =========================
+    // CRIAR
     @Transactional
-    public Avaliacao salvarAvaliacao(Long idChamado, Integer nota, String comentario) {
+    public Avaliacao criar(Long idChamado, Integer nota, String comentario) {
+
+        Chamado chamado = chamadoRepository.findById(idChamado)
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
+
+        // Regra: só avaliar fechado
+        if (chamado.getStatus() == null || !STATUS_FECHADO.equalsIgnoreCase(chamado.getStatus().trim())) {
+            throw new RuntimeException("Só é permitido avaliar chamados com status FECHADO.");
+        }
+
+        // Regra: 1 avaliação por chamado
+        if (avaliacaoRepository.existsByChamadoId(idChamado)) {
+            throw new RuntimeException("Este chamado já foi avaliado.");
+        }
+
         Usuario usuarioLogado = usuarioService.getUsuarioLogado();
-        return avaliarChamado(idChamado, usuarioLogado, nota, comentario);
-    }
-
-    // =========================
-    // MOTOR DE AVALIAÇÃO (sua lógica)
-    // =========================
-    @Transactional
-    public Avaliacao avaliarChamado(Long idChamado, Usuario usuarioLogado, Integer nota, String comentario) {
-
-        if (usuarioLogado == null || usuarioLogado.getId() == null) {
-            throw new IllegalStateException("Usuário logado não encontrado.");
-        }
-
-        if (nota == null || nota < 1 || nota > 5) {
-            throw new IllegalArgumentException("A nota deve estar entre 1 e 5.");
-        }
-
-        Chamado chamado = chamadoRepository.findByIdComUsuarios(idChamado)
-                .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
-
-        // ✅ Regra: só pode avaliar se estiver fechado/finalizado/encerrado/resolvido
-        if (!isChamadoFechado(chamado.getStatus())) {
-            throw new IllegalStateException("Só é possível avaliar um chamado FECHADO/FINALIZADO.");
-        }
-
-        // ✅ Regra: só o solicitante avalia
-        Usuario solicitante = chamado.getSolicitante();
-        if (solicitante == null || solicitante.getId() == null) {
-            throw new IllegalStateException("Chamado sem solicitante definido. Não é possível avaliar.");
-        }
-
-        if (!solicitante.getId().equals(usuarioLogado.getId())) {
-            throw new IllegalStateException("Somente o solicitante pode avaliar este chamado.");
-        }
-
-        // ✅ Regra: impedir duplicidade
-        if (avaliacaoRepository.existsByChamadoIdAndAtivaTrue(idChamado)) {
-            throw new IllegalStateException("Este chamado já foi avaliado.");
-        }
 
         Avaliacao a = new Avaliacao();
         a.setChamado(chamado);
         a.setUsuario(usuarioLogado);
         a.setNota(nota);
         a.setComentario(comentario);
-        a.setDataAvaliacao(LocalDateTime.now());
-
-        // ✅ Soft delete default
         a.setAtiva(true);
-        a.setDataDesativacao(null);
-        a.setDesativadaPor(null);
+        a.setDataAvaliacao(LocalDateTime.now());
 
         return avaliacaoRepository.save(a);
     }
 
-    // =========================
-    // SOFT DELETE
-    // =========================
+    // ATUALIZAR (UPDATE)
     @Transactional
-    public void desativar(Long id) {
-        Usuario usuarioLogado = usuarioService.getUsuarioLogado();
+    public Avaliacao atualizar(Long idAvaliacao, Integer nota, String comentario) {
 
-        Avaliacao av = avaliacaoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada."));
+        Avaliacao a = buscarPorId(idAvaliacao);
 
-        if (Boolean.FALSE.equals(av.getAtiva())) {
-            throw new IllegalStateException("Esta avaliação já está desativada.");
+        // (opcional) impedir edição de excluída
+        if (Boolean.FALSE.equals(a.getAtiva())) {
+            throw new RuntimeException("Não é possível editar uma avaliação excluída.");
         }
 
-        av.setAtiva(false);
-        av.setDataDesativacao(LocalDateTime.now());
-        av.setDesativadaPor(usuarioLogado);
+        a.setNota(nota);
+        a.setComentario(comentario);
 
-        avaliacaoRepository.save(av);
+        return avaliacaoRepository.save(a);
     }
 
+    // DELETE (soft)
     @Transactional
-    public void restaurar(Long id) {
-        Avaliacao av = avaliacaoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Avaliação não encontrada."));
+    public void excluir(Long idAvaliacao) {
+        Avaliacao a = buscarPorId(idAvaliacao);
 
-        if (Boolean.TRUE.equals(av.getAtiva())) {
-            throw new IllegalStateException("Esta avaliação já está ativa.");
-        }
+        if (Boolean.FALSE.equals(a.getAtiva())) return;
 
-        av.setAtiva(true);
-        av.setDataDesativacao(null);
-        av.setDesativadaPor(null);
+        a.setAtiva(false);
+        a.setDataDesativacao(LocalDateTime.now());
+        a.setDesativadaPor(usuarioService.getUsuarioLogado());
 
-        avaliacaoRepository.save(av);
+        avaliacaoRepository.save(a);
     }
 
-    // =========================
-    // UTILS
-    // =========================
-    @Transactional(readOnly = true)
-    public boolean chamadoJaAvaliado(Long idChamado) {
-        return avaliacaoRepository.existsByChamadoIdAndAtivaTrue(idChamado);
-    }
+    // RESTORE
+    @Transactional
+    public void restaurar(Long idAvaliacao) {
+        Avaliacao a = buscarPorId(idAvaliacao);
 
-    @Transactional(readOnly = true)
-    public Chamado buscarChamadoParaAvaliacao(Long idChamado) {
-        return chamadoRepository.findByIdComUsuarios(idChamado)
-                .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado."));
-    }
+        a.setAtiva(true);
+        a.setDataDesativacao(null);
+        a.setDesativadaPor(null);
 
-    // ✅ AQUI ESTÁ A CORREÇÃO
-    private boolean isChamadoFechado(String status) {
-        if (status == null) return false;
-        String v = status.trim().toUpperCase();
-        return v.equals("FECHADO")
-                || v.equals("ENCERRADO")
-                || v.equals("FINALIZADO")
-                || v.equals("RESOLVIDO");
+        avaliacaoRepository.save(a);
     }
 }

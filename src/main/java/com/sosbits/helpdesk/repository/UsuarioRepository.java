@@ -8,13 +8,19 @@ import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+    // Login / Security
     Optional<Usuario> findByEmail(String email);
 
+    // Validações
     boolean existsByEmail(String email);
-
     boolean existsByCpf(String cpf);
 
-    List<Usuario> findByAtivoTrue();
+    // =========================
+    // LISTAGENS (ordenadas por ID) - recomendadas
+    // =========================
+    List<Usuario> findByAtivoTrueOrderByIdAsc();
+    List<Usuario> findByAtivoFalseOrderByIdAsc();
 
-    List<Usuario> findByAtivoFalse();
+    // (Opcional) se você quiser sempre listar tudo ordenado também:
+    List<Usuario> findAllByOrderByIdAsc();
 }
