@@ -1,4 +1,3 @@
-
 package com.sosbits.helpdesk.controller;
 
 import com.sosbits.helpdesk.model.Usuario;
@@ -25,7 +24,10 @@ public class UsuarioAdminController {
     ) {
         model.addAttribute("usuarios", usuarioAdminService.listarFiltrando(ativo, perfilId));
         model.addAttribute("usuariosExcluidos", usuarioAdminService.listarInativos());
+
         model.addAttribute("usuario", new Usuario());
+        model.addAttribute("modoEdicao", false);
+
         return "usuario";
     }
 
@@ -38,7 +40,10 @@ public class UsuarioAdminController {
     ) {
         model.addAttribute("usuarios", usuarioAdminService.listarFiltrando(ativo, perfilId));
         model.addAttribute("usuariosExcluidos", usuarioAdminService.listarInativos());
+
         model.addAttribute("usuario", usuarioAdminService.buscarPorId(id));
+        model.addAttribute("modoEdicao", true);
+
         return "usuario";
     }
 

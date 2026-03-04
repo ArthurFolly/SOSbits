@@ -5,6 +5,7 @@
         ativarBuscaUsuarios();
         ativarCliqueForaParaFecharModais();
         ativarTeclaESCParaFecharModais();
+        abrirModalEdicaoSeNecessario(); // ✅ FALTAVA ISSO
     });
 
     function ativarBuscaUsuarios() {
@@ -40,12 +41,12 @@
         overlay.classList.remove("active");
         overlay.style.display = "none";
 
-        // só libera scroll se não existir nenhum outro modal ativo
         const aindaTemModalAberto = document.querySelector(".modal-overlay.active");
         if (!aindaTemModalAberto) {
             document.body.style.overflow = "";
         }
     };
+
     window.abrirModalUsuariosExcluidos = function () {
         abrirModalGenerico("modalUsuariosExcluidos");
     };
@@ -58,7 +59,6 @@
         document.addEventListener("click", function (event) {
             const overlay = event.target;
 
-            // se clicou no próprio overlay (fundo), fecha
             if (overlay && overlay.classList && overlay.classList.contains("modal-overlay")) {
                 if (overlay.classList.contains("active")) {
                     fecharModalGenerico(overlay.id);
@@ -66,7 +66,6 @@
             }
         });
     }
-
     function ativarTeclaESCParaFecharModais() {
         document.addEventListener("keydown", function (e) {
             if (e.key !== "Escape") return;
@@ -76,4 +75,14 @@
             });
         });
     }
+    function abrirModalEdicaoSeNecessario() {
+        const flag = document.getElementById("modoEdicaoFlag");
+        if (!flag) return;
+
+        const isEdicao = String(flag.value || "").toLowerCase() === "true";
+        if (isEdicao) {
+            abrirModalGenerico("modalNovoUsuario");
+        }
+    }
+
 })();

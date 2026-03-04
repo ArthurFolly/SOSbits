@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuários - Help Desk</title>
+
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
     <link rel="stylesheet" th:href="@{/css/usuario.css}">
@@ -14,7 +15,6 @@
 <body id="page-usuarios">
 
 <div class="app-container">
-
 
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -55,10 +55,8 @@
         </nav>
     </aside>
 
-
     <main class="main-content">
 
-        <!-- HEADER -->
         <header class="page-header">
             <div class="header-left">
                 <h1>Usuários</h1>
@@ -78,7 +76,6 @@
                            placeholder="Buscar por nome ou email">
                 </div>
 
-
                 <button type="button"
                         class="usuarios-btn-excluidos"
                         onclick="abrirModalUsuariosExcluidos()">
@@ -86,8 +83,8 @@
                     Excluídos
                 </button>
 
-
-                <button class="usuarios-btn-filter"
+                <button type="button"
+                        class="usuarios-btn-filter"
                         onclick="abrirModalGenerico('modalFiltroUsuarios')">
                     <i class="fas fa-sliders-h"></i>
                     Filtros
@@ -96,7 +93,8 @@
             </div>
 
             <div class="usuarios-filters-right">
-                <button class="usuarios-btn-novo"
+                <button type="button"
+                        class="usuarios-btn-novo"
                         onclick="abrirModalGenerico('modalNovoUsuario')">
                     <i class="fas fa-user-plus"></i>
                     Novo Usuário
@@ -104,7 +102,6 @@
             </div>
 
         </div>
-
 
         <div class="usuarios-card-table">
             <table class="usuarios-table">
@@ -149,7 +146,6 @@
                             <i class="fas fa-edit"></i>
                         </a>
 
-
                         <a th:href="@{/admin/usuarios/desativar/{id}(id=${usuario.id})}"
                            class="usuarios-btn-icon usuarios-btn-del"
                            onclick="return confirm('Deseja desativar este usuário?');"
@@ -178,8 +174,10 @@
                     <i class="fas fa-user-plus"></i>
                 </div>
                 <div class="header-text-elite">
-                    <h2>Novo Usuário</h2>
-                    <p>Cadastro de conta no sistema</p>
+                    <h2 th:text="${modoEdicao} ? 'Editar Usuário' : 'Novo Usuário'">Novo Usuário</h2>
+                    <p th:text="${modoEdicao} ? 'Altere os dados da conta' : 'Cadastro de conta no sistema'">
+                        Cadastro de conta no sistema
+                    </p>
                 </div>
             </div>
 
@@ -191,27 +189,36 @@
 
 
         <form th:action="@{/admin/usuarios/salvar}"
+              th:object="${usuario}"
               method="post"
               class="modal-body-elite">
 
+            <!-- ✅ ID escondido (se tiver valor = edição) -->
+            <input type="hidden" th:field="*{id}"/>
+
             <div class="form-group-elite">
                 <label>Nome</label>
-                <input type="text" name="nome" class="input-elite" required>
+                <input type="text" th:field="*{nome}" class="input-elite" required>
             </div>
 
             <div class="form-group-elite">
                 <label>Email</label>
-                <input type="email" name="email" class="input-elite" required>
+                <input type="email" th:field="*{email}" class="input-elite" required>
             </div>
 
             <div class="form-group-elite">
                 <label>CPF</label>
-                <input type="text" name="cpf" class="input-elite" required>
+                <input type="text" th:field="*{cpf}" class="input-elite" required>
             </div>
 
             <div class="form-group-elite">
                 <label>Senha</label>
-                <input type="password" name="senha" class="input-elite" required>
+                <!-- ✅ Em edição, pode deixar em branco para manter a senha -->
+                <input type="password"
+                       name="senha"
+                       class="input-elite"
+                       th:placeholder="${modoEdicao} ? 'Deixe em branco para manter a senha atual' : ''"
+                       th:required="${!modoEdicao}">
             </div>
 
             <div class="form-group-elite">
@@ -233,7 +240,8 @@
                 </button>
 
                 <button type="submit"
-                        class="btn-primary-elite">
+                        class="btn-primary-elite"
+                        th:text="${modoEdicao} ? 'Salvar Alterações' : 'Salvar Usuário'">
                     Salvar Usuário
                 </button>
             </div>
@@ -241,7 +249,6 @@
         </form>
     </div>
 </div>
-
 
 <div class="modal-overlay" id="modalFiltroUsuarios">
     <div class="modal-box elite-box">
@@ -351,7 +358,6 @@
                     </thead>
 
                     <tbody id="usuariosExcluidosTable">
-
                     <tr th:each="u : ${usuariosExcluidos}">
                         <td th:text="'#' + ${u.id}">#1</td>
                         <td th:text="${u.nome}">Nome</td>
@@ -377,7 +383,6 @@
                     <tr th:if="${usuariosExcluidos == null or #lists.isEmpty(usuariosExcluidos)}">
                         <td colspan="5" style="padding:14px;">Nenhum usuário excluído.</td>
                     </tr>
-
                     </tbody>
                 </table>
             </div>
@@ -390,6 +395,9 @@
         </div>
     </div>
 </div>
+
+>
+<input type="hidden" id="modoEdicaoFlag" th:value="${modoEdicao}"/>
 
 <script th:src="@{/js/usuario.js}"></script>
 

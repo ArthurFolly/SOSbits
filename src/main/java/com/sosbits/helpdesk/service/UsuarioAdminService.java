@@ -1,7 +1,4 @@
-// =========================================================
-// 1) UsuarioAdminService.java  (ARQUIVO COMPLETO)
-// Caminho: src/main/java/com/sosbits/helpdesk/service/UsuarioAdminService.java
-// =========================================================
+
 package com.sosbits.helpdesk.service;
 
 import com.sosbits.helpdesk.model.Usuario;
@@ -45,7 +42,7 @@ public class UsuarioAdminService {
             return usuarioRepository.findAllByPerfilIdOrderByIdAsc(perfilId);
         }
 
-        // 4) ativo + perfil
+
         return usuarioRepository.findAllByAtivoAndPerfilIdOrderByIdAsc(ativo, perfilId);
     }
 
