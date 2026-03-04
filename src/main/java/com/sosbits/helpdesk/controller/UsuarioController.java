@@ -7,9 +7,7 @@ import com.sosbits.helpdesk.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class UsuarioController {
@@ -51,22 +49,17 @@ public class UsuarioController {
             return "redirect:/cadastro?error=email";
         }
 
-        // Criptografa senha
+
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setAtivo(true);
 
-        // 1️⃣ SALVA PRIMEIRO PARA GERAR ID
-        Usuario usuarioSalvo = usuarioRepository.save(usuario);
-
-        // 2️⃣ BUSCA PERFIL
         Perfil perfilUsuario = perfilRepository.findByNome("USUARIO")
                 .orElseThrow(() -> new RuntimeException("Perfil USUARIO não encontrado no banco"));
 
-        // 3️⃣ ADICIONA PERFIL
-        usuarioSalvo.getPerfis().add(perfilUsuario);
+        usuario.getPerfis().clear();
+        usuario.getPerfis().add(perfilUsuario);
 
-        // 4️⃣ SALVA NOVAMENTE PARA GRAVAR NA TABELA usuario_perfil
-        usuarioRepository.save(usuarioSalvo);
+        usuarioRepository.save(usuario);
 
         return "redirect:/?success";
     }

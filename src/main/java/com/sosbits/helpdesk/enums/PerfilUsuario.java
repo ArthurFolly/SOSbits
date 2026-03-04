@@ -1,4 +1,4 @@
-package com.sosbits.helpdesk.model;
+package com.sosbits.helpdesk.enums;
 
 public enum PerfilUsuario {
     ADMIN,

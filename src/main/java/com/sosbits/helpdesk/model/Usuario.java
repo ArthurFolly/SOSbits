@@ -36,7 +36,7 @@ public class Usuario {
     @Column(length = 30)
     private String telefone;
 
-    // ✅ AJUSTADO para usuario_id / perfil_id (como o banco está pedindo)
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_perfil",

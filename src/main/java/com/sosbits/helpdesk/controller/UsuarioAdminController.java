@@ -1,6 +1,7 @@
 package com.sosbits.helpdesk.controller;
 
 import com.sosbits.helpdesk.model.Usuario;
+import com.sosbits.helpdesk.repository.PerfilRepository;
 import com.sosbits.helpdesk.service.UsuarioAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,9 +12,12 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioAdminController {
 
     private final UsuarioAdminService usuarioAdminService;
+    private final PerfilRepository perfilRepository;
 
-    public UsuarioAdminController(UsuarioAdminService usuarioAdminService) {
+    public UsuarioAdminController(UsuarioAdminService usuarioAdminService,
+                                  PerfilRepository perfilRepository) {
         this.usuarioAdminService = usuarioAdminService;
+        this.perfilRepository = perfilRepository;
     }
 
     @GetMapping
@@ -25,10 +29,13 @@ public class UsuarioAdminController {
         model.addAttribute("usuarios", usuarioAdminService.listarFiltrando(ativo, perfilId));
         model.addAttribute("usuariosExcluidos", usuarioAdminService.listarInativos());
 
+        // ✅ AQUI ESTÁ O QUE FALTAVA
+        model.addAttribute("perfis", perfilRepository.findAll());
+
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("modoEdicao", false);
 
-        return "usuario";
+        return "usuario"; // sua view
     }
 
     @GetMapping("/editar/{id}")
@@ -41,6 +48,9 @@ public class UsuarioAdminController {
         model.addAttribute("usuarios", usuarioAdminService.listarFiltrando(ativo, perfilId));
         model.addAttribute("usuariosExcluidos", usuarioAdminService.listarInativos());
 
+        // ✅ AQUI TAMBÉM
+        model.addAttribute("perfis", perfilRepository.findAll());
+
         model.addAttribute("usuario", usuarioAdminService.buscarPorId(id));
         model.addAttribute("modoEdicao", true);
 
@@ -48,8 +58,13 @@ public class UsuarioAdminController {
     }
 
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Usuario usuario) {
-        usuarioAdminService.salvar(usuario);
+    public String salvar(@ModelAttribute Usuario usuario,
+                         @RequestParam("perfilId") Long perfilId,
+                         @RequestParam(value = "senha", required = false) String senha) {
+
+
+        usuarioAdminService.salvar(usuario, perfilId, senha);
+
         return "redirect:/admin/usuarios";
     }
 

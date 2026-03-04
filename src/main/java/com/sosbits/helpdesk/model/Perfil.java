@@ -16,5 +16,5 @@ public class Perfil {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 30)
-    private String nome; // ADMIN, SUPORTE, USUARIO
+    private String nome;
 }
