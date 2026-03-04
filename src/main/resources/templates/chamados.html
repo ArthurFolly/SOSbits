@@ -398,5 +398,15 @@
 </div>
 
 <script th:src="@{/js/chamados.js}"></script>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        const abrir = /*[[${abrirModal}]]*/ false;
+
+        if (abrir) {
+            abrirModal();
+        }
+    });
+</script>
 </body>
 </html>

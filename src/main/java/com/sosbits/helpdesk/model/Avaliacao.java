@@ -19,7 +19,7 @@ public class Avaliacao {
     @Column(name = "id_avaliacao")
     private Long id;
 
-    // 1 avaliação por chamado
+
     @OneToOne(optional = false)
     @JoinColumn(
             name = "id_chamado",

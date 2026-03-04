@@ -22,11 +22,9 @@ public class AvaliacaoController {
         model.addAttribute("usuarioNome", usuarioService.getNomeUsuarioLogado());
         model.addAttribute("avaliacoes", avaliacaoService.listarAtivas());
         model.addAttribute("avaliacoesExcluidas", avaliacaoService.listarExcluidas());
-
-        // IMPORTANTÍSSIMO: para popular o combo do modal (só fechados e não avaliados)
         model.addAttribute("chamadosParaAvaliar", chamadoService.listarChamadosFechadosNaoAvaliados());
 
-        return "avaliacoes";
+        return "avaliacao";
     }
 
     @PostMapping("/criar")

@@ -28,6 +28,7 @@ public class ChamadoController {
         model.addAttribute("totalAbertos", service.contarPorStatus("Aberto"));
         model.addAttribute("totalAndamento", service.contarPorStatus("Em Andamento"));
         model.addAttribute("totalResolvidos", service.contarPorStatus("Resolvido"));
+        model.addAttribute("totalPendentes", service.contarPorStatus("Pendente"));
         model.addAttribute("totalUrgentes", service.contarPorPrioridade("Alta"));
 
         return "dashboard";
@@ -35,16 +36,28 @@ public class ChamadoController {
 
     @GetMapping
     public String listar(@RequestParam(value = "deleted", required = false) Integer deleted,
+                         @RequestParam(value = "novo", required = false) Integer novo,
                          Model model) {
 
         boolean modoExcluidos = (deleted != null && deleted == 1);
+        boolean abrirModal = (novo != null && novo == 1);
 
         model.addAttribute("chamados", modoExcluidos ? service.listarDeletados() : service.listarTodos());
         model.addAttribute("modoExcluidos", modoExcluidos);
 
+        model.addAttribute("chamado", new Chamado());
+
+
+        model.addAttribute("abrirModal", abrirModal);
+
         return "chamados";
     }
 
+
+    @GetMapping("/novo")
+    public String novo() {
+        return "redirect:/chamados?novo=1";
+    }
 
     @PostMapping("/salvar")
     public String salvarForm(@ModelAttribute Chamado chamado) {
@@ -57,7 +70,6 @@ public class ChamadoController {
         service.excluir(id);
         return "redirect:/chamados";
     }
-
 
     @GetMapping("/restaurar/{id}")
     public String restaurarForm(@PathVariable Long id) {
@@ -79,13 +91,13 @@ public class ChamadoController {
         return service.criar(chamado, user);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     @ResponseBody
     public Chamado buscar(@PathVariable Long id) {
         return service.buscarPorId(id);
     }
 
-    @PutMapping(value = "/{id}", consumes = "application/json")
+    @PutMapping(value = "/{id:\\d+}", consumes = "application/json")
     @ResponseBody
     public Chamado atualizar(@PathVariable Long id,
                              @RequestBody Chamado chamado,
@@ -93,13 +105,13 @@ public class ChamadoController {
         return service.atualizar(id, chamado, user);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:\\d+}")
     @ResponseBody
     public void excluirAjax(@PathVariable Long id) {
         service.excluir(id);
     }
 
-    @PatchMapping("/{id}/restaurar")
+    @PatchMapping("/{id:\\d+}/restaurar")
     @ResponseBody
     public void restaurarAjax(@PathVariable Long id) {
         service.restaurar(id);

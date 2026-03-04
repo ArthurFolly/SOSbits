@@ -1,4 +1,4 @@
-/* --- CAMADA DE FUNDO (Geral para todos os modais) --- */
+
 .modal-overlay {
     display: none;
     position: fixed;
@@ -124,13 +124,12 @@
 
 .chip:hover { border-color: #cbd5e1 !important; color: #1e293b !important; }
 
-/* Ativos dos Chips */
+
 .chip.active { background: #0f172a !important; color: #ffffff !important; border-color: #0f172a !important; }
 .chip.chip-baixa.active { background: #10b981 !important; border-color: #10b981 !important; }
 .chip.chip-media.active { background: #f59e0b !important; border-color: #f59e0b !important; }
 .chip.chip-alta.active { background: #ef4444 !important; border-color: #ef4444 !important; }
 
-/* --- INPUTS E TEXTAREA --- */
 .modern-select-elite, .input-elite, .textarea-elite-box textarea {
     width: 100% !important;
     padding: 12px !important;
@@ -142,7 +141,6 @@
 
 .hidden-field { display: none !important; }
 
-/* --- FOOTERS --- */
 .modal-footer-elite, .modal-footer-flex {
     padding: 20px 32px !important;
     background-color: #f8fafc !important;
@@ -151,7 +149,6 @@
     gap: 12px !important;
 }
 
-/* --- BOTÕES --- */
 .btn-primary-elite, .btn-apply {
     background-color: #0f172a !important;
     color: #ffffff !important;
@@ -178,3 +175,7 @@
 }
 
 .btn-ghost-elite:hover, .btn-clear:hover { background-color: #f1f5f9 !important; color: #1e293b !important; }
+
+.priority-indicator-elite.low  { background-color: #10b981 !important; }
+.priority-indicator-elite.med  { background-color: #f59e0b !important; }
+.priority-indicator-elite.high { background-color: #ef4444 !important; }

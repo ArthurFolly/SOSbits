@@ -261,23 +261,37 @@ document.addEventListener("click", function (event) {
     }
 });
 function setElitePriority(button, prioridade) {
+
+    // 1) tira "active" de todos
     document.querySelectorAll(".prio-card-elite").forEach(card => {
         card.classList.remove("active");
     });
 
+    // 2) ativa o clicado
     button.classList.add("active");
 
+    // 3) grava no hidden input
     const input = document.getElementById("prioridadeInput");
     if (input) input.value = prioridade;
 
+    // 4) muda a barra superior (priorityLine)
     const priorityLine = document.getElementById("priorityLine");
-    if (!priorityLine) return;
+    if (priorityLine) {
+        priorityLine.classList.remove("low", "med", "high");
+        if (prioridade === "Baixa") priorityLine.classList.add("low");
+        if (prioridade === "Média") priorityLine.classList.add("med");
+        if (prioridade === "Alta") priorityLine.classList.add("high");
+    }
 
-    priorityLine.className = "priority-indicator-elite";
+    // 5) (opcional) muda a cor do ícone do header
+    const headerIconBox = document.getElementById("headerIconBox");
+    if (headerIconBox) {
+        headerIconBox.style.color = prioridade === "Alta" ? "#ef4444"
+            : (prioridade === "Média" ? "#f59e0b" : "#10b981");
 
-    if (prioridade === "Baixa") priorityLine.classList.add("low");
-    if (prioridade === "Média") priorityLine.classList.add("med");
-    if (prioridade === "Alta") priorityLine.classList.add("high");
+        headerIconBox.style.background = prioridade === "Alta" ? "#fef2f2"
+            : (prioridade === "Média" ? "#fffbeb" : "#ecfdf5");
+    }
 }
 function updateCharCount(textarea) {
     const counter = document.getElementById("charCount");
@@ -317,11 +331,11 @@ function aplicarFiltrosElite() {
         const tipoTxt = (tds[1]?.innerText || "").trim().toLowerCase();
         const assuntoTxt = (tds[2]?.innerText || "").trim().toLowerCase();
 
-        const statusTxt = (tds[3]?.innerText || "").trim();       // ex: "Aberto"
-        const prioridadeTxt = (tds[4]?.innerText || "").trim();    // ex: "Média"
+        const statusTxt = (tds[3]?.innerText || "").trim();
+        const prioridadeTxt = (tds[4]?.innerText || "").trim();
 
-        const dataBr = (tds[5]?.innerText || "").trim();           // ex: "28/01/2026"
-        const dataISO = brDateToISO(dataBr);                       // "2026-01-28"
+        const dataBr = (tds[5]?.innerText || "").trim();
+        const dataISO = brDateToISO(dataBr);
 
         let mostrar = true;
 
