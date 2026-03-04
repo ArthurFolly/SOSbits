@@ -1,13 +1,3 @@
-/* =========================================================
-   usuario.js - EXCLUSIVO da tela de Usuários (SEM FETCH)
-
-   O que ele faz:
-   1) Busca (filtra tabela localmente)
-   2) Abre/fecha modais (Novo Usuário / Filtros / Excluídos)
-   3) Fecha modal clicando fora (overlay)
-   4) Fecha modal com tecla ESC
-========================================================= */
-
 (function () {
     "use strict";
 
@@ -17,12 +7,6 @@
         ativarTeclaESCParaFecharModais();
     });
 
-    // =========================================================
-    // 1) BUSCA: filtra as linhas da tabela conforme texto digitado
-    // Requisito no HTML:
-    // - input:  id="usuariosSearchInput"
-    // - tbody:  id="usuariosTableBody"
-    // =========================================================
     function ativarBuscaUsuarios() {
         const input = document.getElementById("usuariosSearchInput");
         const tbody = document.getElementById("usuariosTableBody");
@@ -40,12 +24,6 @@
         });
     }
 
-    // =========================================================
-    // 2) MODAL GENÉRICO: abrir/fechar por ID
-    // Você chama no HTML:
-    // - abrirModalGenerico('modalNovoUsuario')
-    // - fecharModalGenerico('modalNovoUsuario')
-    // =========================================================
     window.abrirModalGenerico = function (modalId) {
         const overlay = document.getElementById(modalId);
         if (!overlay) return;
@@ -68,12 +46,6 @@
             document.body.style.overflow = "";
         }
     };
-
-    // =========================================================
-    // 3) MODAL EXCLUÍDOS (SEM FETCH)
-    // IMPORTANTE:
-    // - NÃO mexer no tbody, porque o Thymeleaf já renderizou no HTML
-    // =========================================================
     window.abrirModalUsuariosExcluidos = function () {
         abrirModalGenerico("modalUsuariosExcluidos");
     };
@@ -82,10 +54,6 @@
         fecharModalGenerico("modalUsuariosExcluidos");
     };
 
-    // =========================================================
-    // 4) FECHAR MODAL: clique fora (overlay)
-    // Fecha qualquer .modal-overlay que esteja .active
-    // =========================================================
     function ativarCliqueForaParaFecharModais() {
         document.addEventListener("click", function (event) {
             const overlay = event.target;
@@ -99,9 +67,6 @@
         });
     }
 
-    // =========================================================
-    // 5) FECHAR MODAL: tecla ESC
-    // =========================================================
     function ativarTeclaESCParaFecharModais() {
         document.addEventListener("keydown", function (e) {
             if (e.key !== "Escape") return;

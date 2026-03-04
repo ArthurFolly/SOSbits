@@ -1,7 +1,8 @@
+
 package com.sosbits.helpdesk.controller;
 
 import com.sosbits.helpdesk.model.Usuario;
-import com.sosbits.helpdesk.service.UsuarioService;
+import com.sosbits.helpdesk.service.UsuarioAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,48 +11,52 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/usuarios")
 public class UsuarioAdminController {
 
-    private final UsuarioService usuarioService;
+    private final UsuarioAdminService usuarioAdminService;
 
-    public UsuarioAdminController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
+    public UsuarioAdminController(UsuarioAdminService usuarioAdminService) {
+        this.usuarioAdminService = usuarioAdminService;
     }
-
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("usuarios", usuarioService.listarAtivos());
-        model.addAttribute("usuariosExcluidos", usuarioService.listarExcluidos());
+    public String listar(
+            @RequestParam(required = false) Boolean ativo,
+            @RequestParam(required = false) Long perfilId,
+            Model model
+    ) {
+        model.addAttribute("usuarios", usuarioAdminService.listarFiltrando(ativo, perfilId));
+        model.addAttribute("usuariosExcluidos", usuarioAdminService.listarInativos());
         model.addAttribute("usuario", new Usuario());
-        return "usuario"; // sem barra
-    }
-
-
-    @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
-        model.addAttribute("usuarios", usuarioService.listarAtivos());
-        model.addAttribute("usuariosExcluidos", usuarioService.listarExcluidos());
-        model.addAttribute("usuario", usuarioService.buscarPorId(id));
         return "usuario";
     }
 
+    @GetMapping("/editar/{id}")
+    public String editar(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean ativo,
+            @RequestParam(required = false) Long perfilId,
+            Model model
+    ) {
+        model.addAttribute("usuarios", usuarioAdminService.listarFiltrando(ativo, perfilId));
+        model.addAttribute("usuariosExcluidos", usuarioAdminService.listarInativos());
+        model.addAttribute("usuario", usuarioAdminService.buscarPorId(id));
+        return "usuario";
+    }
 
     @PostMapping("/salvar")
     public String salvar(@ModelAttribute Usuario usuario) {
-        usuarioService.salvar(usuario);
+        usuarioAdminService.salvar(usuario);
         return "redirect:/admin/usuarios";
     }
-
 
     @GetMapping("/desativar/{id}")
     public String desativar(@PathVariable Long id) {
-        usuarioService.desativar(id);
+        usuarioAdminService.desativar(id);
         return "redirect:/admin/usuarios";
     }
 
-
     @GetMapping("/restaurar/{id}")
     public String restaurar(@PathVariable Long id) {
-        usuarioService.restaurar(id);
+        usuarioAdminService.restaurar(id);
         return "redirect:/admin/usuarios";
     }
 }
