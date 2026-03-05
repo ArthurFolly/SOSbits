@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Help Desk</title>
 
-
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/chamados.css}">
 
@@ -17,13 +16,17 @@
 
 <div class="app-container">
 
+    <!-- ================= SIDEBAR ================= -->
+
     <aside class="sidebar">
+
         <div class="sidebar-header">
             <i class="fas fa-headset"></i>
             <h2>Help Desk</h2>
         </div>
 
         <nav class="sidebar-nav">
+
             <ul>
 
                 <li>
@@ -55,7 +58,6 @@
                     </a>
                 </li>
 
-
                 <li>
                     <a th:href="@{/admin/usuarios}">
                         <i class="fas fa-users"></i>
@@ -78,13 +80,18 @@
                 </li>
 
             </ul>
+
         </nav>
+
     </aside>
 
+
+    <!-- ================= CONTEÚDO PRINCIPAL ================= -->
 
     <main class="main-content">
 
         <div class="dashboard-page">
+
             <header class="page-header">
 
                 <div class="header-left">
@@ -93,7 +100,9 @@
                 </div>
 
                 <div class="header-right">
+
                     <div class="user-info">
+
                         <span class="user-name"
                               th:text="${usuarioNome} ?: 'Convidado'">
                             Convidado
@@ -107,12 +116,17 @@
                         </div>
 
                         <a th:href="@{/logout}" class="logout-link">Sair</a>
+
                     </div>
+
                 </div>
 
             </header>
+
         </div>
 
+
+        <!-- ================= CARDS DE ESTATÍSTICAS ================= -->
 
         <section class="stats-grid">
 
@@ -159,6 +173,8 @@
         </section>
 
 
+        <!-- ================= CHAMADOS RECENTES ================= -->
+
         <section class="recent-tickets">
 
             <div class="section-header">
@@ -167,6 +183,7 @@
             </div>
 
             <div class="card-table">
+
                 <table class="chamados-table">
 
                     <thead>
@@ -177,11 +194,11 @@
                         <th>STATUS</th>
                         <th>PRIORIDADE</th>
                         <th>DATA</th>
-                        <th>AÇÕES</th>
                     </tr>
                     </thead>
 
                     <tbody>
+
                     <tr th:each="chamado : ${chamadosRecentes}">
 
                         <td th:text="'#' + ${chamado.id}">#1</td>
@@ -189,26 +206,29 @@
                         <td th:text="${chamado.titulo}">Assunto</td>
 
                         <td>
+
                             <span class="badge"
                                   th:with="st=${#strings.trim(chamado.status)}"
                                   th:classappend="
-                                    ${#strings.equalsIgnoreCase(st,'Aberto')} ? 'badge-aberto' :
-                                    (${#strings.equalsIgnoreCase(st,'Em Andamento')} ? 'badge-progresso' :
-                                    (${#strings.equalsIgnoreCase(st,'Resolvido')} ? 'badge-resolvido' :
-                                    'badge-pendente'))
-                                  "
+                                  ${#strings.equalsIgnoreCase(st,'Aberto')} ? 'badge-aberto' :
+                                  (${#strings.equalsIgnoreCase(st,'Em Andamento')} ? 'badge-progresso' :
+                                  (${#strings.equalsIgnoreCase(st,'Resolvido')} ? 'badge-resolvido' :
+                                  'badge-pendente'))"
                                   th:text="${st}">
                                 Aberto
                             </span>
+
                         </td>
 
                         <td>
+
                             <span class="badge"
                                   th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' :
                                   (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
                                   th:text="${chamado.prioridade}">
                                 Média
                             </span>
+
                         </td>
 
                         <td th:text="${chamado.dataCriacao != null ?
@@ -216,38 +236,21 @@
                             -
                         </td>
 
-                        <td class="actions-cell">
-
-                            <a th:href="@{/chamados}"
-                               class="btn-icon btn-edit"
-                               title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
-
-                            <a th:href="@{/chamados/excluir/{id}(id=${chamado.id})}"
-                               class="btn-icon btn-del"
-                               title="Excluir"
-                               onclick="return confirm('Deseja excluir este chamado?');">
-                                <i class="fas fa-trash"></i>
-                            </a>
-
-                        </td>
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
-                        <td colspan="7"
+
+                        <td colspan="6"
                             style="text-align:center;padding:40px;color:#94a3b8;">
+
                             Nenhum chamado recente encontrado.
+
                         </td>
                     </tr>
-
                     </tbody>
-
                 </table>
             </div>
-
         </section>
-
     </main>
 </div>
 
