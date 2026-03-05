@@ -43,7 +43,6 @@
                 <input type="text" id="searchInput" placeholder="Buscar por ID, tipo ou assunto..." class="search-input">
             </div>
 
-            <!-- ✅ NOVO: botão abre MODAL de excluídos -->
             <button type="button" onclick="abrirModalExcluidos()" class="btn-filter-trigger">
                 <i class="fas fa-trash-restore"></i> Excluídos
             </button>
@@ -81,30 +80,28 @@
                     <td class="col-titulo" th:text="${chamado.titulo}">Assunto</td>
 
                     <td class="col-status">
-    <span class="badge"
-          th:classappend="
-            ${chamado.status == 'Aberto'} ? 'badge-aberto' :
-            (${chamado.status == 'Em Andamento'} ? 'badge-progresso' :
-            (${chamado.status == 'Resolvido'} ? 'badge-resolvido' :
-            'badge-pendente'))
-          "
-          th:text="${chamado.status}">
-        Aberto
-    </span>
-                    </td>
-
+                        <span class="badge"
+                              th:classappend="
+                                ${chamado.status == 'Aberto'} ? 'badge-aberto' :
+                                (${chamado.status == 'Em Andamento'} ? 'badge-progresso' :
+                                (${chamado.status == 'Resolvido'} ? 'badge-resolvido' :
+                                'badge-pendente'))
+                              "
+                              th:text="${chamado.status}">
+                            Aberto
+                        </span>
                     </td>
 
                     <td class="col-prio">
-        <span class="badge"
-              th:classappend="
-                ${chamado.prioridade == 'Alta'} ? 'prio-alta' :
-                (${chamado.prioridade == 'Média'} ? 'prio-media' :
-                'prio-baixa')
-              "
-              th:text="${chamado.prioridade}">
-            Média
-        </span>
+                        <span class="badge"
+                              th:classappend="
+                                ${chamado.prioridade == 'Alta'} ? 'prio-alta' :
+                                (${chamado.prioridade == 'Média'} ? 'prio-media' :
+                                'prio-baixa')
+                              "
+                              th:text="${chamado.prioridade}">
+                            Média
+                        </span>
                     </td>
 
                     <td class="col-data"
@@ -329,7 +326,8 @@
             <button type="button" onclick="fecharModal()" class="btn-close-elite">&times;</button>
         </div>
 
-        <form th:action="@{/chamados/salvar}" method="POST" enctype="multipart/form-data">
+        <!-- ✅ SEM ANEXOS: removido enctype -->
+        <form th:action="@{/chamados/salvar}" method="POST">
             <div class="modal-body-elite">
 
                 <div class="form-group-elite">
@@ -378,14 +376,7 @@
                     </div>
                 </div>
 
-                <div class="form-group-elite">
-                    <label><i class="fas fa-paperclip icon-teal"></i> Anexos (Opcional)</label>
-                    <div class="file-dropzone-elite" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p id="fileNameText">Arraste ou clique para anexar</p>
-                        <input type="file" name="anexo" id="fileInput" hidden onchange="handleFileSelection()">
-                    </div>
-                </div>
+                <!-- ✅ REMOVIDO BLOCO DE ANEXOS -->
 
             </div>
 
@@ -402,10 +393,7 @@
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", () => {
         const abrir = /*[[${abrirModal}]]*/ false;
-
-        if (abrir) {
-            abrirModal();
-        }
+        if (abrir) abrirModal();
     });
 </script>
 </body>

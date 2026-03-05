@@ -13,6 +13,7 @@ function fecharModal() {
     modal.classList.remove("active");
     document.body.style.overflow = "";
 }
+
 function abrirModalFiltros() {
     const modal = document.getElementById("modalFiltros");
     if (!modal) return;
@@ -28,6 +29,7 @@ function fecharModalFiltros() {
     modal.classList.remove("active");
     document.body.style.overflow = "";
 }
+
 function abrirModalEditar(el) {
     const id = el?.dataset?.id;
     if (!id) return;
@@ -238,6 +240,7 @@ function escapeHtml(str) {
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
 }
+
 document.addEventListener("click", function (event) {
 
     const modalChamado = document.getElementById("modalChamado");
@@ -260,6 +263,7 @@ document.addEventListener("click", function (event) {
         fecharModalExcluidos();
     }
 });
+
 function setElitePriority(button, prioridade) {
 
     // 1) tira "active" de todos
@@ -283,7 +287,7 @@ function setElitePriority(button, prioridade) {
         if (prioridade === "Alta") priorityLine.classList.add("high");
     }
 
-    // 5) (opcional) muda a cor do ícone do header
+    // 5) muda a cor do ícone do header
     const headerIconBox = document.getElementById("headerIconBox");
     if (headerIconBox) {
         headerIconBox.style.color = prioridade === "Alta" ? "#ef4444"
@@ -293,19 +297,10 @@ function setElitePriority(button, prioridade) {
             : (prioridade === "Média" ? "#fffbeb" : "#ecfdf5");
     }
 }
+
 function updateCharCount(textarea) {
     const counter = document.getElementById("charCount");
     if (counter) counter.textContent = textarea.value.length;
-}
-function handleFileSelection() {
-    const input = document.getElementById("fileInput");
-    const text = document.getElementById("fileNameText");
-
-    if (!input || !text) return;
-
-    text.textContent = input.files.length
-        ? input.files[0].name
-        : "Arraste ou clique para anexar";
 }
 
 function aplicarFiltrosElite() {
@@ -363,6 +358,7 @@ function brDateToISO(br) {
     const yyyy = m[3];
     return `${yyyy}-${mm}-${dd}`;
 }
+
 function limparFiltros() {
     const inputBusca = document.getElementById("filterBusca");
     if (inputBusca) inputBusca.value = "";
