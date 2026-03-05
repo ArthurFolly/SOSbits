@@ -16,7 +16,7 @@
 <body id="page-categoria">
 
 <div class="app-container">
-    <!-- ================= SIDEBAR ================= -->
+
     <aside class="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-headset"></i>
@@ -34,7 +34,6 @@
         </nav>
     </aside>
 
-    <!-- ================= CONTEÚDO ================= -->
     <main class="main-content">
         <header class="page-header">
             <div class="header-left">
@@ -43,7 +42,6 @@
             </div>
         </header>
 
-        <!-- ================= BARRA BUSCA / BOTÕES ================= -->
         <div class="filters-row">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
@@ -72,11 +70,9 @@
             </button>
         </div>
 
-        <!-- ================= ALERTAS ================= -->
         <div th:if="${sucesso}" class="alert-sucesso" th:text="${sucesso}"></div>
         <div th:if="${erro}" class="alert-erro" th:text="${erro}"></div>
 
-        <!-- ================= TABELA PRINCIPAL ================= -->
         <div class="card-table">
             <table class="categoria-table">
                 <thead>
@@ -90,13 +86,16 @@
                 </thead>
 
                 <tbody id="categoriasTableBody">
-                <!-- ✅ CORRIGIDO: usar idCategoria (PK) -->
-                <tr th:each="cat : ${categorias}" th:attr="data-id=${cat.idCategoria}">
-                    <td class="id-cell" th:text="'#' + ${cat.idCategoria}">#1</td>
+                <tr th:each="cat : ${categorias}" th:attr="data-id=${cat.id}">
+                    <td class="id-cell" th:text="'#' + ${cat.id}">#1</td>
 
                     <td class="col-nome" th:text="${cat.nome}">Hardware</td>
 
-                    <td class="col-desc" th:text="${cat.descricao} ?: '-'">-</td>
+                    <!-- ✅ CORRIGIDO (sem erro de Thymeleaf) -->
+                    <td class="col-desc"
+                        th:text="${#strings.isEmpty(cat.descricao) ? '-' : cat.descricao}">
+                        -
+                    </td>
 
                     <td class="col-data"
                         th:text="${cat.dataCriacao != null ? #temporals.format(cat.dataCriacao,'dd/MM/yyyy') : '-'}">
@@ -106,13 +105,13 @@
                     <td class="actions-cell">
                         <a href="javascript:void(0)"
                            class="btn-icon btn-edit"
-                           th:attr="data-id=${cat.idCategoria}"
+                           th:attr="data-id=${cat.id}"
                            onclick="abrirModalCategoriaEditar(this)"
                            title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
 
-                        <a th:href="@{/categorias/excluir/{id}(id=${cat.idCategoria})}"
+                        <a th:href="@{/categorias/excluir/{id}(id=${cat.id})}"
                            class="btn-icon btn-del"
                            onclick="return confirm('Deseja excluir esta categoria?');"
                            title="Excluir">
@@ -130,7 +129,7 @@
     </main>
 </div>
 
-<!-- ========================= MODAL FILTROS ========================= -->
+<!-- MODAL FILTROS -->
 <div id="modalCategoriasFiltros" class="modal-overlay" onclick="fecharModalCategoriasFiltros()">
     <div class="modal-box elite-box" style="max-width: 480px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
@@ -164,7 +163,7 @@
     </div>
 </div>
 
-<!-- ========================= MODAL EDITAR ========================= -->
+<!-- MODAL EDITAR -->
 <div id="modalCategoriaEditar" class="modal-overlay" onclick="fecharModalCategoriaEditar()">
     <div class="modal-box elite-box" style="max-width: 520px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
@@ -208,7 +207,7 @@
     </div>
 </div>
 
-<!-- ========================= MODAL EXCLUÍDAS ========================= -->
+<!-- MODAL EXCLUÍDAS -->
 <div id="modalCategoriasExcluidas" class="modal-overlay" onclick="fecharModalCategoriasExcluidas()">
     <div class="modal-box elite-box" style="max-width: 820px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">
@@ -253,7 +252,7 @@
     </div>
 </div>
 
-<!-- ========================= MODAL CRIAR ========================= -->
+<!-- MODAL CRIAR -->
 <div id="modalCategoriaCriar" class="modal-overlay" onclick="fecharModalCategoriaCriar()">
     <div class="modal-box elite-box" style="max-width: 520px;" onclick="event.stopPropagation()">
         <div class="modal-header-elite">

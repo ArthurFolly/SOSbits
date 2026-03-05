@@ -1,5 +1,7 @@
 package com.sosbits.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "chamado")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Chamado {
 
     @Id
@@ -34,10 +37,12 @@ public class Chamado {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_solicitante", nullable = false)
+    @JsonIgnore
     private Usuario solicitante;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_atendente")
+    @JsonIgnore
     private Usuario atendente;
 
     @Column(name = "data_atendimento")
@@ -52,5 +57,4 @@ public class Chamado {
         if (status == null) status = "Aberto";
         if (prioridade == null) prioridade = "Baixa";
     }
-
 }

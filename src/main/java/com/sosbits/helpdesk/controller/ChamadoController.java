@@ -44,21 +44,18 @@ public class ChamadoController {
 
         model.addAttribute("chamados", modoExcluidos ? service.listarDeletados() : service.listarTodos());
         model.addAttribute("modoExcluidos", modoExcluidos);
-
         model.addAttribute("chamado", new Chamado());
-
-
         model.addAttribute("abrirModal", abrirModal);
 
         return "chamados";
     }
-
 
     @GetMapping("/novo")
     public String novo() {
         return "redirect:/chamados?novo=1";
     }
 
+    // ✅ AQUI: volta para o método que existe
     @PostMapping("/salvar")
     public String salvarForm(@ModelAttribute Chamado chamado) {
         service.salvar(chamado);

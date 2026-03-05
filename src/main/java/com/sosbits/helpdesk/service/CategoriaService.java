@@ -15,9 +15,6 @@ public class CategoriaService {
 
     private final CategoriaRepository repository;
 
-    // =========================
-    // LISTAGENS
-    // =========================
 
     @Transactional(readOnly = true)
     public List<Categoria> listarAtivas() {
@@ -29,9 +26,7 @@ public class CategoriaService {
         return repository.findByDeletadoTrueOrderByIdDesc();
     }
 
-    // =========================
-    // CRUD
-    // =========================
+
 
     @Transactional
     public Categoria salvar(Categoria categoria) {
@@ -100,9 +95,7 @@ public class CategoriaService {
         repository.save(cat);
     }
 
-    // =========================
-    // VALIDAÇÕES
-    // =========================
+
 
     private void validarCategoria(Categoria categoria) {
         if (categoria == null) throw new RuntimeException("Categoria inválida.");

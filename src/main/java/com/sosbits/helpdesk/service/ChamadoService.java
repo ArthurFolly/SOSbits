@@ -21,6 +21,7 @@ public class ChamadoService {
     // =========================
     // LISTAGENS
     // =========================
+
     @Transactional(readOnly = true)
     public List<Chamado> listarTodos() {
         return chamadoRepository.findAllByDeletadoFalseOrderByIdDesc();
@@ -31,7 +32,7 @@ public class ChamadoService {
         return chamadoRepository.findAllByDeletadoTrueOrderByIdDesc();
     }
 
-    // ✅ PARA COMPATIBILIDADE COM SEU CONTROLLER (que chama listarDeletados)
+    // compatibilidade com controller que chama listarDeletados()
     @Transactional(readOnly = true)
     public List<Chamado> listarDeletados() {
         return listarExcluidos();
@@ -42,7 +43,7 @@ public class ChamadoService {
         return chamadoRepository.findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
     }
 
-    // ✅ usado no combo do modal (Avaliação)
+    // usado no combo do modal Avaliação
     @Transactional(readOnly = true)
     public List<Chamado> listarChamadosFechadosNaoAvaliados() {
         Long idUsuario = usuarioService.getIdUsuarioLogado();
@@ -52,6 +53,7 @@ public class ChamadoService {
     // =========================
     // CREATE / UPDATE
     // =========================
+
     @Transactional
     public Chamado salvar(Chamado chamado) {
 
@@ -76,7 +78,7 @@ public class ChamadoService {
             return chamadoRepository.save(chamado);
         }
 
-        // UPDATE (preserva dataCriacao e solicitante)
+        // UPDATE (preserva dataCriacao, solicitante, deletado)
         Chamado existente = chamadoRepository.findById(chamado.getId())
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + chamado.getId()));
 
@@ -98,6 +100,7 @@ public class ChamadoService {
     // =========================
     // SOFT DELETE
     // =========================
+
     @Transactional
     public void excluir(Long id) {
         Chamado chamado = chamadoRepository.findById(id)
@@ -117,8 +120,9 @@ public class ChamadoService {
     }
 
     // =========================
-    // API (AJAX) - COMPATIBILIDADE
+    // API (AJAX)
     // =========================
+
     @Transactional
     public Chamado criar(Chamado chamado, UserDetails user) {
         chamado.setId(null);
@@ -131,15 +135,17 @@ public class ChamadoService {
         return salvar(chamado);
     }
 
+    // ✅ IMPORTANTE: BUSCA PARA EDIÇÃO (evita Lazy/500)
     @Transactional(readOnly = true)
     public Chamado buscarPorId(Long id) {
-        return chamadoRepository.findById(id)
+        return chamadoRepository.findByIdComUsuarios(id)
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + id));
     }
 
     // =========================
     // DASHBOARD
     // =========================
+
     @Transactional(readOnly = true)
     public long contarPorStatus(String status) {
         return chamadoRepository.countByStatusAndDeletadoFalse(status);

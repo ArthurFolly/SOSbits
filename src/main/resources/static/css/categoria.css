@@ -1,11 +1,12 @@
 /* =========================================================
-   CATEGORIA — PADRÃO DO SISTEMA (SINGULAR)
+   CATEGORIA — PADRÃO IGUAL CHAMADOS (COM CORREÇÃO DO MODAL 4 COLUNAS)
    ========================================================= */
 
 /* =========================================================
-   BARRA DE FILTROS / BUSCA
+   BARRA DE FILTROS E BUSCA — CATEGORIA
    ========================================================= */
-.filters-row {
+
+body#page-categoria .filters-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -14,14 +15,14 @@
 }
 
 /* BUSCA */
-.search-wrapper {
+body#page-categoria .search-wrapper {
     position: relative;
     flex: 1;
     max-width: 450px;
     min-width: 240px;
 }
 
-.search-wrapper i {
+body#page-categoria .search-wrapper i {
     position: absolute;
     left: 15px;
     top: 50%;
@@ -29,7 +30,7 @@
     color: #94a3b8;
 }
 
-.search-input {
+body#page-categoria .search-input {
     width: 100%;
     padding: 11px 11px 11px 42px;
     border: 1px solid #e2e8f0;
@@ -40,16 +41,17 @@
     background: #ffffff;
 }
 
-.search-input:focus {
+body#page-categoria .search-input:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* =========================================================
-   BOTÃO FILTROS — PADRÃO
+   BOTÃO FILTROS — PADRÃO DO SISTEMA
    ========================================================= */
-.btn-filter-trigger {
-    display: inline-flex;
+
+body#page-categoria .btn-filter-trigger {
+    display: flex;
     align-items: center;
     gap: 8px;
 
@@ -71,26 +73,27 @@
     transition: all 0.2s ease;
 }
 
-.btn-filter-trigger i {
+body#page-categoria .btn-filter-trigger i {
     font-size: 14px;
 }
 
-.btn-filter-trigger:hover {
+body#page-categoria .btn-filter-trigger:hover {
     background: #eff6ff;
     border-color: #60a5fa;
     color: #1e40af;
 }
 
-.btn-filter-trigger:active {
+body#page-categoria .btn-filter-trigger:active {
     transform: translateY(1px);
 }
 
 /* =========================================================
-   BOTÃO EXCLUÍDAS — VERMELHO (FORÇADO)
+   BOTÃO EXCLUÍDAS — VERMELHO
    ========================================================= */
-button.btn-excluidas,
-.btn-excluidas {
-    display: inline-flex;
+
+body#page-categoria button.btn-excluidas,
+body#page-categoria .btn-excluidas {
+    display: flex;
     align-items: center;
     gap: 8px;
 
@@ -112,24 +115,24 @@ button.btn-excluidas,
     transition: all 0.2s ease;
 }
 
-button.btn-excluidas i,
-.btn-excluidas i {
+body#page-categoria button.btn-excluidas i,
+body#page-categoria .btn-excluidas i {
     font-size: 14px;
     color: #b91c1c !important;
 }
 
-button.btn-excluidas:hover,
-.btn-excluidas:hover {
+body#page-categoria button.btn-excluidas:hover,
+body#page-categoria .btn-excluidas:hover {
     background: #fff1f2 !important;
     border-color: #fda4af !important;
     color: #991b1b !important;
 
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
+    box-shadow: 0 6px 14px rgba(0,0,0,.08);
 }
 
-button.btn-excluidas:active,
-.btn-excluidas:active {
+body#page-categoria button.btn-excluidas:active,
+body#page-categoria .btn-excluidas:active {
     transform: translateY(1px);
     box-shadow: none;
 }
@@ -137,10 +140,10 @@ button.btn-excluidas:active,
 /* =========================================================
    BOTÃO NOVA CATEGORIA
    ========================================================= */
-.btn-nova-categoria {
-    margin-left: auto;
 
-    display: inline-flex;
+body#page-categoria .btn-nova-categoria {
+    margin-left: auto;
+    display: flex;
     align-items: center;
     gap: 8px;
 
@@ -159,15 +162,16 @@ button.btn-excluidas:active,
     transition: all 0.2s ease;
 }
 
-.btn-nova-categoria:hover {
+body#page-categoria .btn-nova-categoria:hover {
     background: #1e40af;
 }
 
 /* =========================================================
    ALERTAS
    ========================================================= */
-.alert-sucesso,
-.alert-erro {
+
+body#page-categoria .alert-sucesso,
+body#page-categoria .alert-erro {
     margin: 0 0 18px 0;
     padding: 12px 14px;
     border-radius: 12px;
@@ -175,36 +179,41 @@ button.btn-excluidas:active,
     border: 1px solid transparent;
 }
 
-.alert-sucesso {
+body#page-categoria .alert-sucesso {
     background: #ecfdf5;
     color: #065f46;
     border-color: #a7f3d0;
 }
 
-.alert-erro {
+body#page-categoria .alert-erro {
     background: #fef2f2;
     color: #991b1b;
     border-color: #fecaca;
 }
 
 /* =========================================================
-   TABELA — CATEGORIA
+   CARD + TABELA (IGUAL CHAMADOS)
    ========================================================= */
-.card-table {
+
+body#page-categoria .card-table {
     background: #ffffff;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     overflow-x: auto;
 }
 
-.card-table .categoria-table {
+/* =========================================================
+   ESTILO BASE DA TABELA (serve para as duas .categoria-table)
+   ========================================================= */
+
+body#page-categoria .card-table .categoria-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 900px;
+    min-width: 900px; /* mesma ideia do Chamados */
 }
 
 /* Cabeçalho */
-.card-table .categoria-table th {
+body#page-categoria .card-table .categoria-table th {
     background: #f8fafc;
     padding: 14px 20px;
     font-size: 12px;
@@ -217,38 +226,103 @@ button.btn-excluidas:active,
 }
 
 /* Corpo */
-.card-table .categoria-table td {
+body#page-categoria .card-table .categoria-table td {
     padding: 16px 20px;
     border-bottom: 1px solid #f1f5f9;
     font-size: 14px;
     color: #111827;
-    text-align: center;
+    text-align: center;       /* ✅ tudo no centro como você pediu */
     white-space: nowrap;
 }
 
-.card-table .categoria-table tbody tr:hover {
+/* Hover linha */
+body#page-categoria .card-table .categoria-table tbody tr:hover {
     background: #fbfdff;
 }
 
-/* Ajustes por coluna */
-.card-table .categoria-table .id-cell {
+/* =========================================================
+   COLUNAS — TABELA PRINCIPAL (5 COLUNAS)
+   (pega só a primeira card-table do conteúdo principal)
+   ========================================================= */
+
+body#page-categoria main.main-content > .card-table .categoria-table th:nth-child(1),
+body#page-categoria main.main-content > .card-table .categoria-table td:nth-child(1) {
+    width: 90px; /* ID */
+}
+
+body#page-categoria main.main-content > .card-table .categoria-table th:nth-child(2),
+body#page-categoria main.main-content > .card-table .categoria-table td:nth-child(2) {
+    width: 320px; /* NOME */
+}
+
+body#page-categoria main.main-content > .card-table .categoria-table th:nth-child(3),
+body#page-categoria main.main-content > .card-table .categoria-table td:nth-child(3) {
+    width: 480px; /* DESCRIÇÃO */
+}
+
+body#page-categoria main.main-content > .card-table .categoria-table th:nth-child(4),
+body#page-categoria main.main-content > .card-table .categoria-table td:nth-child(4) {
+    width: 140px; /* DATA */
+}
+
+body#page-categoria main.main-content > .card-table .categoria-table th:nth-child(5),
+body#page-categoria main.main-content > .card-table .categoria-table td:nth-child(5) {
+    width: 140px; /* AÇÕES */
+}
+
+/* =========================================================
+   COLUNAS — TABELA DO MODAL EXCLUÍDAS (4 COLUNAS)
+   (evita conflito do nth-child(5))
+   ========================================================= */
+
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table {
+    min-width: 760px;
+}
+
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table th:nth-child(1),
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table td:nth-child(1) {
+    width: 90px; /* ID */
+}
+
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table th:nth-child(2),
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table td:nth-child(2) {
+    width: 280px; /* NOME */
+}
+
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table th:nth-child(3),
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table td:nth-child(3) {
+    width: 420px; /* DESCRIÇÃO */
+}
+
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table th:nth-child(4),
+body#page-categoria #modalCategoriasExcluidas .card-table .categoria-table td:nth-child(4) {
+    width: 140px; /* AÇÃO */
+}
+
+/* =========================================================
+   CONTEÚDO (sem quebrar o visual)
+   ========================================================= */
+
+body#page-categoria .card-table .categoria-table .id-cell {
     font-weight: 800;
     color: #0f172a;
 }
 
-.card-table .categoria-table .col-nome,
-.card-table .categoria-table .col-desc {
-    text-align: left;
+body#page-categoria .card-table .categoria-table .col-nome {
+    font-weight: 700;
+    color: #0f172a;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.card-table .categoria-table .col-desc {
-    max-width: 520px;
+body#page-categoria .card-table .categoria-table .col-desc {
+    color: #475569;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 /* Linha vazia */
-.card-table .empty-row {
+body#page-categoria .card-table .empty-row {
     text-align: center !important;
     color: #64748b;
     padding: 18px 20px !important;
@@ -256,16 +330,17 @@ button.btn-excluidas:active,
 }
 
 /* =========================================================
-   AÇÕES
+   AÇÕES (IGUAL CHAMADOS)
    ========================================================= */
-.card-table .actions-cell {
+
+body#page-categoria .card-table .actions-cell {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
 }
 
-.card-table .actions-cell .btn-icon {
+body#page-categoria .card-table .actions-cell .btn-icon {
     width: 34px;
     height: 34px;
     border-radius: 10px;
@@ -282,18 +357,18 @@ button.btn-excluidas:active,
     text-decoration: none;
 }
 
-.card-table .actions-cell .btn-icon:hover {
+body#page-categoria .card-table .actions-cell .btn-icon:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
+    box-shadow: 0 6px 14px rgba(0,0,0,.08);
 }
 
-.card-table .actions-cell .btn-edit:hover {
+body#page-categoria .card-table .actions-cell .btn-edit:hover {
     background: #eff6ff;
     border-color: #60a5fa;
     color: #2563eb;
 }
 
-.card-table .actions-cell .btn-del:hover {
+body#page-categoria .card-table .actions-cell .btn-del:hover {
     background: #fee2e2;
     border-color: #f87171;
     color: #dc2626;
@@ -302,25 +377,30 @@ button.btn-excluidas:active,
 /* =========================================================
    RESPONSIVO
    ========================================================= */
+
 @media (max-width: 900px) {
-    .filters-row {
+    body#page-categoria .filters-row {
         gap: 10px;
     }
 
-    .btn-nova-categoria {
+    body#page-categoria .btn-nova-categoria {
         margin-left: 0;
         width: 100%;
         justify-content: center;
     }
 
-    .btn-filter-trigger,
-    .btn-excluidas {
+    body#page-categoria .btn-filter-trigger,
+    body#page-categoria .btn-excluidas {
         flex: 1;
         justify-content: center;
     }
 
-    .search-wrapper {
+    body#page-categoria .search-wrapper {
         max-width: none;
         width: 100%;
+    }
+
+    body#page-categoria main.main-content > .card-table .categoria-table {
+        min-width: 860px;
     }
 }

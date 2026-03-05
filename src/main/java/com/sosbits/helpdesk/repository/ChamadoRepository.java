@@ -10,10 +10,6 @@ import java.util.Optional;
 
 public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
-    // =========================
-    // LISTAGENS PADRÃO
-    // =========================
-
     List<Chamado> findAllByDeletadoFalseOrderByIdDesc();
 
     List<Chamado> findAllByDeletadoTrueOrderByIdDesc();
@@ -24,9 +20,7 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
     long countByPrioridadeAndDeletadoFalse(String prioridade);
 
-    // =========================
-    // BUSCAR COM RELACIONAMENTOS
-    // =========================
+
 
     @Query("""
            SELECT c
@@ -38,10 +32,6 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
            """)
     Optional<Chamado> findByIdComUsuarios(@Param("id") Long id);
 
-    // =========================
-    // CHAMADOS FECHADOS E NÃO AVALIADOS
-    // =========================
-    // usado no combo do modal Avaliação
 
     @Query("""
         SELECT c
@@ -60,10 +50,6 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
     List<Chamado> listarFechadosNaoAvaliadosDoSolicitante(
             @Param("idUsuario") Long idUsuario
     );
-
-    // =========================
-    // CHAMADOS POR SOLICITANTE
-    // =========================
 
     List<Chamado> findBySolicitanteIdAndDeletadoFalseOrderByDataCriacaoDesc(Long idUsuario);
 }
