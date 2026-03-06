@@ -68,8 +68,6 @@ body {
     font-weight: 600;
 }
 
-
-
 .dot-alert {
     width: 6px;
     height: 6px;
@@ -226,112 +224,210 @@ body {
 }
 
 #page-dashboard .card-table {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    overflow: hidden;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #dbe3ee;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-#page-dashboard .card-table table {
+#page-dashboard .card-table .chamados-table {
     width: 100%;
-    border-collapse: collapse;
-}
-
-
-
-#page-dashboard .card-table th {
-    padding: 16px 20px;
-    background-color: #fcfcfd;
-    font-size: 12px;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-/* linhas */
-
-#page-dashboard .card-table td {
-    padding: 16px 20px;
-    font-size: 14px;
-    color: #475569;
-    border-bottom: 1px solid #f1f5f9;
+    min-width: 1100px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
 }
 
 /* ==========================================================================
-   ALINHAMENTO DAS COLUNAS
+   CABEÇALHO
    ========================================================================== */
 
-
-#page-dashboard .card-table th:nth-child(1),
-#page-dashboard .card-table td:nth-child(1) {
-    text-align: center;
-}
-
-#page-dashboard .card-table th:nth-child(2),
-#page-dashboard .card-table td:nth-child(2) {
-    text-align: center;
-}
-
-#page-dashboard .card-table th:nth-child(3),
-#page-dashboard .card-table td:nth-child(3) {
-    text-align: left;
-}
-
-#page-dashboard .card-table th:nth-child(4),
-#page-dashboard .card-table td:nth-child(4) {
-    text-align: center;
-}
-
-#page-dashboard .card-table th:nth-child(5),
-#page-dashboard .card-table td:nth-child(5) {
-    text-align: center;
-}
-
-#page-dashboard .card-table th:nth-child(6),
-#page-dashboard .card-table td:nth-child(6) {
-    text-align: center;
-}
-
-#page-dashboard .card-table th:nth-child(7),
-#page-dashboard .card-table td:nth-child(7) {
-    text-align: center;
-}
-
-#page-dashboard .badge {
-    padding: 4px 12px;
-    border-radius: 20px;
+#page-dashboard .card-table .chamados-table thead th {
+    background: #f8fafc;
+    padding: 16px 14px;
     font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+    white-space: nowrap;
+}
+
+#page-dashboard .card-table .chamados-table thead th:first-child {
+    border-top-left-radius: 16px;
+}
+
+#page-dashboard .card-table .chamados-table thead th:last-child {
+    border-top-right-radius: 16px;
+}
+
+/* ==========================================================================
+   CORPO
+   ========================================================================== */
+
+#page-dashboard .card-table .chamados-table tbody td {
+    padding: 14px 14px;
+    font-size: 14px;
+    color: #0f172a;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+    vertical-align: middle;
+    background: #ffffff;
+}
+
+#page-dashboard .card-table .chamados-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#page-dashboard .card-table .chamados-table tbody tr:hover td {
+    background: #fbfdff;
+}
+
+/* ==========================================================================
+   LARGURA DAS COLUNAS
+   ========================================================================== */
+
+#page-dashboard .card-table .chamados-table th:nth-child(1),
+#page-dashboard .card-table .chamados-table td:nth-child(1) {
+    width: 80px;
+}
+
+#page-dashboard .card-table .chamados-table th:nth-child(2),
+#page-dashboard .card-table .chamados-table td:nth-child(2) {
+    width: 190px;
+}
+
+#page-dashboard .card-table .chamados-table th:nth-child(3),
+#page-dashboard .card-table .chamados-table td:nth-child(3) {
+    width: 290px;
+}
+
+#page-dashboard .card-table .chamados-table th:nth-child(4),
+#page-dashboard .card-table .chamados-table td:nth-child(4) {
+    width: 150px;
+}
+
+#page-dashboard .card-table .chamados-table th:nth-child(5),
+#page-dashboard .card-table .chamados-table td:nth-child(5) {
+    width: 140px;
+}
+
+#page-dashboard .card-table .chamados-table th:nth-child(6),
+#page-dashboard .card-table .chamados-table td:nth-child(6) {
+    width: 120px;
+}
+
+/* ==========================================================================
+   CÉLULAS ESPECÍFICAS
+   ========================================================================== */
+
+#page-dashboard .id-cell {
+    font-weight: 800;
+    color: #0f172a;
+}
+
+#page-dashboard .col-tipo {
+    color: #334155;
     font-weight: 600;
-    display: inline-block;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.35;
+    text-align: center;
 }
 
-#page-dashboard .badge-aberto {
-    background-color: #eff6ff;
-    color: #3b82f6;
+#page-dashboard .col-titulo {
+    color: #0f172a;
+    font-weight: 600;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.35;
+    text-align: center;
 }
 
-#page-dashboard .badge-progresso {
-    background-color: #fffbeb;
-    color: #f59e0b;
+#page-dashboard .col-status,
+#page-dashboard .col-prio,
+#page-dashboard .col-data {
+    text-align: center;
 }
 
-#page-dashboard .badge-resolvido {
-    background-color: #ecfdf5;
-    color: #10b981;
+/* ==========================================================================
+   BADGES
+   ========================================================================== */
+
+#page-dashboard .table-status-badge,
+#page-dashboard .table-prio-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    min-width: 88px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
 }
 
-#page-dashboard .prio-alta {
-    background-color: #fef2f2;
-    color: #ef4444;
+/* STATUS */
+
+#page-dashboard .table-status-aberto {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
 }
 
-#page-dashboard .prio-media {
-    background-color: #fffbeb;
-    color: #f59e0b;
+#page-dashboard .table-status-andamento {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #fde68a;
 }
 
-#page-dashboard .prio-baixa {
-    background-color: #f1f5f9;
-    color: #64748b;
+#page-dashboard .table-status-pendente {
+    background: #fde68a;
+    color: #92400e;
+    border-color: #fcd34d;
+}
+
+#page-dashboard .table-status-fechado {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+#page-dashboard .table-status-default {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+/* PRIORIDADE */
+
+#page-dashboard .table-prio-baixa {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+
+#page-dashboard .table-prio-media {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fdba74;
+}
+
+#page-dashboard .table-prio-alta {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+#page-dashboard .table-prio-default {
+    background: #f8fafc;
+    color: #475569;
+    border-color: #cbd5e1;
 }

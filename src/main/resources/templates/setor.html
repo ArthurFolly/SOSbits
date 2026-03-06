@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setores - Help Desk</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/setor.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body id="page-setor">
+
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-headset"></i>
+            <h2>Help Desk</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a th:href="@{/chamados/dashboard}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a th:href="@{/chamados}"><i class="fas fa-ticket-alt"></i> Chamados</a></li>
+                <li><a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a th:href="@{/usuarios}"><i class="fas fa-users"></i> Usuários</a></li>
+                <li><a th:href="@{/categorias}"><i class="fas fa-tags"></i> Categorias</a></li>
+                <li><a th:href="@{/setores}" class="active"><i class="fas fa-building"></i> Setores</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div class="header-left">
+                <h1>Todos os Setores</h1>
+                <p>Gerenciamento completo de setores</p>
+            </div>
+        </header>
+
+        <div class="filters-row">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text"
+                       id="setoresSearchInput"
+                       placeholder="Buscar por ID, nome ou descrição..."
+                       class="search-input">
+            </div>
+
+            <button type="button"
+                    onclick="abrirModalSetoresExcluidos()"
+                    class="btn-filter-trigger btn-excluidos">
+                <i class="fas fa-trash-restore"></i> Excluídos
+            </button>
+
+            <button type="button"
+                    onclick="abrirModalSetoresFiltros()"
+                    class="btn-filter-trigger">
+                <i class="fas fa-sliders-h"></i> Filtros
+            </button>
+
+            <button type="button"
+                    onclick="abrirModalSetorCriar()"
+                    class="btn-novo-chamado">
+                <i class="fas fa-plus"></i> Novo Setor
+            </button>
+        </div>
+
+        <div class="card-table">
+            <table class="setores-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NOME</th>
+                    <th>DESCRIÇÃO</th>
+                    <th>DATA</th>
+                    <th>AÇÕES</th>
+                </tr>
+                </thead>
+
+                <tbody id="setoresTableBody">
+                <tr th:each="setor : ${setores}" th:attr="data-id=${setor.id}">
+                    <td class="id-cell" th:text="'#' + ${setor.id}">#1</td>
+
+                    <td class="col-nome" th:text="${setor.nome}">TI</td>
+
+                    <td class="col-desc"
+                        th:text="${setor.descricao != null and !#strings.isEmpty(setor.descricao) ? setor.descricao : '-'}">
+                        Descrição do setor
+                    </td>
+
+                    <td class="col-data"
+                        th:text="${#temporals.format(setor.dataCriacao,'dd/MM/yyyy')}">
+                        28/01/2026
+                    </td>
+
+                    <td class="actions-cell">
+                        <a href="javascript:void(0)"
+                           class="btn-icon btn-edit"
+                           th:attr="data-id=${setor.id}"
+                           onclick="abrirModalSetorEditar(this)"
+                           title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a th:href="@{/setores/excluir/{id}(id=${setor.id})}"
+                           class="btn-icon btn-del"
+                           onclick="return confirm('Deseja excluir este setor?');"
+                           title="Excluir">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(setores)}">
+                    <td colspan="5" class="empty-row">Nenhum setor cadastrado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- ========================= MODAL FILTROS ========================= -->
+<div id="modalSetoresFiltros" class="modal-overlay">
+    <div class="modal-box elite-box" style="max-width: 480px;" onclick="event.stopPropagation()">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite" style="color: #3b82f6; background: #eff6ff;">
+                    <i class="fas fa-filter"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Filtros Avançados</h2>
+                    <p>Refine a visualização dos setores.</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalSetoresFiltros()" class="btn-close-elite">&times;</button>
+        </div>
+
+        <div class="modal-body-elite">
+            <div class="form-group-elite">
+                <label><i class="fas fa-search icon-blue"></i> Palavra-chave</label>
+                <input type="text"
+                       id="filtroSetorBusca"
+                       placeholder="ID, Nome ou Descrição..."
+                       class="input-elite">
+            </div>
+        </div>
+
+        <div class="modal-footer-elite" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+            <button type="button" class="btn-ghost-elite" onclick="limparFiltrosSetores()">
+                <i class="fas fa-broom"></i> Limpar
+            </button>
+            <button type="button" class="btn-primary-elite" onclick="aplicarFiltrosSetores()" style="background: #3b82f6 !important;">
+                Aplicar Filtros
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= MODAL EDITAR ========================= -->
+<div id="modalSetorEditar" class="modal-overlay">
+    <div class="modal-box elite-box" style="max-width: 520px;" onclick="event.stopPropagation()">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite" style="color:#10b981; background:#ecfdf5;">
+                    <i class="fas fa-pen"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Editar Setor</h2>
+                    <p>Atualize os dados do setor.</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalSetorEditar()" class="btn-close-elite">&times;</button>
+        </div>
+
+        <div class="modal-body-elite">
+            <input type="hidden" id="setorEditId">
+
+            <div class="form-group-elite">
+                <label><i class="fas fa-building icon-blue"></i> Nome do Setor</label>
+                <input type="text"
+                       id="setorEditNome"
+                       class="input-elite"
+                       placeholder="Ex: TI, RH, Financeiro">
+            </div>
+
+            <div class="form-group-elite">
+                <label><i class="fas fa-align-left icon-gray"></i> Descrição</label>
+                <div class="textarea-elite-box">
+                    <textarea id="setorEditDescricao"
+                              rows="4"
+                              maxlength="300"
+                              placeholder="Descreva o setor..."
+                              oninput="updateCharCountSetorEditar(this)"></textarea>
+                    <div class="textarea-footer-elite">
+                        <span id="setorCharCountEditar">0</span> / 300
+                    </div>
+                </div>
+            </div>
+
+            <div id="setorEditErro" style="display:none;margin-top:10px;color:#ef4444;font-weight:600;"></div>
+        </div>
+
+        <div class="modal-footer-elite">
+            <button type="button" class="btn-ghost-elite" onclick="fecharModalSetorEditar()">Cancelar</button>
+            <button type="button" class="btn-primary-elite" onclick="salvarEdicaoSetor()">
+                <i class="fas fa-save"></i> Salvar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= MODAL EXCLUÍDOS ========================= -->
+<div id="modalSetoresExcluidos" class="modal-overlay">
+    <div class="modal-box elite-box" style="max-width: 820px;" onclick="event.stopPropagation()">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite" style="color:#f59e0b; background:#fffbeb;">
+                    <i class="fas fa-trash-restore"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Setores Excluídos</h2>
+                    <p>Restaure setores removidos do sistema.</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalSetoresExcluidos()" class="btn-close-elite">&times;</button>
+        </div>
+
+        <div class="modal-body-elite">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;">
+                <div style="font-weight:700;" id="setoresExcluidosStatus">Carregando...</div>
+                <button type="button" class="btn-ghost-elite" onclick="carregarSetoresExcluidos()">
+                    <i class="fas fa-rotate"></i> Atualizar
+                </button>
+            </div>
+
+            <div class="card-table" style="box-shadow:none;border:1px solid #e2e8f0;">
+                <table class="setores-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NOME</th>
+                        <th>DESCRIÇÃO</th>
+                        <th>AÇÃO</th>
+                    </tr>
+                    </thead>
+                    <tbody id="setoresExcluidosTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-footer-elite">
+            <button type="button" class="btn-primary-elite" onclick="fecharModalSetoresExcluidos()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= MODAL CRIAR ========================= -->
+<div id="modalSetorCriar" class="modal-overlay">
+    <div class="modal-box elite-box">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite" style="color:#2563eb; background:#eff6ff;">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="header-text-elite">
+                    <h2>Criar Novo Setor</h2>
+                    <p>Cadastre um novo setor no sistema.</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalSetorCriar()" class="btn-close-elite">&times;</button>
+        </div>
+
+        <form th:action="@{/setores/salvar}" method="POST">
+            <div class="modal-body-elite">
+
+                <div class="form-group-elite">
+                    <label><i class="fas fa-building icon-blue"></i> Nome do Setor</label>
+                    <input type="text"
+                           name="nome"
+                           required
+                           placeholder="Ex: TI, RH, Compras"
+                           class="input-elite">
+                </div>
+
+                <div class="form-group-elite">
+                    <label><i class="fas fa-align-left icon-gray"></i> Descrição</label>
+                    <div class="textarea-elite-box">
+                        <textarea name="descricao"
+                                  rows="4"
+                                  maxlength="300"
+                                  placeholder="Descreva a função deste setor..."
+                                  oninput="updateCharCountSetorCriar(this)"></textarea>
+                        <div class="textarea-footer-elite">
+                            <span id="setorCharCountCriar">0</span> / 300
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer-elite">
+                <button type="button" class="btn-ghost-elite" onclick="fecharModalSetorCriar()">Descartar</button>
+                <button type="submit" class="btn-primary-elite">
+                    <i class="fas fa-save"></i> Salvar Setor
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/setor.js}"></script>
+</body>
+</html>
