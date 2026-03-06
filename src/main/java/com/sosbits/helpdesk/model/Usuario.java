@@ -36,6 +36,34 @@ public class Usuario {
     @Column(length = 30)
     private String telefone;
 
+    /* ==============================
+       ENDEREÇO
+       ============================== */
+
+    @Column(length = 9)
+    private String cep;
+
+    @Column(length = 255)
+    private String logradouro;
+
+    @Column(length = 20)
+    private String numero;
+
+    @Column(length = 255)
+    private String complemento;
+
+    @Column(length = 100)
+    private String bairro;
+
+    @Column(length = 100)
+    private String cidade;
+
+    @Column(length = 2)
+    private String estado;
+
+    /* ==============================
+       PERFIS
+       ============================== */
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -44,4 +72,5 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "perfil_id", referencedColumnName = "id_perfil")
     )
     private Set<Perfil> perfis = new HashSet<>();
+
 }

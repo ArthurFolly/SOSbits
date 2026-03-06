@@ -5,9 +5,10 @@
 #page-usuarios .usuarios-filters-row {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 🔥 separa esquerda e direita */
+    justify-content: space-between;
     gap: 16px;
     margin-bottom: 24px;
+    flex-wrap: wrap;
 }
 
 /* LADO ESQUERDO (BUSCA + FUTURO FILTRO) */
@@ -16,6 +17,7 @@
     align-items: center;
     gap: 12px;
     flex: 1;
+    flex-wrap: wrap;
 }
 
 /* BUSCA */
@@ -195,6 +197,7 @@
     border-color: #f87171;
     color: #dc2626;
 }
+
 /* =========================================================
    BOTÃO FILTROS — USUÁRIOS
    ========================================================= */
@@ -203,85 +206,66 @@
     display: flex;
     align-items: center;
     gap: 8px;
-
-    height: 42px;              /* igual ao input e ao botão novo */
+    height: 42px;
     padding: 0 16px;
-
     background: #ffffff;
     color: #2563eb;
-
     border: 1px solid #e2e8f0;
     border-radius: 10px;
-
     font-size: 14px;
     font-weight: 600;
-
     cursor: pointer;
     white-space: nowrap;
-
     transition: all 0.2s ease;
 }
 
-/* ÍCONE */
 #page-usuarios .usuarios-btn-filter i {
     font-size: 14px;
 }
 
-/* HOVER */
 #page-usuarios .usuarios-btn-filter:hover {
     background: #eff6ff;
     border-color: #60a5fa;
     color: #1e40af;
 }
 
-/* CLICK */
 #page-usuarios .usuarios-btn-filter:active {
     transform: translateY(1px);
 }
 
 /* =========================================================
    BOTÃO EXCLUÍDOS — USUÁRIOS
-   (mesmo padrão do botão filtro)
    ========================================================= */
 
 #page-usuarios .usuarios-btn-excluidos {
     display: flex;
     align-items: center;
     gap: 8px;
-
     height: 42px;
     padding: 0 16px;
-
     background: #ffffff;
-    color: #b91c1c;                 /* vermelho elegante (alerta) */
-
+    color: #b91c1c;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
-
     font-size: 14px;
     font-weight: 600;
-
     cursor: pointer;
     white-space: nowrap;
-
     transition: all 0.2s ease;
 }
 
-/* ÍCONE */
 #page-usuarios .usuarios-btn-excluidos i {
     font-size: 14px;
 }
 
-/* HOVER */
 #page-usuarios .usuarios-btn-excluidos:hover {
-    background: #fff1f2;            /* rosado bem leve */
-    border-color: #fda4af;          /* borda suave */
+    background: #fff1f2;
+    border-color: #fda4af;
     color: #991b1b;
     transform: translateY(-1px);
     box-shadow: 0 6px 14px rgba(0,0,0,.08);
 }
 
-/* CLICK */
 #page-usuarios .usuarios-btn-excluidos:active {
     transform: translateY(1px);
     box-shadow: none;
@@ -293,11 +277,207 @@
     color: #7f1d1d;
 }
 
-/* opcional: foco acessível */
 #page-usuarios .usuarios-btn-excluidos:focus {
     outline: none;
 }
+
 #page-usuarios .usuarios-btn-excluidos:focus-visible {
     box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.18);
     border-color: #fca5a5;
+}
+
+/* =========================================================
+   MODAL USUÁRIO — 2 ABAS PROFISSIONAL
+   ========================================================= */
+
+#page-usuarios .modal-usuario-tabs {
+    width: 95%;
+    max-width: 980px;
+    max-height: 92vh;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#page-usuarios #modalNovoUsuario .modal-body-elite {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+/* ABAS */
+#page-usuarios .usuario-tabs-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+#page-usuarios .usuario-tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#page-usuarios .usuario-tab-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+#page-usuarios .usuario-tab-btn.active {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+
+/* CONTEÚDO DAS ABAS */
+#page-usuarios .usuario-tab-content {
+    display: none;
+}
+
+#page-usuarios .usuario-tab-content.active {
+    display: block;
+    animation: fadeUsuarioTab 0.25s ease;
+}
+
+@keyframes fadeUsuarioTab {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* GRID DO FORMULÁRIO */
+#page-usuarios .usuario-form-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+#page-usuarios .usuario-form-grid .form-group-elite {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+#page-usuarios .usuario-form-grid .form-group-elite.full-width {
+    grid-column: 1 / -1;
+}
+
+/* LABELS */
+#page-usuarios .usuario-form-grid .form-group-elite label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+}
+
+/* INPUTS */
+#page-usuarios .usuario-form-grid .input-elite,
+#page-usuarios .usuario-form-grid .modern-select-elite {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid #dbe3ee;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+#page-usuarios .usuario-form-grid .input-elite:focus,
+#page-usuarios .usuario-form-grid .modern-select-elite:focus {
+    border-color: #2563eb;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+}
+
+/* FOOTER */
+#page-usuarios #modalNovoUsuario .modal-footer-elite {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* RESPONSIVO */
+@media (max-width: 900px) {
+    #page-usuarios .usuario-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #page-usuarios .usuario-form-grid .form-group-elite.full-width {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    #page-usuarios .usuario-tabs-nav {
+        flex-direction: column;
+    }
+
+    #page-usuarios .usuario-tab-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #page-usuarios .modal-usuario-tabs {
+        width: 96%;
+        max-width: 96%;
+        max-height: 94vh;
+    }
+
+    #page-usuarios #modalNovoUsuario .modal-body-elite {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    #page-usuarios .usuarios-filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #page-usuarios .usuarios-filters-left,
+    #page-usuarios .usuarios-filters-right {
+        width: 100%;
+    }
+
+    #page-usuarios .usuarios-search-wrapper {
+        max-width: 100%;
+    }
+
+    #page-usuarios .usuarios-btn-novo,
+    #page-usuarios .usuarios-btn-filter,
+    #page-usuarios .usuarios-btn-excluidos {
+        width: 100%;
+        justify-content: center;
+    }
 }
