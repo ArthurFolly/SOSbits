@@ -31,7 +31,6 @@ public class CategoriaController {
         model.addAttribute("modoExcluidos", modoExcluidos);
         model.addAttribute("categoria", new Categoria());
 
-        // templates/categoria.html
         return "categoria";
     }
 
@@ -66,6 +65,11 @@ public class CategoriaController {
         return service.listarDeletadas();
     }
 
+    @GetMapping("/excluidas")
+    @ResponseBody
+    public List<Categoria> listarExcluidas() {
+        return service.listarDeletadas();
+    }
 
     @PostMapping(consumes = "application/json")
     @ResponseBody
@@ -73,8 +77,32 @@ public class CategoriaController {
         return service.criar(categoria);
     }
 
+    @PostMapping("/editar")
+    @ResponseBody
+    public ResponseEntity<String> editar(@RequestParam Long id,
+                                         @RequestParam String nome,
+                                         @RequestParam(required = false) String descricao) {
+        Categoria categoria = service.buscarPorId(id);
 
-    @GetMapping("/{id}")
+        if (categoria == null) {
+            return ResponseEntity.badRequest().body("Categoria não encontrada.");
+        }
+
+        categoria.setNome(nome);
+        categoria.setDescricao(descricao);
+
+        service.salvar(categoria);
+        return ResponseEntity.ok("OK");
+    }
+
+    @PostMapping("/restaurar")
+    @ResponseBody
+    public ResponseEntity<String> restaurar(@RequestParam Long id) {
+        service.restaurar(id);
+        return ResponseEntity.ok("OK");
+    }
+
+    @GetMapping("/buscar/{id}")
     @ResponseBody
     public Categoria buscar(@PathVariable Long id) {
         return service.buscarPorId(id);
@@ -85,30 +113,35 @@ public class CategoriaController {
     public Categoria buscarApi(@PathVariable Long id) {
         return service.buscarPorId(id);
     }
+
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseBody
     public Categoria atualizar(@PathVariable Long id,
                                @RequestBody Categoria categoria) {
         return service.atualizar(id, categoria);
     }
+
     @PutMapping(value = "/api/{id}", consumes = "application/json")
     @ResponseBody
     public Categoria atualizarApi(@PathVariable Long id,
                                   @RequestBody Categoria categoria) {
         return service.atualizar(id, categoria);
     }
+
     @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Void> excluirAjax(@PathVariable Long id) {
         service.excluir(id);
         return ResponseEntity.ok().build();
     }
+
     @PatchMapping("/{id}/restaurar")
     @ResponseBody
     public ResponseEntity<Void> restaurarAjax(@PathVariable Long id) {
         service.restaurar(id);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("/api/{id}/restaurar")
     @ResponseBody
     public ResponseEntity<Void> restaurarAjaxCompat(@PathVariable Long id) {

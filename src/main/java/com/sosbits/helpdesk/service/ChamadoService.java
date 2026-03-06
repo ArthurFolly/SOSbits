@@ -18,10 +18,6 @@ public class ChamadoService {
     private final ChamadoRepository chamadoRepository;
     private final UsuarioService usuarioService;
 
-    // =========================
-    // LISTAGENS
-    // =========================
-
     @Transactional(readOnly = true)
     public List<Chamado> listarTodos() {
         return chamadoRepository.findAllByDeletadoFalseOrderByIdDesc();
@@ -32,7 +28,6 @@ public class ChamadoService {
         return chamadoRepository.findAllByDeletadoTrueOrderByIdDesc();
     }
 
-    // compatibilidade com controller que chama listarDeletados()
     @Transactional(readOnly = true)
     public List<Chamado> listarDeletados() {
         return listarExcluidos();
@@ -43,16 +38,11 @@ public class ChamadoService {
         return chamadoRepository.findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
     }
 
-    // usado no combo do modal Avaliação
     @Transactional(readOnly = true)
     public List<Chamado> listarChamadosFechadosNaoAvaliados() {
         Long idUsuario = usuarioService.getIdUsuarioLogado();
         return chamadoRepository.listarFechadosNaoAvaliadosDoSolicitante(idUsuario);
     }
-
-    // =========================
-    // CREATE / UPDATE
-    // =========================
 
     @Transactional
     public Chamado salvar(Chamado chamado) {
@@ -67,11 +57,15 @@ public class ChamadoService {
             }
 
             if (chamado.getStatus() == null || chamado.getStatus().trim().isEmpty()) {
-                chamado.setStatus("Aberto");
+                chamado.setStatus("ABERTO");
+            } else {
+                chamado.setStatus(normalizarStatus(chamado.getStatus()));
             }
 
             if (chamado.getPrioridade() == null || chamado.getPrioridade().trim().isEmpty()) {
-                chamado.setPrioridade("Baixa");
+                chamado.setPrioridade("BAIXA");
+            } else {
+                chamado.setPrioridade(normalizarPrioridade(chamado.getPrioridade()));
             }
 
             chamado.setDeletado(false);
@@ -88,18 +82,18 @@ public class ChamadoService {
 
         if (chamado.getStatus() == null || chamado.getStatus().trim().isEmpty()) {
             chamado.setStatus(existente.getStatus());
+        } else {
+            chamado.setStatus(normalizarStatus(chamado.getStatus()));
         }
 
         if (chamado.getPrioridade() == null || chamado.getPrioridade().trim().isEmpty()) {
             chamado.setPrioridade(existente.getPrioridade());
+        } else {
+            chamado.setPrioridade(normalizarPrioridade(chamado.getPrioridade()));
         }
 
         return chamadoRepository.save(chamado);
     }
-
-    // =========================
-    // SOFT DELETE
-    // =========================
 
     @Transactional
     public void excluir(Long id) {
@@ -135,24 +129,74 @@ public class ChamadoService {
         return salvar(chamado);
     }
 
-    // ✅ IMPORTANTE: BUSCA PARA EDIÇÃO (evita Lazy/500)
     @Transactional(readOnly = true)
     public Chamado buscarPorId(Long id) {
         return chamadoRepository.findByIdComUsuarios(id)
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + id));
     }
 
-    // =========================
-    // DASHBOARD
-    // =========================
-
     @Transactional(readOnly = true)
     public long contarPorStatus(String status) {
-        return chamadoRepository.countByStatusAndDeletadoFalse(status);
+        return chamadoRepository.countByStatusAndDeletadoFalse(normalizarStatus(status));
     }
 
     @Transactional(readOnly = true)
     public long contarPorPrioridade(String prioridade) {
-        return chamadoRepository.countByPrioridadeAndDeletadoFalse(prioridade);
+        return chamadoRepository.countByPrioridadeAndDeletadoFalse(normalizarPrioridade(prioridade));
+    }
+
+    private String normalizarStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            return "ABERTO";
+        }
+
+        String valor = status.trim();
+
+        if (valor.equalsIgnoreCase("ABERTO") || valor.equalsIgnoreCase("Aberto")) {
+            return "ABERTO";
+        }
+
+        if (valor.equalsIgnoreCase("EM_ANDAMENTO")
+                || valor.equalsIgnoreCase("Em Andamento")
+                || valor.equalsIgnoreCase("EM ANDAMENTO")) {
+            return "EM_ANDAMENTO";
+        }
+
+        if (valor.equalsIgnoreCase("PENDENTE") || valor.equalsIgnoreCase("Pendente")) {
+            return "PENDENTE";
+        }
+
+        if (valor.equalsIgnoreCase("FECHADO")
+                || valor.equalsIgnoreCase("Fechado")
+                || valor.equalsIgnoreCase("Resolvido")
+                || valor.equalsIgnoreCase("RESOLVIDO")) {
+            return "FECHADO";
+        }
+
+        return "ABERTO";
+    }
+
+    private String normalizarPrioridade(String prioridade) {
+        if (prioridade == null || prioridade.trim().isEmpty()) {
+            return "BAIXA";
+        }
+
+        String valor = prioridade.trim();
+
+        if (valor.equalsIgnoreCase("BAIXA") || valor.equalsIgnoreCase("Baixa")) {
+            return "BAIXA";
+        }
+
+        if (valor.equalsIgnoreCase("MEDIA")
+                || valor.equalsIgnoreCase("Média")
+                || valor.equalsIgnoreCase("Media")) {
+            return "MEDIA";
+        }
+
+        if (valor.equalsIgnoreCase("ALTA") || valor.equalsIgnoreCase("Alta")) {
+            return "ALTA";
+        }
+
+        return "BAIXA";
     }
 }

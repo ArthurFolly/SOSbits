@@ -55,7 +55,7 @@ public class ChamadoController {
         return "redirect:/chamados?novo=1";
     }
 
-    // ✅ AQUI: volta para o método que existe
+
     @PostMapping("/salvar")
     public String salvarForm(@ModelAttribute Chamado chamado) {
         service.salvar(chamado);

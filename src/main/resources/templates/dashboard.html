@@ -17,7 +17,6 @@
 <div class="app-container">
 
     <!-- ================= SIDEBAR ================= -->
-
     <aside class="sidebar">
 
         <div class="sidebar-header">
@@ -26,9 +25,7 @@
         </div>
 
         <nav class="sidebar-nav">
-
             <ul>
-
                 <li>
                     <a th:href="@{/chamados/dashboard}" class="active">
                         <i class="fas fa-th-large"></i>
@@ -78,16 +75,12 @@
                         <span>Categorias</span>
                     </a>
                 </li>
-
             </ul>
-
         </nav>
 
     </aside>
 
-
     <!-- ================= CONTEÚDO PRINCIPAL ================= -->
-
     <main class="main-content">
 
         <div class="dashboard-page">
@@ -100,7 +93,6 @@
                 </div>
 
                 <div class="header-right">
-
                     <div class="user-info">
 
                         <span class="user-name"
@@ -109,25 +101,20 @@
                         </span>
 
                         <div class="user-avatar"
-                             th:text="${usuarioNome != null and #strings.length(usuarioNome) >= 2}
-                             ? ${#strings.toUpperCase(#strings.substring(usuarioNome,0,2))}
-                             : 'US'">
+                             th:text="${usuarioNome != null and #strings.length(usuarioNome) >= 2 ? #strings.toUpperCase(#strings.substring(usuarioNome,0,2)) : 'US'}">
                             US
                         </div>
 
                         <a th:href="@{/logout}" class="logout-link">Sair</a>
 
                     </div>
-
                 </div>
 
             </header>
 
         </div>
 
-
         <!-- ================= CARDS DE ESTATÍSTICAS ================= -->
-
         <section class="stats-grid">
 
             <div class="stat-card open">
@@ -172,9 +159,7 @@
 
         </section>
 
-
         <!-- ================= CHAMADOS RECENTES ================= -->
-
         <section class="recent-tickets">
 
             <div class="section-header">
@@ -200,53 +185,88 @@
                     <tbody>
 
                     <tr th:each="chamado : ${chamadosRecentes}">
+                        <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
 
-                        <td th:text="'#' + ${chamado.id}">#1</td>
-                        <td th:text="${chamado.tipo}">Tipo</td>
-                        <td th:text="${chamado.titulo}">Assunto</td>
+                        <td class="col-tipo" th:text="${chamado.tipo}">Tipo</td>
 
-                        <td>
+                        <td class="col-titulo" th:text="${chamado.titulo}">Assunto</td>
 
-                            <span class="badge"
-                                  th:with="st=${#strings.trim(chamado.status)}"
-                                  th:classappend="
-                                  ${#strings.equalsIgnoreCase(st,'Aberto')} ? 'badge-aberto' :
-                                  (${#strings.equalsIgnoreCase(st,'Em Andamento')} ? 'badge-progresso' :
-                                  (${#strings.equalsIgnoreCase(st,'Resolvido')} ? 'badge-resolvido' :
-                                  'badge-pendente'))"
-                                  th:text="${st}">
+                        <td class="col-status"
+                            th:with="statusValor=${#strings.toUpperCase(#strings.trim(chamado.status))}">
+
+                            <span class="table-status-badge table-status-aberto"
+                                  th:if="${statusValor == 'ABERTO'}">
                                 Aberto
                             </span>
 
+                            <span class="table-status-badge table-status-andamento"
+                                  th:if="${statusValor == 'EM_ANDAMENTO' or statusValor == 'EM ANDAMENTO'}">
+                                Em Andamento
+                            </span>
+
+                            <span class="table-status-badge table-status-pendente"
+                                  th:if="${statusValor == 'PENDENTE'}">
+                                Pendente
+                            </span>
+
+                            <span class="table-status-badge table-status-fechado"
+                                  th:if="${statusValor == 'FECHADO' or statusValor == 'RESOLVIDO'}">
+                                Fechado
+                            </span>
+
+                            <span class="table-status-badge table-status-default"
+                                  th:if="${statusValor != 'ABERTO'
+                                       and statusValor != 'EM_ANDAMENTO'
+                                       and statusValor != 'EM ANDAMENTO'
+                                       and statusValor != 'PENDENTE'
+                                       and statusValor != 'FECHADO'
+                                       and statusValor != 'RESOLVIDO'}"
+                                  th:text="${chamado.status}">
+                                Status
+                            </span>
                         </td>
 
-                        <td>
+                        <td class="col-prio"
+                            th:with="prioValor=${#strings.toUpperCase(#strings.trim(chamado.prioridade))}">
 
-                            <span class="badge"
-                                  th:classappend="${chamado.prioridade == 'Alta'} ? 'prio-alta' :
-                                  (${chamado.prioridade == 'Média'} ? 'prio-media' : 'prio-baixa')"
-                                  th:text="${chamado.prioridade}">
+                            <span class="table-prio-badge table-prio-alta"
+                                  th:if="${prioValor == 'ALTA'}">
+                                Alta
+                            </span>
+
+                            <span class="table-prio-badge table-prio-media"
+                                  th:if="${prioValor == 'MEDIA' or prioValor == 'MÉDIA'}">
                                 Média
                             </span>
 
+                            <span class="table-prio-badge table-prio-baixa"
+                                  th:if="${prioValor == 'BAIXA'}">
+                                Baixa
+                            </span>
+
+                            <span class="table-prio-badge table-prio-default"
+                                  th:if="${prioValor != 'ALTA'
+                                       and prioValor != 'MEDIA'
+                                       and prioValor != 'MÉDIA'
+                                       and prioValor != 'BAIXA'}"
+                                  th:text="${chamado.prioridade}">
+                                Prioridade
+                            </span>
                         </td>
 
-                        <td th:text="${chamado.dataCriacao != null ?
-                                     #temporals.format(chamado.dataCriacao,'dd/MM/yyyy') : '-'}">
+                        <td class="col-data"
+                            th:text="${chamado.dataCriacao != null ? #temporals.format(chamado.dataCriacao,'dd/MM/yyyy') : '-'}">
                             -
                         </td>
-
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(chamadosRecentes)}">
-
                         <td colspan="6"
                             style="text-align:center;padding:40px;color:#94a3b8;">
-
                             Nenhum chamado recente encontrado.
-
                         </td>
                     </tr>
+
                     </tbody>
                 </table>
             </div>

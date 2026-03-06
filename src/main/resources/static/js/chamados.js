@@ -37,9 +37,11 @@ function abrirModalEditar(el) {
     const modal = document.getElementById("modalEditar");
     if (!modal) return;
 
-    // limpa erro
     const erro = document.getElementById("editErro");
-    if (erro) { erro.style.display = "none"; erro.textContent = ""; }
+    if (erro) {
+        erro.style.display = "none";
+        erro.textContent = "";
+    }
 
     fetch(`/chamados/${id}`)
         .then(r => {
@@ -51,8 +53,8 @@ function abrirModalEditar(el) {
             document.getElementById("editTipo").value = c.tipo || "";
             document.getElementById("editTitulo").value = c.titulo || "";
             document.getElementById("editDescricao").value = c.descricao || "";
-            document.getElementById("editStatus").value = c.status || "Aberto";
-            document.getElementById("editPrioridade").value = c.prioridade || "Baixa";
+            document.getElementById("editStatus").value = normalizarStatusParaSelect(c.status);
+            document.getElementById("editPrioridade").value = normalizarPrioridadeParaSelect(c.prioridade);
 
             updateCharCountEditar(document.getElementById("editDescricao"));
 
@@ -83,8 +85,8 @@ function salvarEdicao() {
         tipo: document.getElementById("editTipo").value.trim(),
         titulo: document.getElementById("editTitulo").value.trim(),
         descricao: document.getElementById("editDescricao").value.trim(),
-        status: document.getElementById("editStatus").value,
-        prioridade: document.getElementById("editPrioridade").value
+        status: normalizarStatusParaBackend(document.getElementById("editStatus").value),
+        prioridade: normalizarPrioridadeParaBackend(document.getElementById("editPrioridade").value)
     };
 
     if (!payload.tipo || !payload.titulo || !payload.descricao) {
@@ -106,32 +108,7 @@ function salvarEdicao() {
             return r.json();
         })
         .then(updated => {
-            // atualiza a linha na tabela (sem recarregar)
-            const row = document.querySelector(`#chamadosTable tr[data-id="${updated.id}"]`);
-            if (row) {
-                const tdTipo = row.querySelector(".col-tipo");
-                const tdTitulo = row.querySelector(".col-titulo");
-                const badgeStatus = row.querySelector(".col-status .badge");
-                const badgePrio = row.querySelector(".col-prio .badge");
-
-                if (tdTipo) tdTipo.textContent = updated.tipo || "";
-                if (tdTitulo) tdTitulo.textContent = updated.titulo || "";
-
-                if (badgeStatus) {
-                    badgeStatus.textContent = updated.status || "";
-                    badgeStatus.classList.remove("badge-aberto", "badge-pendente");
-                    badgeStatus.classList.add(updated.status === "Aberto" ? "badge-aberto" : "badge-pendente");
-                }
-
-                if (badgePrio) {
-                    badgePrio.textContent = updated.prioridade || "";
-                    badgePrio.classList.remove("prio-alta", "prio-media", "prio-baixa");
-                    if (updated.prioridade === "Alta") badgePrio.classList.add("prio-alta");
-                    else if (updated.prioridade === "Média") badgePrio.classList.add("prio-media");
-                    else badgePrio.classList.add("prio-baixa");
-                }
-            }
-
+            atualizarLinhaChamado(updated);
             fecharModalEditar();
         })
         .catch(() => {
@@ -141,6 +118,96 @@ function salvarEdicao() {
                 erro.style.display = "block";
             }
         });
+}
+
+function atualizarLinhaChamado(updated) {
+    const row = document.querySelector(`#chamadosTable tr[data-id="${updated.id}"]`);
+    if (!row) return;
+
+    const tdTipo = row.querySelector(".col-tipo");
+    const tdTitulo = row.querySelector(".col-titulo");
+    const tdStatus = row.querySelector(".col-status");
+    const tdPrio = row.querySelector(".col-prio");
+
+    if (tdTipo) tdTipo.textContent = updated.tipo || "";
+    if (tdTitulo) tdTitulo.textContent = updated.titulo || "";
+
+    if (tdStatus) {
+        tdStatus.innerHTML = gerarBadgeStatus(updated.status);
+    }
+
+    if (tdPrio) {
+        tdPrio.innerHTML = gerarBadgePrioridade(updated.prioridade);
+    }
+}
+
+function gerarBadgeStatus(status) {
+    const valor = normalizarStatusParaBackend(status);
+
+    if (valor === "ABERTO") {
+        return `<span class="table-status-badge table-status-aberto">Aberto</span>`;
+    }
+
+    if (valor === "EM_ANDAMENTO") {
+        return `<span class="table-status-badge table-status-andamento">Em Andamento</span>`;
+    }
+
+    if (valor === "PENDENTE") {
+        return `<span class="table-status-badge table-status-pendente">Pendente</span>`;
+    }
+
+    if (valor === "FECHADO" || valor === "RESOLVIDO") {
+        return `<span class="table-status-badge table-status-fechado">Fechado</span>`;
+    }
+
+    return `<span class="table-status-badge table-status-default">${escapeHtml(status || "")}</span>`;
+}
+
+function gerarBadgePrioridade(prioridade) {
+    const valor = normalizarPrioridadeParaBackend(prioridade);
+
+    if (valor === "BAIXA") {
+        return `<span class="table-prio-badge table-prio-baixa">Baixa</span>`;
+    }
+
+    if (valor === "MEDIA") {
+        return `<span class="table-prio-badge table-prio-media">Média</span>`;
+    }
+
+    if (valor === "ALTA") {
+        return `<span class="table-prio-badge table-prio-alta">Alta</span>`;
+    }
+
+    return `<span class="table-prio-badge table-prio-default">${escapeHtml(prioridade || "")}</span>`;
+}
+
+function normalizarStatusParaBackend(status) {
+    const s = String(status || "").trim().toUpperCase();
+
+    if (s === "ABERTO") return "ABERTO";
+    if (s === "EM ANDAMENTO" || s === "EM_ANDAMENTO") return "EM_ANDAMENTO";
+    if (s === "PENDENTE") return "PENDENTE";
+    if (s === "FECHADO" || s === "RESOLVIDO") return "FECHADO";
+
+    return s;
+}
+
+function normalizarPrioridadeParaBackend(prioridade) {
+    const p = String(prioridade || "").trim().toUpperCase();
+
+    if (p === "BAIXA") return "BAIXA";
+    if (p === "MEDIA" || p === "MÉDIA") return "MEDIA";
+    if (p === "ALTA") return "ALTA";
+
+    return p;
+}
+
+function normalizarStatusParaSelect(status) {
+    return normalizarStatusParaBackend(status) || "ABERTO";
+}
+
+function normalizarPrioridadeParaSelect(prioridade) {
+    return normalizarPrioridadeParaBackend(prioridade) || "BAIXA";
 }
 
 function abrirModalExcluidos() {
@@ -219,8 +286,6 @@ function restaurarChamado(id, btn) {
             const row = document.querySelector(`#excluidosTable tr[data-id="${id}"]`);
             if (row) row.remove();
             carregarExcluidos();
-
-            // tabela principal é Thymeleaf -> recarrega pra voltar pros ativos
             location.reload();
         })
         .catch(() => {
@@ -242,7 +307,6 @@ function escapeHtml(str) {
 }
 
 document.addEventListener("click", function (event) {
-
     const modalChamado = document.getElementById("modalChamado");
     if (modalChamado && modalChamado.classList.contains("active") && event.target === modalChamado) {
         fecharModal();
@@ -265,36 +329,37 @@ document.addEventListener("click", function (event) {
 });
 
 function setElitePriority(button, prioridade) {
-
-    // 1) tira "active" de todos
     document.querySelectorAll(".prio-card-elite").forEach(card => {
         card.classList.remove("active");
     });
 
-    // 2) ativa o clicado
     button.classList.add("active");
 
-    // 3) grava no hidden input
-    const input = document.getElementById("prioridadeInput");
-    if (input) input.value = prioridade;
+    const valor = normalizarPrioridadeParaBackend(prioridade);
 
-    // 4) muda a barra superior (priorityLine)
+    const input = document.getElementById("prioridadeInput");
+    if (input) input.value = valor;
+
     const priorityLine = document.getElementById("priorityLine");
     if (priorityLine) {
         priorityLine.classList.remove("low", "med", "high");
-        if (prioridade === "Baixa") priorityLine.classList.add("low");
-        if (prioridade === "Média") priorityLine.classList.add("med");
-        if (prioridade === "Alta") priorityLine.classList.add("high");
+
+        if (valor === "BAIXA") priorityLine.classList.add("low");
+        if (valor === "MEDIA") priorityLine.classList.add("med");
+        if (valor === "ALTA") priorityLine.classList.add("high");
     }
 
-    // 5) muda a cor do ícone do header
     const headerIconBox = document.getElementById("headerIconBox");
     if (headerIconBox) {
-        headerIconBox.style.color = prioridade === "Alta" ? "#ef4444"
-            : (prioridade === "Média" ? "#f59e0b" : "#10b981");
+        headerIconBox.style.color =
+            valor === "ALTA" ? "#ef4444" :
+            valor === "MEDIA" ? "#f59e0b" :
+            "#10b981";
 
-        headerIconBox.style.background = prioridade === "Alta" ? "#fef2f2"
-            : (prioridade === "Média" ? "#fffbeb" : "#ecfdf5");
+        headerIconBox.style.background =
+            valor === "ALTA" ? "#fef2f2" :
+            valor === "MEDIA" ? "#fffbeb" :
+            "#ecfdf5";
     }
 }
 
@@ -305,7 +370,7 @@ function updateCharCount(textarea) {
 
 function aplicarFiltrosElite() {
     const busca = (document.getElementById("filterBusca")?.value || "").trim().toLowerCase();
-    const dataFiltroISO = (document.getElementById("filterData")?.value || "").trim(); // yyyy-mm-dd
+    const dataFiltroISO = (document.getElementById("filterData")?.value || "").trim();
 
     const statusChip = document.querySelector("#statusFilterGroup .chip.active");
     const prioChip = document.querySelector("#prioFilterGroup .chip.active");
@@ -402,6 +467,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const val = (searchTop.value || "").trim().toLowerCase();
             aplicarBuscaTopo(val);
         });
+    }
+
+    const prioridadeInput = document.getElementById("prioridadeInput");
+    if (prioridadeInput) {
+        const valor = normalizarPrioridadeParaBackend(prioridadeInput.value || "BAIXA");
+        const botao =
+            valor === "ALTA" ? document.querySelector(".prio-card-elite.high") :
+            valor === "MEDIA" ? document.querySelector(".prio-card-elite.med") :
+            document.querySelector(".prio-card-elite.low");
+
+        if (botao) setElitePriority(botao, valor);
     }
 });
 

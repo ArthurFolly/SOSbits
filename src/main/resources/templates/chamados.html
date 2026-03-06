@@ -43,7 +43,7 @@
                 <input type="text" id="searchInput" placeholder="Buscar por ID, tipo ou assunto..." class="search-input">
             </div>
 
-            <button type="button" onclick="abrirModalExcluidos()" class="btn-filter-trigger">
+            <button type="button" onclick="abrirModalExcluidos()" class="btn-filter-trigger btn-excluidos">
                 <i class="fas fa-trash-restore"></i> Excluídos
             </button>
 
@@ -80,28 +80,38 @@
                     <td class="col-titulo" th:text="${chamado.titulo}">Assunto</td>
 
                     <td class="col-status">
-                        <span class="badge"
-                              th:classappend="
-                                ${chamado.status == 'Aberto'} ? 'badge-aberto' :
-                                (${chamado.status == 'Em Andamento'} ? 'badge-progresso' :
-                                (${chamado.status == 'Resolvido'} ? 'badge-resolvido' :
-                                'badge-pendente'))
-                              "
-                              th:text="${chamado.status}">
-                            Aberto
-                        </span>
+                        <th:block th:switch="${chamado.status}">
+                            <span th:case="'ABERTO'" class="table-status-badge table-status-aberto">Aberto</span>
+                            <span th:case="'EM_ANDAMENTO'" class="table-status-badge table-status-andamento">Em Andamento</span>
+                            <span th:case="'PENDENTE'" class="table-status-badge table-status-pendente">Pendente</span>
+                            <span th:case="'FECHADO'" class="table-status-badge table-status-fechado">Fechado</span>
+
+                            <!-- compatibilidade com valores antigos -->
+                            <span th:case="'Aberto'" class="table-status-badge table-status-aberto">Aberto</span>
+                            <span th:case="'Em Andamento'" class="table-status-badge table-status-andamento">Em Andamento</span>
+                            <span th:case="'Pendente'" class="table-status-badge table-status-pendente">Pendente</span>
+                            <span th:case="'Fechado'" class="table-status-badge table-status-fechado">Fechado</span>
+                            <span th:case="'Resolvido'" class="table-status-badge table-status-fechado">Fechado</span>
+                            <span th:case="'RESOLVIDO'" class="table-status-badge table-status-fechado">Fechado</span>
+
+                            <span th:case="*" class="table-status-badge table-status-default" th:text="${chamado.status}">Status</span>
+                        </th:block>
                     </td>
 
                     <td class="col-prio">
-                        <span class="badge"
-                              th:classappend="
-                                ${chamado.prioridade == 'Alta'} ? 'prio-alta' :
-                                (${chamado.prioridade == 'Média'} ? 'prio-media' :
-                                'prio-baixa')
-                              "
-                              th:text="${chamado.prioridade}">
-                            Média
-                        </span>
+                        <th:block th:switch="${chamado.prioridade}">
+                            <span th:case="'ALTA'" class="table-prio-badge table-prio-alta">Alta</span>
+                            <span th:case="'MEDIA'" class="table-prio-badge table-prio-media">Média</span>
+                            <span th:case="'BAIXA'" class="table-prio-badge table-prio-baixa">Baixa</span>
+
+                            <!-- compatibilidade com valores antigos -->
+                            <span th:case="'Alta'" class="table-prio-badge table-prio-alta">Alta</span>
+                            <span th:case="'Média'" class="table-prio-badge table-prio-media">Média</span>
+                            <span th:case="'Media'" class="table-prio-badge table-prio-media">Média</span>
+                            <span th:case="'Baixa'" class="table-prio-badge table-prio-baixa">Baixa</span>
+
+                            <span th:case="*" class="table-prio-badge table-prio-default" th:text="${chamado.prioridade}">Prioridade</span>
+                        </th:block>
                     </td>
 
                     <td class="col-data"
@@ -110,7 +120,6 @@
                     </td>
 
                     <td class="actions-cell">
-
                         <a href="javascript:void(0)"
                            class="btn-icon btn-edit"
                            th:attr="data-id=${chamado.id}"
@@ -159,10 +168,10 @@
                 <label><i class="fas fa-tasks icon-purple"></i> Status do Ticket</label>
                 <div class="chip-group" id="statusFilterGroup">
                     <button type="button" class="chip all-option active">Tudo</button>
-                    <button type="button" class="chip status-aberto">Aberto</button>
-                    <button type="button" class="chip status-andamento">Em Andamento</button>
-                    <button type="button" class="chip status-resolvido">Resolvido</button>
-                    <button type="button" class="chip status-pendente">Pendente</button>
+                    <button type="button" class="chip status-aberto" data-value="ABERTO">Aberto</button>
+                    <button type="button" class="chip status-andamento" data-value="EM_ANDAMENTO">Em Andamento</button>
+                    <button type="button" class="chip status-pendente" data-value="PENDENTE">Pendente</button>
+                    <button type="button" class="chip status-fechado" data-value="FECHADO">Fechado</button>
                 </div>
             </div>
 
@@ -170,9 +179,9 @@
                 <label><i class="fas fa-fire-extinguisher icon-orange"></i> Prioridade</label>
                 <div class="chip-group" id="prioFilterGroup">
                     <button type="button" class="chip all-option active">Tudo</button>
-                    <button type="button" class="chip chip-baixa">Baixa</button>
-                    <button type="button" class="chip chip-media">Média</button>
-                    <button type="button" class="chip chip-alta">Alta</button>
+                    <button type="button" class="chip chip-baixa" data-value="BAIXA">Baixa</button>
+                    <button type="button" class="chip chip-media" data-value="MEDIA">Média</button>
+                    <button type="button" class="chip chip-alta" data-value="ALTA">Alta</button>
                 </div>
             </div>
 
@@ -233,19 +242,19 @@
             <div class="filter-group">
                 <label><i class="fas fa-tasks icon-purple"></i> Status</label>
                 <select id="editStatus" class="modern-select-elite">
-                    <option value="Aberto">Aberto</option>
-                    <option value="Em Andamento">Em Andamento</option>
-                    <option value="Pendente">Pendente</option>
-                    <option value="Resolvido">Resolvido</option>
+                    <option value="ABERTO">Aberto</option>
+                    <option value="EM_ANDAMENTO">Em Andamento</option>
+                    <option value="PENDENTE">Pendente</option>
+                    <option value="FECHADO">Fechado</option>
                 </select>
             </div>
 
             <div class="filter-group">
                 <label><i class="fas fa-fire-extinguisher icon-orange"></i> Prioridade</label>
                 <select id="editPrioridade" class="modern-select-elite">
-                    <option value="Baixa">Baixa</option>
-                    <option value="Média">Média</option>
-                    <option value="Alta">Alta</option>
+                    <option value="BAIXA">Baixa</option>
+                    <option value="MEDIA">Média</option>
+                    <option value="ALTA">Alta</option>
                 </select>
             </div>
 
@@ -326,7 +335,6 @@
             <button type="button" onclick="fecharModal()" class="btn-close-elite">&times;</button>
         </div>
 
-        <!-- ✅ SEM ANEXOS: removido enctype -->
         <form th:action="@{/chamados/salvar}" method="POST">
             <div class="modal-body-elite">
 
@@ -334,13 +342,6 @@
                     <label><i class="fas fa-list-ul icon-blue"></i> Tipo de Ocorrência</label>
                     <select name="tipo" id="selectOcorrencia" required class="modern-select-elite">
                         <option value="" disabled selected>Selecione uma ocorrência...</option>
-                        <option value="Problema em Sistema">Problema em Sistema</option>
-                        <option value="Problema de Hardware">Problema de Hardware</option>
-                        <option value="Problema de Rede / Internet">Problema de Rede / Internet</option>
-                        <option value="Acesso / Login">Acesso / Login</option>
-                        <option value="Solicitação de Acesso">Solicitação de Acesso</option>
-                        <option value="Dúvida / Orientação">Dúvida / Orientação</option>
-                        <option value="Outros">Outros (Descrever abaixo)</option>
                     </select>
                 </div>
 
@@ -352,16 +353,19 @@
                 <div class="form-group-elite">
                     <label><i class="fas fa-layer-group icon-orange"></i> Nível de Urgência</label>
                     <div class="priority-elite-grid">
-                        <input type="hidden" name="prioridade" id="prioridadeInput" value="Baixa">
-                        <button type="button" class="prio-card-elite low active" onclick="setElitePriority(this, 'Baixa')">
+                        <input type="hidden" name="prioridade" id="prioridadeInput" value="BAIXA">
+
+                        <button type="button" class="prio-card-elite low active" onclick="setElitePriority(this, 'BAIXA')">
                             <i class="fas fa-leaf"></i>
                             <div class="prio-info"><strong>Baixa</strong><span>Normal</span></div>
                         </button>
-                        <button type="button" class="prio-card-elite med" onclick="setElitePriority(this, 'Média')">
+
+                        <button type="button" class="prio-card-elite med" onclick="setElitePriority(this, 'MEDIA')">
                             <i class="fas fa-bolt"></i>
                             <div class="prio-info"><strong>Média</strong><span>Importante</span></div>
                         </button>
-                        <button type="button" class="prio-card-elite high" onclick="setElitePriority(this, 'Alta')">
+
+                        <button type="button" class="prio-card-elite high" onclick="setElitePriority(this, 'ALTA')">
                             <i class="fas fa-fire-extinguisher"></i>
                             <div class="prio-info"><strong>Alta</strong><span>Crítico</span></div>
                         </button>
@@ -375,8 +379,6 @@
                         <div class="textarea-footer-elite"><span id="charCount">0</span> / 500</div>
                     </div>
                 </div>
-
-                <!-- ✅ REMOVIDO BLOCO DE ANEXOS -->
 
             </div>
 
