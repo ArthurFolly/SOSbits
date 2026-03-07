@@ -148,7 +148,7 @@
 
 .card-table .chamados-table {
     width: 100%;
-    min-width: 1100px;
+    min-width: 1500px;
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
@@ -169,6 +169,7 @@
     border-bottom: 1px solid #e2e8f0;
     text-align: center;
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 .card-table .chamados-table thead th:first-child {
@@ -212,31 +213,36 @@
 
 .card-table .chamados-table th:nth-child(2),
 .card-table .chamados-table td:nth-child(2) {
-    width: 190px;
+    width: 320px;
 }
 
 .card-table .chamados-table th:nth-child(3),
 .card-table .chamados-table td:nth-child(3) {
-    width: 290px;
+    width: 190px;
 }
 
 .card-table .chamados-table th:nth-child(4),
 .card-table .chamados-table td:nth-child(4) {
-    width: 150px;
+    width: 470px;
 }
 
 .card-table .chamados-table th:nth-child(5),
 .card-table .chamados-table td:nth-child(5) {
-    width: 140px;
+    width: 130px;
 }
 
 .card-table .chamados-table th:nth-child(6),
 .card-table .chamados-table td:nth-child(6) {
-    width: 120px;
+    width: 140px;
 }
 
 .card-table .chamados-table th:nth-child(7),
 .card-table .chamados-table td:nth-child(7) {
+    width: 120px;
+}
+
+.card-table .chamados-table th:nth-child(8),
+.card-table .chamados-table td:nth-child(8) {
     width: 120px;
 }
 
@@ -249,20 +255,17 @@
     color: #0f172a;
 }
 
-.col-tipo {
-    color: #334155;
-    font-weight: 600;
-    white-space: normal;
-    word-break: break-word;
-    line-height: 1.35;
-}
-
+.col-tipo,
+.col-setor,
 .col-titulo {
     color: #0f172a;
     font-weight: 600;
-    white-space: normal;
-    word-break: break-word;
-    line-height: 1.35;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    line-height: 1.2;
 }
 
 .col-status,
@@ -359,6 +362,7 @@
 
 .actions-cell {
     text-align: center;
+    white-space: nowrap;
 }
 
 .actions-cell .btn-icon {
@@ -506,6 +510,40 @@
 }
 
 /* =========================================================
+   BOTÃO EXCLUÍDOS
+   ========================================================= */
+
+.btn-excluidos {
+    background: #ffffff;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.btn-excluidos i {
+    color: #b91c1c;
+}
+
+.btn-excluidos:hover {
+    background: #fff1f2;
+    border-color: #f87171;
+    color: #991b1b;
+}
+
+/* =========================================================
+   CORREÇÃO DE ALINHAMENTO
+   COLUNAS TIPO, SETOR E ASSUNTO
+   ========================================================= */
+
+.card-table .chamados-table thead th:nth-child(2),
+.card-table .chamados-table tbody td:nth-child(2),
+.card-table .chamados-table thead th:nth-child(3),
+.card-table .chamados-table tbody td:nth-child(3),
+.card-table .chamados-table thead th:nth-child(4),
+.card-table .chamados-table tbody td:nth-child(4) {
+    text-align: left;
+}
+
+/* =========================================================
    RESPONSIVO
    ========================================================= */
 
@@ -537,22 +575,6 @@
     }
 
     .card-table .chamados-table {
-        min-width: 980px;
+        min-width: 1500px;
     }
-}
-
-.btn-excluidos {
-    background: #ffffff;
-    color: #b91c1c;
-    border: 1px solid #fca5a5;
-}
-
-.btn-excluidos i {
-    color: #b91c1c;
-}
-
-.btn-excluidos:hover {
-    background: #fff1f2;
-    border-color: #f87171;
-    color: #991b1b;
 }

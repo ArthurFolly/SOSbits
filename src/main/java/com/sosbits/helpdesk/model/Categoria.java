@@ -12,6 +12,7 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_categoria")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -28,6 +29,8 @@ public class Categoria {
 
     @PrePersist
     public void prePersist() {
-        if (dataCriacao == null) dataCriacao = LocalDateTime.now();
+        if (dataCriacao == null) {
+            dataCriacao = LocalDateTime.now();
+        }
     }
 }

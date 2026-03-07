@@ -1,7 +1,9 @@
 package com.sosbits.helpdesk.controller;
 
 import com.sosbits.helpdesk.model.Chamado;
+import com.sosbits.helpdesk.service.CategoriaService;
 import com.sosbits.helpdesk.service.ChamadoService;
+import com.sosbits.helpdesk.service.SetorService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -15,9 +17,15 @@ import java.util.List;
 public class ChamadoController {
 
     private final ChamadoService service;
+    private final CategoriaService categoriaService;
+    private final SetorService setorService;
 
-    public ChamadoController(ChamadoService service) {
+    public ChamadoController(ChamadoService service,
+                             CategoriaService categoriaService,
+                             SetorService setorService) {
         this.service = service;
+        this.categoriaService = categoriaService;
+        this.setorService = setorService;
     }
 
     @GetMapping("/dashboard")
@@ -47,6 +55,9 @@ public class ChamadoController {
         model.addAttribute("chamado", new Chamado());
         model.addAttribute("abrirModal", abrirModal);
 
+        model.addAttribute("categorias", categoriaService.listarAtivas());
+        model.addAttribute("setores", setorService.listarAtivos());
+
         return "chamados";
     }
 
@@ -54,7 +65,6 @@ public class ChamadoController {
     public String novo() {
         return "redirect:/chamados?novo=1";
     }
-
 
     @PostMapping("/salvar")
     public String salvarForm(@ModelAttribute Chamado chamado) {

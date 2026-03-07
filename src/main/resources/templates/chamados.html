@@ -18,6 +18,7 @@
             <i class="fas fa-headset"></i>
             <h2>Help Desk</h2>
         </div>
+
         <nav class="sidebar-nav">
             <ul>
                 <li><a th:href="@{/chamados/dashboard}"><i class="fas fa-th-large"></i> Dashboard</a></li>
@@ -40,7 +41,7 @@
         <div class="filters-row">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Buscar por ID, tipo ou assunto..." class="search-input">
+                <input type="text" id="searchInput" placeholder="Buscar por ID, tipo, setor ou assunto..." class="search-input">
             </div>
 
             <button type="button" onclick="abrirModalExcluidos()" class="btn-filter-trigger btn-excluidos">
@@ -62,6 +63,7 @@
                 <tr>
                     <th>ID</th>
                     <th>TIPO</th>
+                    <th>SETOR / LOCAL</th>
                     <th>ASSUNTO</th>
                     <th>STATUS</th>
                     <th>PRIORIDADE</th>
@@ -75,7 +77,15 @@
 
                     <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
 
-                    <td class="col-tipo" th:text="${chamado.tipo}">Problema de Hardware</td>
+                    <td class="col-tipo"
+                        th:text="${chamado.tipo}">
+                        Problema de Hardware
+                    </td>
+
+                    <td class="col-setor"
+                        th:text="${chamado.setor != null ? chamado.setor.nome : '-'}">
+                        TI
+                    </td>
 
                     <td class="col-titulo" th:text="${chamado.titulo}">Assunto</td>
 
@@ -86,7 +96,6 @@
                             <span th:case="'PENDENTE'" class="table-status-badge table-status-pendente">Pendente</span>
                             <span th:case="'FECHADO'" class="table-status-badge table-status-fechado">Fechado</span>
 
-                            <!-- compatibilidade com valores antigos -->
                             <span th:case="'Aberto'" class="table-status-badge table-status-aberto">Aberto</span>
                             <span th:case="'Em Andamento'" class="table-status-badge table-status-andamento">Em Andamento</span>
                             <span th:case="'Pendente'" class="table-status-badge table-status-pendente">Pendente</span>
@@ -104,7 +113,6 @@
                             <span th:case="'MEDIA'" class="table-prio-badge table-prio-media">Média</span>
                             <span th:case="'BAIXA'" class="table-prio-badge table-prio-baixa">Baixa</span>
 
-                            <!-- compatibilidade com valores antigos -->
                             <span th:case="'Alta'" class="table-prio-badge table-prio-alta">Alta</span>
                             <span th:case="'Média'" class="table-prio-badge table-prio-media">Média</span>
                             <span th:case="'Media'" class="table-prio-badge table-prio-media">Média</span>
@@ -136,6 +144,12 @@
                         </a>
                     </td>
                 </tr>
+
+                <tr th:if="${#lists.isEmpty(chamados)}">
+                    <td colspan="8" style="text-align: center; padding: 30px; color: #64748b;">
+                        Nenhum chamado encontrado.
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -161,7 +175,7 @@
         <div class="modal-body-elite">
             <div class="form-group-elite">
                 <label><i class="fas fa-search icon-blue"></i> Palavra-chave</label>
-                <input type="text" id="filterBusca" placeholder="ID, Assunto ou Descrição..." class="input-elite">
+                <input type="text" id="filterBusca" placeholder="ID, Assunto, Setor ou Descrição..." class="input-elite">
             </div>
 
             <div class="filter-group">
@@ -224,6 +238,17 @@
             <div class="form-group-elite">
                 <label><i class="fas fa-list-ul icon-blue"></i> Tipo</label>
                 <input type="text" id="editTipo" class="input-elite" placeholder="Ex: Problema de Hardware">
+            </div>
+
+            <div class="form-group-elite">
+                <label><i class="fas fa-building icon-teal"></i> Setor - Local do chamado</label>
+                <select id="editSetor" class="modern-select-elite">
+                    <option value="">Selecione um setor...</option>
+                    <option th:each="setor : ${setores}"
+                            th:value="${setor.id}"
+                            th:text="${setor.nome}">
+                    </option>
+                </select>
             </div>
 
             <div class="form-group-elite">
@@ -341,7 +366,22 @@
                 <div class="form-group-elite">
                     <label><i class="fas fa-list-ul icon-blue"></i> Tipo de Ocorrência</label>
                     <select name="tipo" id="selectOcorrencia" required class="modern-select-elite">
-                        <option value="" disabled selected>Selecione uma ocorrência...</option>
+                        <option value="">Selecione uma ocorrência...</option>
+                        <option th:each="cat : ${categorias}"
+                                th:value="${cat.nome}"
+                                th:text="${cat.nome}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group-elite">
+                    <label><i class="fas fa-building icon-teal"></i> Setor - Local do chamado</label>
+                    <select name="setor.id" id="selectSetor" required class="modern-select-elite">
+                        <option value="">Selecione um setor...</option>
+                        <option th:each="setor : ${setores}"
+                                th:value="${setor.id}"
+                                th:text="${setor.nome}">
+                        </option>
                     </select>
                 </div>
 
@@ -398,5 +438,6 @@
         if (abrir) abrirModal();
     });
 </script>
+
 </body>
 </html>

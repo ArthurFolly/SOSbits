@@ -91,7 +91,6 @@
 
                     <td class="col-nome" th:text="${cat.nome}">Hardware</td>
 
-                    <!-- ✅ CORRIGIDO (sem erro de Thymeleaf) -->
                     <td class="col-desc"
                         th:text="${#strings.isEmpty(cat.descricao) ? '-' : cat.descricao}">
                         -

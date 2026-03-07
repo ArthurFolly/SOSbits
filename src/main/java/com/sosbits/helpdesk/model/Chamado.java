@@ -45,6 +45,11 @@ public class Chamado {
     @JsonIgnore
     private Usuario atendente;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_setor")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Setor setor;
+
     @Column(name = "data_atendimento")
     private LocalDateTime dataAtendimento;
 
@@ -54,7 +59,7 @@ public class Chamado {
     @PrePersist
     public void prePersist() {
         if (dataCriacao == null) dataCriacao = LocalDateTime.now();
-        if (status == null) status = "Aberto";
-        if (prioridade == null) prioridade = "Baixa";
+        if (status == null) status = "ABERTO";
+        if (prioridade == null) prioridade = "BAIXA";
     }
 }

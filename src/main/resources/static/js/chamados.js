@@ -55,6 +55,7 @@ function abrirModalEditar(el) {
             document.getElementById("editDescricao").value = c.descricao || "";
             document.getElementById("editStatus").value = normalizarStatusParaSelect(c.status);
             document.getElementById("editPrioridade").value = normalizarPrioridadeParaSelect(c.prioridade);
+            document.getElementById("editSetor").value = c.setor && c.setor.id ? c.setor.id : "";
 
             updateCharCountEditar(document.getElementById("editDescricao"));
 
@@ -81,18 +82,21 @@ function salvarEdicao() {
     const id = document.getElementById("editId").value;
     if (!id) return;
 
+    const setorId = document.getElementById("editSetor").value;
+
     const payload = {
         tipo: document.getElementById("editTipo").value.trim(),
         titulo: document.getElementById("editTitulo").value.trim(),
         descricao: document.getElementById("editDescricao").value.trim(),
         status: normalizarStatusParaBackend(document.getElementById("editStatus").value),
-        prioridade: normalizarPrioridadeParaBackend(document.getElementById("editPrioridade").value)
+        prioridade: normalizarPrioridadeParaBackend(document.getElementById("editPrioridade").value),
+        setor: setorId ? { id: Number(setorId) } : null
     };
 
-    if (!payload.tipo || !payload.titulo || !payload.descricao) {
+    if (!payload.tipo || !payload.titulo || !payload.descricao || !payload.setor) {
         const erro = document.getElementById("editErro");
         if (erro) {
-            erro.textContent = "Preencha Tipo, Assunto e Descrição.";
+            erro.textContent = "Preencha Tipo, Setor, Assunto e Descrição.";
             erro.style.display = "block";
         }
         return;
@@ -125,11 +129,13 @@ function atualizarLinhaChamado(updated) {
     if (!row) return;
 
     const tdTipo = row.querySelector(".col-tipo");
+    const tdSetor = row.querySelector(".col-setor");
     const tdTitulo = row.querySelector(".col-titulo");
     const tdStatus = row.querySelector(".col-status");
     const tdPrio = row.querySelector(".col-prio");
 
     if (tdTipo) tdTipo.textContent = updated.tipo || "";
+    if (tdSetor) tdSetor.textContent = updated.setor && updated.setor.nome ? updated.setor.nome : "-";
     if (tdTitulo) tdTitulo.textContent = updated.titulo || "";
 
     if (tdStatus) {
@@ -385,16 +391,17 @@ function aplicarFiltrosElite() {
 
     rows.forEach(row => {
         const tds = row.querySelectorAll("td");
-        if (tds.length < 6) return;
+        if (tds.length < 7) return;
 
         const idTxt = (tds[0]?.innerText || "").trim().toLowerCase();
         const tipoTxt = (tds[1]?.innerText || "").trim().toLowerCase();
-        const assuntoTxt = (tds[2]?.innerText || "").trim().toLowerCase();
+        const setorTxt = (tds[2]?.innerText || "").trim().toLowerCase();
+        const assuntoTxt = (tds[3]?.innerText || "").trim().toLowerCase();
 
-        const statusTxt = (tds[3]?.innerText || "").trim();
-        const prioridadeTxt = (tds[4]?.innerText || "").trim();
+        const statusTxt = (tds[4]?.innerText || "").trim();
+        const prioridadeTxt = (tds[5]?.innerText || "").trim();
 
-        const dataBr = (tds[5]?.innerText || "").trim();
+        const dataBr = (tds[6]?.innerText || "").trim();
         const dataISO = brDateToISO(dataBr);
 
         let mostrar = true;
@@ -404,7 +411,7 @@ function aplicarFiltrosElite() {
         if (dataFiltroISO && dataISO !== dataFiltroISO) mostrar = false;
 
         if (busca) {
-            const textoLinha = `${idTxt} ${tipoTxt} ${assuntoTxt}`;
+            const textoLinha = `${idTxt} ${tipoTxt} ${setorTxt} ${assuntoTxt}`;
             if (!textoLinha.includes(busca)) mostrar = false;
         }
 
@@ -488,13 +495,14 @@ function aplicarBuscaTopo(busca) {
     const rows = Array.from(tbody.querySelectorAll("tr"));
     rows.forEach(row => {
         const tds = row.querySelectorAll("td");
-        if (tds.length < 3) return;
+        if (tds.length < 4) return;
 
         const idTxt = (tds[0]?.innerText || "").trim().toLowerCase();
         const tipoTxt = (tds[1]?.innerText || "").trim().toLowerCase();
-        const assuntoTxt = (tds[2]?.innerText || "").trim().toLowerCase();
+        const setorTxt = (tds[2]?.innerText || "").trim().toLowerCase();
+        const assuntoTxt = (tds[3]?.innerText || "").trim().toLowerCase();
 
-        const textoLinha = `${idTxt} ${tipoTxt} ${assuntoTxt}`;
+        const textoLinha = `${idTxt} ${tipoTxt} ${setorTxt} ${assuntoTxt}`;
         const mostrar = !busca || textoLinha.includes(busca);
 
         row.style.display = mostrar ? "" : "none";
