@@ -15,7 +15,6 @@ public class CategoriaService {
 
     private final CategoriaRepository repository;
 
-
     @Transactional(readOnly = true)
     public List<Categoria> listarAtivas() {
         return repository.findByDeletadoFalseOrderByIdDesc();
@@ -26,28 +25,6 @@ public class CategoriaService {
         return repository.findByDeletadoTrueOrderByIdDesc();
     }
 
-
-
-    @Transactional
-    public Categoria salvar(Categoria categoria) {
-        // salvar via FORM
-        validarCategoria(categoria);
-
-        // se o seu Model Categoria tiver @PrePersist, pode remover isso daqui.
-        if (categoria.getDataCriacao() == null) {
-            categoria.setDataCriacao(LocalDateTime.now());
-        }
-        categoria.setDeletado(false);
-
-        return repository.save(categoria);
-    }
-
-    @Transactional
-    public Categoria criar(Categoria categoria) {
-        // criar via API (JSON)
-        return salvar(categoria);
-    }
-
     @Transactional(readOnly = true)
     public Categoria buscarPorId(Long id) {
         return repository.findById(id)
@@ -55,62 +32,89 @@ public class CategoriaService {
     }
 
     @Transactional
+    public Categoria salvar(Categoria categoria) {
+        validarCategoria(categoria);
+
+        if (categoria.getDataCriacao() == null) {
+            categoria.setDataCriacao(LocalDateTime.now());
+        }
+
+        return repository.save(categoria);
+    }
+
+    @Transactional
+    public Categoria criar(Categoria categoria) {
+        return salvar(categoria);
+    }
+
+    @Transactional
     public Categoria atualizar(Long id, Categoria dados) {
         Categoria atual = buscarPorId(id);
 
-        // valida dados mínimos
-        if (dados == null) throw new RuntimeException("Dados inválidos.");
-        String nome = dados.getNome() != null ? dados.getNome().trim() : "";
-        String descricao = dados.getDescricao() != null ? dados.getDescricao().trim() : null;
-
-        if (nome.isEmpty()) throw new RuntimeException("O nome da categoria é obrigatório.");
-
-        // se mudou o nome, checa duplicidade entre as ativas
-        if (!nome.equalsIgnoreCase(atual.getNome())) {
-            if (repository.existsByNomeIgnoreCaseAndDeletadoFalse(nome)) {
-                throw new RuntimeException("Já existe uma categoria ativa com esse nome.");
-            }
+        if (dados == null) {
+            throw new RuntimeException("Dados inválidos.");
         }
 
-        atual.setNome(nome);
-        atual.setDescricao(descricao);
+        atual.setNome(dados.getNome());
+        atual.setDescricao(dados.getDescricao());
 
-        return repository.save(atual);
+        return salvar(atual);
     }
 
     @Transactional
     public void excluir(Long id) {
-        Categoria cat = buscarPorId(id);
-
-        // soft delete
-        cat.setDeletado(true);
-        repository.save(cat);
+        Categoria categoria = buscarPorId(id);
+        categoria.setDeletado(true);
+        repository.save(categoria);
     }
 
     @Transactional
     public void restaurar(Long id) {
-        Categoria cat = buscarPorId(id);
-
-        cat.setDeletado(false);
-        repository.save(cat);
-    }
-
-
-
-    private void validarCategoria(Categoria categoria) {
-        if (categoria == null) throw new RuntimeException("Categoria inválida.");
+        Categoria categoria = buscarPorId(id);
 
         String nome = categoria.getNome() != null ? categoria.getNome().trim() : "";
-        if (nome.isEmpty()) throw new RuntimeException("O nome da categoria é obrigatório.");
 
-        if (repository.existsByNomeIgnoreCaseAndDeletadoFalse(nome)) {
+        if (nome.isEmpty()) {
+            throw new RuntimeException("Categoria inválida para restaurar.");
+        }
+
+        if (repository.existsByNomeIgnoreCaseAndDeletadoFalseAndIdNot(nome, id)) {
+            throw new RuntimeException("Já existe uma categoria ativa com esse nome.");
+        }
+
+        categoria.setDeletado(false);
+        repository.save(categoria);
+    }
+
+    private void validarCategoria(Categoria categoria) {
+        if (categoria == null) {
+            throw new RuntimeException("Categoria inválida.");
+        }
+
+        String nome = categoria.getNome() != null ? categoria.getNome().trim() : "";
+        String descricao = categoria.getDescricao() != null ? categoria.getDescricao().trim() : "";
+
+        if (nome.isEmpty()) {
+            throw new RuntimeException("O nome da categoria é obrigatório.");
+        }
+
+        if (descricao.isEmpty()) {
+            throw new RuntimeException("A descrição da categoria é obrigatória.");
+        }
+
+        boolean nomeDuplicado;
+
+        if (categoria.getId() == null) {
+            nomeDuplicado = repository.existsByNomeIgnoreCaseAndDeletadoFalse(nome);
+        } else {
+            nomeDuplicado = repository.existsByNomeIgnoreCaseAndDeletadoFalseAndIdNot(nome, categoria.getId());
+        }
+
+        if (nomeDuplicado) {
             throw new RuntimeException("Já existe uma categoria ativa com esse nome.");
         }
 
         categoria.setNome(nome);
-
-        if (categoria.getDescricao() != null) {
-            categoria.setDescricao(categoria.getDescricao().trim());
-        }
+        categoria.setDescricao(descricao);
     }
 }

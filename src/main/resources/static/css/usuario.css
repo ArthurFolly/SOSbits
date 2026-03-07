@@ -481,3 +481,30 @@
         justify-content: center;
     }
 }
+
+/* =========================================
+   CONSULTA CEP
+========================================= */
+
+.cep-container{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.btn-buscar-cep{
+
+background:#2563eb;
+color:#fff;
+border:none;
+padding:10px 16px;
+border-radius:8px;
+cursor:pointer;
+font-size:13px;
+font-weight:600;
+
+}
+
+.btn-buscar-cep:hover{
+background:#1d4ed8;
+}

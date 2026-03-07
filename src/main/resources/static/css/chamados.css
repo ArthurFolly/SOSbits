@@ -201,49 +201,66 @@
 .card-table .chamados-table tbody tr:hover td {
     background: #fbfdff;
 }
-
 /* =========================================================
    LARGURA DAS COLUNAS
    ========================================================= */
 
 .card-table .chamados-table th:nth-child(1),
 .card-table .chamados-table td:nth-child(1) {
-    width: 80px;
+    width: 80px; /* ID */
 }
 
 .card-table .chamados-table th:nth-child(2),
 .card-table .chamados-table td:nth-child(2) {
-    width: 320px;
+    width: 180px; /* SOLICITANTE */
 }
 
 .card-table .chamados-table th:nth-child(3),
 .card-table .chamados-table td:nth-child(3) {
-    width: 190px;
+    width: 250px; /* TIPO */
 }
 
 .card-table .chamados-table th:nth-child(4),
 .card-table .chamados-table td:nth-child(4) {
-    width: 470px;
+    width: 120px; /* SETOR */
 }
 
 .card-table .chamados-table th:nth-child(5),
 .card-table .chamados-table td:nth-child(5) {
-    width: 130px;
+    width: 520px; /* ASSUNTO (MAIOR COLUNA) */
 }
 
 .card-table .chamados-table th:nth-child(6),
 .card-table .chamados-table td:nth-child(6) {
-    width: 140px;
+    width: 140px; /* STATUS */
 }
 
 .card-table .chamados-table th:nth-child(7),
 .card-table .chamados-table td:nth-child(7) {
-    width: 120px;
+    width: 140px; /* PRIORIDADE */
 }
 
 .card-table .chamados-table th:nth-child(8),
 .card-table .chamados-table td:nth-child(8) {
-    width: 120px;
+    width: 120px; /* DATA */
+}
+
+.card-table .chamados-table th:nth-child(9),
+.card-table .chamados-table td:nth-child(9) {
+    width: 120px; /* AÇÕES */
+}
+
+/* =========================================================
+   COLUNA ASSUNTO
+   ========================================================= */
+
+.col-titulo {
+
+    text-align:left;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
 }
 
 /* =========================================================
@@ -531,15 +548,17 @@
 
 /* =========================================================
    CORREÇÃO DE ALINHAMENTO
-   COLUNAS TIPO, SETOR E ASSUNTO
+   COLUNAS SOLICITANTE, TIPO, SETOR E ASSUNTO
    ========================================================= */
 
-.card-table .chamados-table thead th:nth-child(2),
-.card-table .chamados-table tbody td:nth-child(2),
-.card-table .chamados-table thead th:nth-child(3),
-.card-table .chamados-table tbody td:nth-child(3),
-.card-table .chamados-table thead th:nth-child(4),
-.card-table .chamados-table tbody td:nth-child(4) {
+    .card-table .chamados-table thead th:nth-child(2),
+    .card-table .chamados-table tbody td:nth-child(2),
+    .card-table .chamados-table thead th:nth-child(3),
+    .card-table .chamados-table tbody td:nth-child(3),
+    .card-table .chamados-table thead th:nth-child(4),
+    .card-table .chamados-table tbody td:nth-child(4),
+    .card-table .chamados-table thead th:nth-child(5),
+    .card-table .chamados-table tbody td:nth-child(5) {
     text-align: left;
 }
 

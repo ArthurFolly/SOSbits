@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório por Usuário - Help Desk</title>
+
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+  <link rel="stylesheet" th:href="@{/css/relatorios.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="app-container">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-headset"></i>
+      <h2>Help Desk</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <a th:href="@{/chamados/dashboard}">
+            <i class="fas fa-th-large"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/chamados}">
+            <i class="fas fa-ticket-alt"></i>
+            <span>Chamados</span>
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/admin/usuarios}">
+            <i class="fas fa-users"></i>
+            <span>Usuários</span>
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/relatorios}" class="active">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="page-header">
+      <h1>Relatório por Usuário</h1>
+      <p>Quantidade de chamados por usuário</p>
+    </header>
+
+    <div class="relatorios-topbar">
+      <a th:href="@{/relatorios}" class="btn-relatorio-outline">
+        <i class="fas fa-table"></i>
+        Relatório Geral
+      </a>
+
+      <a th:href="@{/relatorios/status}" class="btn-relatorio-outline">
+        <i class="fas fa-chart-pie"></i>
+        Status
+      </a>
+
+      <a th:href="@{/admin/usuarios}" class="btn-relatorio-primary">
+        <i class="fas fa-users"></i>
+        Ir para Usuários
+      </a>
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-panel-header">
+        <h2>Resumo por Usuário</h2>
+        <p>Estatísticas de chamados agrupadas por solicitante.</p>
+      </div>
+
+      <div class="relatorio-table-wrapper">
+        <table class="relatorio-table">
+          <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Abertos</th>
+            <th>Em Andamento</th>
+            <th>Pendentes</th>
+            <th>Fechados</th>
+            <th>Total</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr th:each="entry : ${estatisticas}">
+            <td class="relatorio-usuario-nome" th:text="${entry.key}"></td>
+
+            <td>
+                            <span class="relatorio-badge relatorio-badge-aberto"
+                                  th:text="${entry.value['ABERTO']}"></span>
+            </td>
+
+            <td>
+                            <span class="relatorio-badge relatorio-badge-andamento"
+                                  th:text="${entry.value['EM_ANDAMENTO']}"></span>
+            </td>
+
+            <td>
+                            <span class="relatorio-badge relatorio-badge-pendente"
+                                  th:text="${entry.value['PENDENTE']}"></span>
+            </td>
+
+            <td>
+                            <span class="relatorio-badge relatorio-badge-fechado"
+                                  th:text="${entry.value['FECHADO']}"></span>
+            </td>
+
+            <td>
+                            <span class="relatorio-badge relatorio-badge-total"
+                                  th:text="${entry.value['ABERTO'] + entry.value['EM_ANDAMENTO'] + entry.value['PENDENTE'] + entry.value['FECHADO']}"></span>
+            </td>
+          </tr>
+
+          <tr th:if="${#maps.isEmpty(estatisticas)}">
+            <td colspan="6">Nenhum dado encontrado.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

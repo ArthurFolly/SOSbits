@@ -66,6 +66,17 @@ public class UsuarioAdminService {
             atual.setEmail(usuario.getEmail());
             atual.setCpf(usuario.getCpf());
             atual.setTelefone(usuario.getTelefone());
+            /* ==========================
+            ENDEREÇO
+            ========================== */
+
+            atual.setCep(usuario.getCep());
+            atual.setLogradouro(usuario.getLogradouro());
+            atual.setNumero(usuario.getNumero());
+            atual.setComplemento(usuario.getComplemento());
+            atual.setBairro(usuario.getBairro());
+            atual.setCidade(usuario.getCidade());
+            atual.setEstado(usuario.getEstado());
 
 
             if (senha != null && !senha.isBlank()) {

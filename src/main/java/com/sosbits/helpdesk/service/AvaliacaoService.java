@@ -20,7 +20,7 @@ public class AvaliacaoService {
     private final ChamadoRepository chamadoRepository;
     private final UsuarioService usuarioService;
 
-    private static final String STATUS_FECHADO = "Fechado";
+    private static final String STATUS_FECHADO = "FECHADO";
 
     @Transactional(readOnly = true)
     public List<Avaliacao> listarAtivas() {
@@ -47,14 +47,16 @@ public class AvaliacaoService {
     @Transactional(readOnly = true)
     public Avaliacao buscarPorId(Long id) {
         return avaliacaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
+                .orElseThrow(() -> new RuntimeException("Avaliação não encontrada."));
     }
 
     @Transactional
     public Avaliacao criar(Long idChamado, Integer nota, String comentario) {
 
+        validarNota(nota);
+
         Chamado chamado = chamadoRepository.findById(idChamado)
-                .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado."));
 
         if (chamado.getStatus() == null || !STATUS_FECHADO.equalsIgnoreCase(chamado.getStatus().trim())) {
             throw new RuntimeException("Só é permitido avaliar chamados com status FECHADO.");
@@ -66,55 +68,72 @@ public class AvaliacaoService {
 
         Usuario usuarioLogado = usuarioService.getUsuarioLogado();
 
-        Avaliacao a = new Avaliacao();
-        a.setChamado(chamado);
-        a.setUsuario(usuarioLogado);
-        a.setNota(nota);
-        a.setComentario(comentario);
-        a.setAtiva(true);
-        a.setDataAvaliacao(LocalDateTime.now());
+        Avaliacao avaliacao = new Avaliacao();
+        avaliacao.setChamado(chamado);
+        avaliacao.setUsuario(usuarioLogado);
+        avaliacao.setNota(nota);
+        avaliacao.setComentario(normalizarComentario(comentario));
+        avaliacao.setAtiva(true);
+        avaliacao.setDataAvaliacao(LocalDateTime.now());
 
-        return avaliacaoRepository.save(a);
+        return avaliacaoRepository.save(avaliacao);
     }
 
     @Transactional
     public Avaliacao atualizar(Long idAvaliacao, Integer nota, String comentario) {
 
-        Avaliacao a = buscarPorId(idAvaliacao);
+        validarNota(nota);
 
-        if (Boolean.FALSE.equals(a.getAtiva())) {
+        Avaliacao avaliacao = buscarPorId(idAvaliacao);
+
+        if (Boolean.FALSE.equals(avaliacao.getAtiva())) {
             throw new RuntimeException("Não é possível editar uma avaliação excluída.");
         }
 
-        a.setNota(nota);
-        a.setComentario(comentario);
+        avaliacao.setNota(nota);
+        avaliacao.setComentario(normalizarComentario(comentario));
 
-        return avaliacaoRepository.save(a);
+        return avaliacaoRepository.save(avaliacao);
     }
 
     @Transactional
     public void excluir(Long idAvaliacao) {
-        Avaliacao a = buscarPorId(idAvaliacao);
+        Avaliacao avaliacao = buscarPorId(idAvaliacao);
 
-        if (Boolean.FALSE.equals(a.getAtiva())) {
+        if (Boolean.FALSE.equals(avaliacao.getAtiva())) {
             return;
         }
 
-        a.setAtiva(false);
-        a.setDataDesativacao(LocalDateTime.now());
-        a.setDesativadaPor(usuarioService.getUsuarioLogado());
+        avaliacao.setAtiva(false);
+        avaliacao.setDataDesativacao(LocalDateTime.now());
+        avaliacao.setDesativadaPor(usuarioService.getUsuarioLogado());
 
-        avaliacaoRepository.save(a);
+        avaliacaoRepository.save(avaliacao);
     }
 
     @Transactional
     public void restaurar(Long idAvaliacao) {
-        Avaliacao a = buscarPorId(idAvaliacao);
+        Avaliacao avaliacao = buscarPorId(idAvaliacao);
 
-        a.setAtiva(true);
-        a.setDataDesativacao(null);
-        a.setDesativadaPor(null);
+        avaliacao.setAtiva(true);
+        avaliacao.setDataDesativacao(null);
+        avaliacao.setDesativadaPor(null);
 
-        avaliacaoRepository.save(a);
+        avaliacaoRepository.save(avaliacao);
+    }
+
+    private void validarNota(Integer nota) {
+        if (nota == null || nota < 1 || nota > 5) {
+            throw new RuntimeException("A nota deve estar entre 1 e 5.");
+        }
+    }
+
+    private String normalizarComentario(String comentario) {
+        if (comentario == null) {
+            return null;
+        }
+
+        String texto = comentario.trim();
+        return texto.isEmpty() ? null : texto;
     }
 }

@@ -1,7 +1,9 @@
 package com.sosbits.helpdesk.controller;
 
+import com.sosbits.helpdesk.model.Chamado;
 import com.sosbits.helpdesk.model.Usuario;
 import com.sosbits.helpdesk.repository.PerfilRepository;
+import com.sosbits.helpdesk.service.ChamadoService;
 import com.sosbits.helpdesk.service.UsuarioAdminService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin/usuarios")
@@ -18,11 +24,14 @@ public class UsuarioAdminController {
 
     private final UsuarioAdminService usuarioAdminService;
     private final PerfilRepository perfilRepository;
+    private final ChamadoService chamadoService;
 
     public UsuarioAdminController(UsuarioAdminService usuarioAdminService,
-                                  PerfilRepository perfilRepository) {
+                                  PerfilRepository perfilRepository,
+                                  ChamadoService chamadoService) {
         this.usuarioAdminService = usuarioAdminService;
         this.perfilRepository = perfilRepository;
+        this.chamadoService = chamadoService;
     }
 
     @GetMapping
@@ -38,6 +47,8 @@ public class UsuarioAdminController {
         model.addAttribute("perfis", perfilRepository.findAll());
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("modoEdicao", false);
+
+        carregarEstatisticasUsuarios(model);
 
         return "usuario";
     }
@@ -56,6 +67,8 @@ public class UsuarioAdminController {
         model.addAttribute("perfis", perfilRepository.findAll());
         model.addAttribute("usuario", usuarioAdminService.buscarPorId(id));
         model.addAttribute("modoEdicao", true);
+
+        carregarEstatisticasUsuarios(model);
 
         return "usuario";
     }
@@ -79,6 +92,67 @@ public class UsuarioAdminController {
     public String restaurar(@PathVariable Long id) {
         usuarioAdminService.restaurar(id);
         return "redirect:/admin/usuarios";
+    }
+
+    private void carregarEstatisticasUsuarios(Model model) {
+        List<Chamado> chamados = chamadoService.listarTodos();
+
+        Map<String, Map<String, Long>> estatisticasUsuarios = new LinkedHashMap<>();
+
+        for (Chamado chamado : chamados) {
+
+            if (chamado.getSolicitante() == null || chamado.getSolicitante().getNome() == null) {
+                continue;
+            }
+
+            String nomeUsuario = chamado.getSolicitante().getNome().trim();
+            String statusNormalizado = normalizarStatus(chamado.getStatus());
+
+            estatisticasUsuarios.putIfAbsent(nomeUsuario, criarMapaZerado());
+
+            Map<String, Long> dados = estatisticasUsuarios.get(nomeUsuario);
+
+            dados.put(statusNormalizado, dados.getOrDefault(statusNormalizado, 0L) + 1L);
+            dados.put("TOTAL", dados.getOrDefault("TOTAL", 0L) + 1L);
+        }
+
+        model.addAttribute("estatisticasUsuarios", estatisticasUsuarios);
+    }
+
+    private Map<String, Long> criarMapaZerado() {
+        Map<String, Long> dados = new HashMap<>();
+        dados.put("ABERTO", 0L);
+        dados.put("EM_ANDAMENTO", 0L);
+        dados.put("PENDENTE", 0L);
+        dados.put("FECHADO", 0L);
+        dados.put("TOTAL", 0L);
+        return dados;
+    }
+
+    private String normalizarStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            return "ABERTO";
+        }
+
+        String valor = status.trim().toUpperCase();
+
+        if (valor.equals("ABERTO")) {
+            return "ABERTO";
+        }
+
+        if (valor.equals("EM_ANDAMENTO") || valor.equals("EM ANDAMENTO")) {
+            return "EM_ANDAMENTO";
+        }
+
+        if (valor.equals("PENDENTE")) {
+            return "PENDENTE";
+        }
+
+        if (valor.equals("FECHADO") || valor.equals("RESOLVIDO")) {
+            return "FECHADO";
+        }
+
+        return "ABERTO";
     }
 
     private String extrairPerfil(UserDetails user) {

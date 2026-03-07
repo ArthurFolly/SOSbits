@@ -23,6 +23,7 @@
 
         <nav class="sidebar-nav">
             <ul>
+
                 <li>
                     <a th:href="@{/chamados/dashboard}">
                         <i class="fas fa-th-large"></i> Dashboard
@@ -41,17 +42,6 @@
                     </a>
                 </li>
 
-                <li>
-                    <a th:href="@{/relatorios/status}">
-                        <i class="fas fa-chart-bar"></i> Relatórios
-                    </a>
-                </li>
-
-                <li th:if="${usuarioPerfil == 'ADMIN'}">
-                    <a th:href="@{/admin/usuarios}">
-                        <i class="fas fa-users"></i> Usuários
-                    </a>
-                </li>
             </ul>
         </nav>
     </aside>
@@ -93,6 +83,7 @@
                 <thead>
                 <tr>
                     <th>ID</th>
+                    <th>SOLICITANTE</th>
                     <th>TIPO</th>
                     <th>SETOR / LOCAL</th>
                     <th>ASSUNTO</th>
@@ -108,9 +99,11 @@
 
                     <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
 
-                    <td class="col-tipo" th:text="${chamado.tipo}">
-                        Problema de Hardware
+                    <td class="col-solicitante"
+                        th:text="${chamado.solicitante != null ? chamado.solicitante.nome : '-'}">
                     </td>
+
+                    <td class="col-tipo" th:text="${chamado.tipo}">
 
                     <td class="col-setor" th:text="${chamado.setor != null ? chamado.setor.nome : '-'}">
                         TI
@@ -180,7 +173,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(chamados)}">
-                    <td colspan="8" style="text-align: center; padding: 30px; color: #64748b;">
+                    <td colspan="9" style="text-align: center; padding: 30px; color: #64748b;">
                         Nenhum chamado encontrado.
                     </td>
                 </tr>

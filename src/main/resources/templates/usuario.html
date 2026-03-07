@@ -45,7 +45,7 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a th:href="@{/relatorios}">
                         <i class="fas fa-chart-bar"></i>
                         <span>Relatórios</span>
                     </a>
@@ -88,6 +88,7 @@
                     <i class="fas fa-sliders-h"></i>
                     Filtros
                 </button>
+
             </div>
 
             <div class="usuarios-filters-right">
@@ -100,7 +101,7 @@
             </div>
         </div>
 
-        <!-- TABELA -->
+        <!-- TABELA PRINCIPAL DE USUÁRIOS -->
         <div class="usuarios-card-table">
             <table class="usuarios-table">
                 <thead>
@@ -152,7 +153,6 @@
                 </tbody>
             </table>
         </div>
-
     </main>
 </div>
 
@@ -256,11 +256,23 @@
                 <div class="usuario-form-grid">
                     <div class="form-group-elite">
                         <label for="cep">CEP</label>
-                        <input type="text"
-                               id="cep"
-                               th:field="*{cep}"
-                               class="input-elite"
-                               placeholder="00000-000">
+
+                        <div class="cep-container">
+                            <input
+                                    type="text"
+                                    id="cep"
+                                    th:field="*{cep}"
+                                    class="input-elite"
+                                    placeholder="00000-000"
+                                    maxlength="9">
+
+                            <button
+                                    type="button"
+                                    id="btnBuscarCep"
+                                    class="btn-buscar-cep">
+                                Consultar
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group-elite">
@@ -380,6 +392,23 @@
         const abaSelecionada = document.getElementById(tabId);
         if (abaSelecionada) {
             abaSelecionada.classList.add("active");
+        }
+    }
+
+    function toggleRelatorioUsuarios() {
+        const box = document.getElementById("relatorioUsuariosBox");
+        const botao = document.getElementById("btnToggleRelatorioUsuarios");
+
+        if (!box || !botao) return;
+
+        const estaFechado = box.style.display === "none" || box.style.display === "";
+
+        if (estaFechado) {
+            box.style.display = "block";
+            botao.classList.add("is-active");
+        } else {
+            box.style.display = "none";
+            botao.classList.remove("is-active");
         }
     }
 </script>

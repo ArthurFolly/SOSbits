@@ -55,17 +55,18 @@
                     </a>
                 </li>
 
+                <!-- NOVO BOTÃO: RELATÓRIOS -->
+                <li th:if="${usuarioPerfil == 'ADMIN' or usuarioPerfil == 'SUPORTE'}">
+                    <a th:href="@{/relatorios}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+
                 <li th:if="${usuarioPerfil == 'ADMIN'}">
                     <a th:href="@{/admin/usuarios}">
                         <i class="fas fa-users"></i>
                         <span>Usuários</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Relatórios</span>
                     </a>
                 </li>
 
@@ -76,7 +77,6 @@
                     </a>
                 </li>
 
-                <!-- NOVO ITEM -->
                 <li th:if="${usuarioPerfil == 'ADMIN' or usuarioPerfil == 'SUPORTE'}">
                     <a th:href="@{/setores}">
                         <i class="fas fa-building"></i>

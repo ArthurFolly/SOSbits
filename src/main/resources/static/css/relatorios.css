@@ -166,3 +166,96 @@
         width: 100%;
     }
 }
+
+/* =========================================================
+   TABELA - RELATÓRIO POR USUÁRIO
+   ========================================================= */
+
+.relatorio-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.relatorio-table {
+    width: 100%;
+    min-width: 920px;
+    border-collapse: collapse;
+}
+
+.relatorio-table th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.relatorio-table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+    color: #0f172a;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.relatorio-table tbody tr:hover {
+    background: #fbfdff;
+}
+
+.relatorio-table th:first-child,
+.relatorio-table td:first-child {
+    text-align: left;
+}
+
+.relatorio-usuario-nome {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.relatorio-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.relatorio-badge-aberto {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+}
+
+.relatorio-badge-andamento {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #fcd34d;
+}
+
+.relatorio-badge-pendente {
+    background: #fef9c3;
+    color: #a16207;
+    border-color: #fde047;
+}
+
+.relatorio-badge-fechado {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #86efac;
+}
+
+.relatorio-badge-total {
+    background: #e0e7ff;
+    color: #4338ca;
+    border-color: #a5b4fc;
+}

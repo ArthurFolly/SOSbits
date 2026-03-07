@@ -34,12 +34,13 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
     Optional<Chamado> findByIdComUsuarios(@Param("id") Long id);
 
     @Query("""
-           SELECT c
-           FROM Chamado c
-           LEFT JOIN FETCH c.setor
-           WHERE c.deletado = false
-           ORDER BY c.id DESC
-           """)
+        SELECT c
+        FROM Chamado c
+        LEFT JOIN FETCH c.solicitante
+        LEFT JOIN FETCH c.setor
+        WHERE c.deletado = false
+        ORDER BY c.id DESC
+        """)
     List<Chamado> buscarTodosComSetor();
 
     @Query("""
@@ -55,8 +56,8 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
            SELECT c
            FROM Chamado c
            WHERE c.deletado = false
-             AND c.status = 'FECHADO'
              AND c.solicitante.id = :idUsuario
+             AND UPPER(TRIM(c.status)) = 'FECHADO'
              AND NOT EXISTS (
                  SELECT 1
                  FROM Avaliacao a

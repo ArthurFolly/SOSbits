@@ -90,10 +90,6 @@ public class CategoriaController {
                                          @RequestParam(required = false) String descricao) {
         Categoria categoria = service.buscarPorId(id);
 
-        if (categoria == null) {
-            return ResponseEntity.badRequest().body("Categoria não encontrada.");
-        }
-
         categoria.setNome(nome);
         categoria.setDescricao(descricao);
 

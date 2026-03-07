@@ -53,6 +53,7 @@ public class SecurityConfig {
                         // ADMIN E SUPORTE
                         .requestMatchers("/categorias/**").hasAnyRole("ADMIN", "SUPORTE")
                         .requestMatchers("/setores/**").hasAnyRole("ADMIN", "SUPORTE")
+                        .requestMatchers("/relatorios/**").hasAnyRole("ADMIN", "SUPORTE")
 
                         // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()

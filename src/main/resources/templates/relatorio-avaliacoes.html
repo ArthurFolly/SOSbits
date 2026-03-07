@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Relatório de Avaliações</title>
+
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+  <link rel="stylesheet" th:href="@{/css/relatorios.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+
+<body id="page-relatorio-avaliacoes">
+
+<div class="app-container">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-headset"></i>
+      <h2>Help Desk</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+
+        <li>
+          <a th:href="@{/chamados/dashboard}">
+            <i class="fas fa-th-large"></i> Dashboard
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/chamados}">
+            <i class="fas fa-ticket-alt"></i> Chamados
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/relatorios/avaliacoes}" class="active">
+            <i class="fas fa-chart-pie"></i> Relatórios
+          </a>
+        </li>
+
+        <li th:if="${usuarioPerfil == 'ADMIN'}">
+          <a th:href="@{/admin/usuarios}">
+            <i class="fas fa-users"></i> Usuários
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="page-header">
+      <div class="header-left">
+        <h1>Relatório de Avaliações</h1>
+        <p>Distribuição das avaliações por estrelas</p>
+      </div>
+    </header>
+
+    <div class="relatorios-topbar">
+
+      <a th:href="@{/relatorios}" class="btn-relatorio-outline">
+        <i class="fas fa-table"></i> Relatório Geral
+      </a>
+
+      <a th:href="@{/relatorios/status}" class="btn-relatorio-outline">
+        <i class="fas fa-chart-bar"></i> Status
+      </a>
+
+      <a th:href="@{/relatorios/avaliacoes}" class="btn-relatorio-primary">
+        <i class="fas fa-star"></i> Avaliações
+      </a>
+
+    </div>
+
+    <section class="chart-panel">
+
+      <div class="chart-panel-header">
+        <h2>Avaliação dos Atendimentos</h2>
+        <p>Total de avaliações: <strong th:text="${total}"></strong></p>
+      </div>
+
+      <div class="chart-wrapper">
+        <canvas id="graficoAvaliacoes"></canvas>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+
+  const e1 = Number(/*[[${e1}]]*/ 0);
+  const e2 = Number(/*[[${e2}]]*/ 0);
+  const e3 = Number(/*[[${e3}]]*/ 0);
+  const e4 = Number(/*[[${e4}]]*/ 0);
+  const e5 = Number(/*[[${e5}]]*/ 0);
+
+  const total = Number(/*[[${total}]]*/ 0);
+
+  const ctx = document.getElementById('graficoAvaliacoes');
+
+  new Chart(ctx, {
+
+  type: 'pie',
+
+  data: {
+
+  labels: [
+  '1 estrela (' + e1 + ')',
+  '2 estrelas (' + e2 + ')',
+  '3 estrelas (' + e3 + ')',
+  '4 estrelas (' + e4 + ')',
+  '5 estrelas (' + e5 + ')'
+  ],
+
+  datasets: [{
+
+  data: [e1, e2, e3, e4, e5],
+
+  backgroundColor: [
+  '#ef4444',
+  '#f97316',
+  '#facc15',
+  '#4ade80',
+  '#22c55e'
+  ]
+
+  }]
+
+  },
+
+  options: {
+
+  plugins: {
+
+  tooltip: {
+
+  callbacks: {
+
+  label: function(context){
+
+  let value = context.raw;
+
+  let percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+
+  return value + " avaliações (" + percent + "%)";
+
+  }
+
+  }
+
+  }
+
+  }
+
+  }
+
+  });
+
+</script>
+
+</body>
+</html>

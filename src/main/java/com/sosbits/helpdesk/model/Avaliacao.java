@@ -19,7 +19,6 @@ public class Avaliacao {
     @Column(name = "id_avaliacao")
     private Long id;
 
-
     @OneToOne(optional = false)
     @JoinColumn(
             name = "id_chamado",
@@ -53,7 +52,11 @@ public class Avaliacao {
 
     @PrePersist
     public void prePersist() {
-        if (dataAvaliacao == null) dataAvaliacao = LocalDateTime.now();
-        if (ativa == null) ativa = true;
+        if (dataAvaliacao == null) {
+            dataAvaliacao = LocalDateTime.now();
+        }
+        if (ativa == null) {
+            ativa = true;
+        }
     }
 }

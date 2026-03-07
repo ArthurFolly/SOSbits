@@ -19,4 +19,8 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     Optional<Avaliacao> findByChamadoId(Long chamadoId);
 
     boolean existsByChamadoId(Long chamadoId);
+
+    long countByNotaAndAtivaTrue(Integer nota);
+
+    long countByAtivaTrue();
 }

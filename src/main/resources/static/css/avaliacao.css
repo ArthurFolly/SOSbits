@@ -8,6 +8,7 @@ align-items:center;
 justify-content:space-between;
 gap:16px;
 margin-bottom:24px;
+flex-wrap:wrap;
 }
 
 #page-avaliacoes .avaliacoes-filters-left{
@@ -15,6 +16,7 @@ display:flex;
 align-items:center;
 gap:12px;
 flex:1;
+flex-wrap:wrap;
 }
 
 /* BUSCA */
@@ -40,6 +42,7 @@ border:1px solid #e2e8f0;
 border-radius:10px;
 font-size:14px;
 outline:none;
+background:#fff;
 }
 
 /* BOTÕES */
@@ -116,10 +119,36 @@ padding:14px;
 border-bottom:1px solid #f1f5f9;
 font-size:14px;
 text-align:center;
+vertical-align:middle;
 }
 
 #page-avaliacoes .avaliacoes-table tbody tr:hover{
 background:#f9fbff;
+}
+
+#page-avaliacoes .avaliacoes-table th:nth-child(2),
+#page-avaliacoes .avaliacoes-table td:nth-child(2){
+text-align:left;
+}
+
+.avaliacoes-col-chamado{
+display:flex;
+align-items:center;
+gap:6px;
+flex-wrap:wrap;
+}
+
+.avaliacoes-empty{
+text-align:center !important;
+padding:22px !important;
+color:#64748b;
+font-weight:600;
+}
+
+.avaliacoes-empty-inline{
+margin-top:8px;
+font-size:13px;
+color:#b91c1c;
 }
 
 /* =========================================================
@@ -131,6 +160,10 @@ padding:6px 10px;
 border-radius:20px;
 font-size:12px;
 font-weight:700;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+min-width:28px;
 }
 
 .avaliacoes-badge-ok{
@@ -160,7 +193,13 @@ color:#dc2626;
 .avaliacoes-actions{
 display:flex;
 justify-content:center;
+align-items:center;
 gap:8px;
+}
+
+.avaliacoes-inline-form{
+margin:0;
+display:flex;
 }
 
 .avaliacoes-btn-icon{
@@ -170,6 +209,9 @@ border-radius:8px;
 border:1px solid #e2e8f0;
 background:#fff;
 cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
 .avaliacoes-btn-icon:hover{
@@ -180,19 +222,144 @@ background:#f8fafc;
 color:#2563eb;
 }
 
+.avaliacoes-btn-edit{
+color:#f59e0b;
+}
+
 .avaliacoes-btn-del{
 color:#dc2626;
 }
 
+.avaliacoes-btn-restore{
+color:#16a34a;
+}
+
 /* =========================================================
-   MODAL DETALHE AVALIAÇÃO
+   MODAIS
+   ========================================================= */
+
+.avaliacao-modal-box{
+width:92%;
+max-width:700px;
+border-radius:16px;
+background:#fff;
+padding:0 !important;
+overflow:hidden;
+}
+
+.avaliacao-modal-box-large{
+max-width:1150px;
+}
+
+.avaliacao-modal-header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:20px 24px;
+border-bottom:1px solid #e2e8f0;
+background:#fff;
+}
+
+.avaliacao-modal-header h3{
+margin:0;
+font-size:20px;
+font-weight:700;
+color:#0f172a;
+}
+
+.avaliacao-modal-close{
+width:38px;
+height:38px;
+border:none;
+border-radius:10px;
+background:#f8fafc;
+color:#64748b;
+cursor:pointer;
+}
+
+.avaliacao-modal-close:hover{
+background:#eef2f7;
+color:#dc2626;
+}
+
+.avaliacao-modal-actions{
+display:flex;
+justify-content:flex-end;
+gap:10px;
+padding:18px 24px 24px;
+border-top:1px solid #e2e8f0;
+flex-wrap:wrap;
+}
+
+.avaliacao-form-modal{
+padding:24px;
+}
+
+.avaliacao-form-group{
+margin-bottom:18px;
+}
+
+.avaliacao-form-group label{
+display:block;
+margin-bottom:8px;
+font-size:13px;
+font-weight:700;
+text-transform:uppercase;
+color:#64748b;
+}
+
+.avaliacao-form-group select,
+.avaliacao-form-group textarea{
+width:100%;
+padding:12px 14px;
+border:1px solid #dbe3ee;
+border-radius:10px;
+font-size:14px;
+background:#fff;
+outline:none;
+}
+
+.avaliacao-form-group textarea{
+resize:vertical;
+min-height:110px;
+}
+
+.btn-primary,
+.btn-secondary{
+padding:10px 18px;
+border-radius:10px;
+font-weight:700;
+cursor:pointer;
+border:none;
+}
+
+.btn-primary{
+background:#2563eb;
+color:#fff;
+}
+
+.btn-primary:hover{
+background:#1d4ed8;
+}
+
+.btn-secondary{
+background:#eef2f7;
+color:#334155;
+}
+
+.btn-secondary:hover{
+background:#e2e8f0;
+}
+
+/* =========================================================
+   MODAL DETALHE
    ========================================================= */
 
 #modalDetalheAvaliacao .avaliacao-detalhe-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:18px;
-margin-top:10px;
+padding:24px;
 }
 
 #modalDetalheAvaliacao .avaliacao-detalhe-item{
@@ -200,6 +367,10 @@ background:#f8fafc;
 border:1px solid #e2e8f0;
 border-radius:10px;
 padding:14px;
+}
+
+#modalDetalheAvaliacao .avaliacao-detalhe-item-full{
+grid-column:1 / -1;
 }
 
 #modalDetalheAvaliacao .avaliacao-detalhe-label{
@@ -217,17 +388,12 @@ color:#0f172a;
 line-height:1.4;
 }
 
-#modalDetalheAvaliacao .avaliacao-detalhe-item:last-child{
-grid-column:1 / -1;
-}
-
-/* ESTRELAS */
-
 #modalDetalheAvaliacao #detNota{
 display:flex;
 align-items:center;
 gap:4px;
 font-size:18px;
+flex-wrap:wrap;
 }
 
 #modalDetalheAvaliacao .estrela-on{
@@ -244,38 +410,44 @@ margin-left:6px;
 color:#475569;
 }
 
-/* ANIMAÇÃO */
+/* =========================================================
+   MODAL EXCLUÍDAS
+   ========================================================= */
 
-#modalDetalheAvaliacao .modal-box{
-animation:modalFade .2s ease;
-}
-
-@keyframes modalFade{
-from{
-transform:translateY(10px);
-opacity:0;
-}
-to{
-transform:translateY(0);
-opacity:1;
-}
+.avaliacoes-card-table-modal{
+margin:24px;
 }
 
 /* =========================================================
-   MODAL AVALIAÇÕES EXCLUÍDAS - TAMANHO MAIOR
+   RESPONSIVO
    ========================================================= */
 
-#modalAvaliacoesExcluidas .modal-box{
+@media (max-width: 768px){
 
-max-width:1100px !important;   /* largura máxima */
-width:95% !important;          /* ocupa quase toda tela */
-
+#page-avaliacoes .avaliacoes-filters-row{
+align-items:stretch;
 }
 
-/* tabela ocupa toda largura */
+#page-avaliacoes .avaliacoes-filters-left{
+flex-direction:column;
+align-items:stretch;
+}
 
-#modalAvaliacoesExcluidas .avaliacoes-table{
+#page-avaliacoes .avaliacoes-btn-novo{
+justify-content:center;
+width:100%;
+}
 
-min-width:1000px;
+#modalDetalheAvaliacao .avaliacao-detalhe-grid{
+grid-template-columns:1fr;
+}
 
+.avaliacao-modal-actions{
+justify-content:stretch;
+}
+
+.btn-primary,
+.btn-secondary{
+width:100%;
+}
 }

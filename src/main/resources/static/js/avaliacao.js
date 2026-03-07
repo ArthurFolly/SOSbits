@@ -1,203 +1,160 @@
 /* =========================================================
    MODAIS GENÉRICOS
-   =========================================================
-   Funções reutilizáveis para abrir e fechar modais do sistema
    ========================================================= */
 
 function abrirModalGenerico(modalId) {
-
     const modal = document.getElementById(modalId);
-
     if (!modal) return;
 
     modal.style.display = "flex";
-
     document.body.classList.add("modal-open");
 }
 
 function fecharModalGenerico(modalId) {
-
     const modal = document.getElementById(modalId);
-
     if (!modal) return;
 
     modal.style.display = "none";
-
     document.body.classList.remove("modal-open");
 }
 
-
 /* =========================================================
-   BUSCA NA TABELA DE AVALIAÇÕES
-   =========================================================
-   Filtra dinamicamente os resultados digitados no campo
-   de busca da página de avaliações
+   ABERTURA DOS MODAIS PRINCIPAIS
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-
+    const btnExcluidas = document.getElementById("btnAbrirExcluidas");
+    const btnNova = document.getElementById("btnAbrirNovaAvaliacao");
     const inputBusca = document.getElementById("avaliacoesSearchInput");
-
     const tabelaBody = document.getElementById("avaliacoesTableBody");
 
-    if (!inputBusca || !tabelaBody) return;
-
-    inputBusca.addEventListener("input", () => {
-
-        const termo = inputBusca.value.toLowerCase();
-
-        const linhas = tabelaBody.querySelectorAll("tr");
-
-        linhas.forEach(linha => {
-
-            /* ignora linha "nenhum resultado" */
-
-            if (linha.querySelector("td[colspan]")) return;
-
-            const textoLinha = linha.innerText.toLowerCase();
-
-            linha.style.display =
-                textoLinha.includes(termo) ? "" : "none";
-
+    if (btnExcluidas) {
+        btnExcluidas.addEventListener("click", () => {
+            abrirModalGenerico("modalAvaliacoesExcluidas");
         });
+    }
 
+    if (btnNova) {
+        btnNova.addEventListener("click", () => {
+            abrirModalGenerico("modalNovaAvaliacao");
+        });
+    }
+
+    if (inputBusca && tabelaBody) {
+        inputBusca.addEventListener("input", () => {
+            const termo = inputBusca.value.toLowerCase();
+            const linhas = tabelaBody.querySelectorAll("tr");
+
+            linhas.forEach(linha => {
+                const textoLinha = linha.innerText.toLowerCase();
+                linha.style.display = textoLinha.includes(termo) ? "" : "none";
+            });
+        });
+    }
+
+    document.querySelectorAll(".modal-overlay").forEach(modal => {
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+                document.body.classList.remove("modal-open");
+            }
+        });
     });
-
 });
 
-
 /* =========================================================
-   FECHAR MODAIS COM ESC
+   FECHAR COM ESC
    ========================================================= */
 
 document.addEventListener("keydown", (e) => {
-
     if (e.key !== "Escape") return;
 
     document.querySelectorAll(".modal-overlay").forEach(modal => {
-
         if (modal.style.display === "flex") {
-
             modal.style.display = "none";
-
         }
-
     });
 
     document.body.classList.remove("modal-open");
-
 });
 
-
 /* =========================================================
-   MODAL DETALHE DA AVALIAÇÃO
-   =========================================================
-   Preenche os dados da avaliação ao clicar no botão "olho"
+   MODAL DETALHE
    ========================================================= */
 
 function abrirModalDetalheAvaliacao(botao) {
-
-    const linha = botao.closest("tr");
-
-    if (!linha) return;
-
-    const colunas = linha.querySelectorAll("td");
-
-    if (colunas.length < 4) return;
-
-
-    /* =============================
-       COLETA DADOS DA TABELA
-       ============================= */
-
-    const id = colunas[0].innerText.trim();
-
-    const chamado = colunas[1].innerText.trim();
-
-    const avaliador = colunas[2].innerText.trim();
-
-    const nota = parseInt(colunas[3].innerText.trim());
-
-
-    /* comentário vem do atributo data */
+    const id = botao.getAttribute("data-id") || "-";
+    const chamado = botao.getAttribute("data-chamado") || "-";
+    const avaliador = botao.getAttribute("data-avaliador") || "-";
+    const nota = parseInt(botao.getAttribute("data-nota") || "0", 10);
+    const status = botao.getAttribute("data-status") || "-";
+    const data = botao.getAttribute("data-data") || "-";
     const comentario = botao.getAttribute("data-comentario") || "—";
 
-
-    /* =============================
-       PREENCHE MODAL
-       ============================= */
-
     setText("detAvaliacaoId", id);
-
     setText("detChamado", chamado);
-
     setText("detAvaliador", avaliador);
-
+    setText("detStatus", status);
+    setText("detData", data);
     setText("detComentario", comentario);
-
-
-    /* renderiza estrelas */
 
     renderStars(nota);
 
-
     abrirModalGenerico("modalDetalheAvaliacao");
-
 }
 
+/* =========================================================
+   MODAL EDITAR
+   ========================================================= */
+
+function abrirModalEditarAvaliacao(botao) {
+    const id = botao.getAttribute("data-id") || "";
+    const nota = botao.getAttribute("data-nota") || "";
+    const comentario = botao.getAttribute("data-comentario") || "";
+
+    const campoId = document.getElementById("editAvaliacaoId");
+    const campoNota = document.getElementById("editNota");
+    const campoComentario = document.getElementById("editComentario");
+
+    if (campoId) campoId.value = id;
+    if (campoNota) campoNota.value = nota;
+    if (campoComentario) campoComentario.value = comentario;
+
+    abrirModalGenerico("modalEditarAvaliacao");
+}
 
 /* =========================================================
-   FUNÇÃO AUXILIAR PARA DEFINIR TEXTO
+   AUXILIAR
    ========================================================= */
 
 function setText(idElemento, valor) {
-
     const elemento = document.getElementById(idElemento);
-
     if (!elemento) return;
-
     elemento.textContent = valor;
-
 }
 
-
 /* =========================================================
-   RENDERIZA ESTRELAS DA NOTA
+   ESTRELAS
    ========================================================= */
 
 function renderStars(nota) {
-
     const container = document.getElementById("detNota");
-
     if (!container) return;
 
     container.innerHTML = "";
 
-
-    /* cria estrelas */
-
     for (let i = 1; i <= 5; i++) {
-
         const estrela = document.createElement("i");
-
-        estrela.className =
-            i <= nota
-                ? "fas fa-star estrela-on"
-                : "far fa-star estrela-off";
+        estrela.className = i <= nota
+            ? "fas fa-star estrela-on"
+            : "far fa-star estrela-off";
 
         container.appendChild(estrela);
-
     }
 
-
-    /* adiciona texto da nota */
-
     const textoNota = document.createElement("span");
-
     textoNota.className = "nota-texto";
-
     textoNota.innerText = ` (${nota})`;
 
     container.appendChild(textoNota);
-
 }
