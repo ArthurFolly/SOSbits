@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório por Status - Help Desk</title>
+
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/relatorios.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body id="page-relatorio-status">
+
+<div class="app-container">
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-headset"></i>
+            <h2>Help Desk</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a th:href="@{/chamados/dashboard}">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/chamados}">
+                        <i class="fas fa-ticket-alt"></i> Chamados
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/relatorios/status}" class="active">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+
+                <li th:if="${usuarioPerfil == 'ADMIN'}">
+                    <a th:href="@{/admin/usuarios}">
+                        <i class="fas fa-users"></i> Usuários
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="page-header">
+            <div class="header-left">
+                <h1>Relatório por Status</h1>
+                <p>Visualização gráfica da situação atual dos chamados</p>
+            </div>
+        </header>
+
+        <div class="relatorios-topbar">
+            <a th:href="@{/relatorios}" class="btn-relatorio-outline">
+                <i class="fas fa-table"></i> Relatório Geral
+            </a>
+
+            <a th:href="@{/relatorios/status}" class="btn-relatorio-primary">
+                <i class="fas fa-chart-pie"></i> Status
+            </a>
+        </div>
+
+        <section class="relatorio-cards-grid">
+            <div class="relatorio-card relatorio-card-aberto">
+                <div class="relatorio-card-icon">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <div class="relatorio-card-content">
+                    <span class="relatorio-card-label">Abertos</span>
+                    <strong th:text="${abertos}">0</strong>
+                </div>
+            </div>
+
+            <div class="relatorio-card relatorio-card-andamento">
+                <div class="relatorio-card-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="relatorio-card-content">
+                    <span class="relatorio-card-label">Em Andamento</span>
+                    <strong th:text="${andamento}">0</strong>
+                </div>
+            </div>
+
+            <div class="relatorio-card relatorio-card-pendente">
+                <div class="relatorio-card-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="relatorio-card-content">
+                    <span class="relatorio-card-label">Pendentes</span>
+                    <strong th:text="${pendentes}">0</strong>
+                </div>
+            </div>
+
+            <div class="relatorio-card relatorio-card-fechado">
+                <div class="relatorio-card-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="relatorio-card-content">
+                    <span class="relatorio-card-label">Fechados</span>
+                    <strong th:text="${fechados}">0</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="chart-panel">
+            <div class="chart-panel-header">
+                <div>
+                    <h2>Gráfico de Status dos Chamados</h2>
+                    <p>Distribuição atual por situação</p>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="graficoStatus"></canvas>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+    const abertos = Number(/*[[${abertos}]]*/ 0);
+    const andamento = Number(/*[[${andamento}]]*/ 0);
+    const pendentes = Number(/*[[${pendentes}]]*/ 0);
+    const fechados = Number(/*[[${fechados}]]*/ 0);
+
+    const ctx = document.getElementById('graficoStatus');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Aberto', 'Em Andamento', 'Pendente', 'Fechado'],
+            datasets: [{
+                label: 'Quantidade de Chamados',
+                data: [abertos, andamento, pendentes, fechados],
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.70)',
+                    'rgba(245, 158, 11, 0.70)',
+                    'rgba(251, 191, 36, 0.70)',
+                    'rgba(34, 197, 94, 0.70)'
+                ],
+                borderColor: [
+                    'rgba(59, 130, 246, 1)',
+                    'rgba(245, 158, 11, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(34, 197, 94, 1)'
+                ],
+                borderWidth: 1.5,
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0,
+                        color: '#475569'
+                    },
+                    grid: {
+                        color: '#e2e8f0'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#475569'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

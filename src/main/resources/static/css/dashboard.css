@@ -336,7 +336,8 @@ body {
     white-space: normal;
     word-break: break-word;
     line-height: 1.35;
-    text-align: center;
+    text-align: left;
+    padding-left: 18px;
 }
 
 #page-dashboard .col-titulo {
@@ -345,7 +346,8 @@ body {
     white-space: normal;
     word-break: break-word;
     line-height: 1.35;
-    text-align: center;
+    text-align: left;
+    padding-left: 18px;
 }
 
 #page-dashboard .col-status,
@@ -430,4 +432,30 @@ body {
     background: #f8fafc;
     color: #475569;
     border-color: #cbd5e1;
+}
+
+/* ==========================================================================
+   DASHBOARD - CHAMADOS RECENTES
+   Alinhar TIPO e ASSUNTO à esquerda
+   ========================================================================== */
+
+#page-dashboard .card-table .chamados-table thead th:nth-child(2),
+#page-dashboard .card-table .chamados-table thead th:nth-child(3) {
+    text-align: left;
+    padding-left: 18px;
+}
+
+#page-dashboard .card-table .chamados-table tbody td:nth-child(2),
+#page-dashboard .card-table .chamados-table tbody td:nth-child(3) {
+    text-align: left;
+    padding-left: 18px;
+}
+
+.user-role{
+    font-size:12px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:20px;
+    background:#e0f2fe;
+    color:#0369a1;
 }

@@ -27,6 +27,12 @@ public class ChamadoService {
     }
 
     @Transactional(readOnly = true)
+    public List<Chamado> listarDoUsuarioLogado() {
+        Long idUsuario = usuarioService.getIdUsuarioLogado();
+        return chamadoRepository.findBySolicitanteIdAndDeletadoFalseOrderByDataCriacaoDesc(idUsuario);
+    }
+
+    @Transactional(readOnly = true)
     public List<Chamado> listarExcluidos() {
         return chamadoRepository.buscarExcluidosComSetor();
     }
@@ -57,9 +63,6 @@ public class ChamadoService {
         Setor setor = setorRepository.findById(chamado.getSetor().getId())
                 .orElseThrow(() -> new RuntimeException("Setor não encontrado."));
 
-        // =========================
-        // CREATE
-        // =========================
         if (chamado.getId() == null) {
             Usuario usuarioLogado = usuarioService.getUsuarioLogado();
             chamado.setSolicitante(usuarioLogado);
@@ -86,9 +89,6 @@ public class ChamadoService {
             return chamadoRepository.save(chamado);
         }
 
-        // =========================
-        // UPDATE
-        // =========================
         Chamado existente = chamadoRepository.findByIdComUsuarios(chamado.getId())
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado: " + chamado.getId()));
 

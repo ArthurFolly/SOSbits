@@ -30,7 +30,6 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // arquivos estáticos
                         .requestMatchers(
                                 "/css/**",
                                 "/js/**",
@@ -39,7 +38,6 @@ public class SecurityConfig {
                                 "/favicon.ico"
                         ).permitAll()
 
-                        // rotas públicas
                         .requestMatchers(
                                 "/",
                                 "/index",
@@ -49,16 +47,23 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // qualquer outra rota
+                        // SOMENTE ADMIN
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // ADMIN E SUPORTE
+                        .requestMatchers("/categorias/**").hasAnyRole("ADMIN", "SUPORTE")
+                        .requestMatchers("/setores/**").hasAnyRole("ADMIN", "SUPORTE")
+
+                        // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form
                         .loginPage("/")
                         .loginProcessingUrl("/login")
-                        .usernameParameter("username") // IMPORTANTE
+                        .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/dashboard", true)
+                        .defaultSuccessUrl("/chamados/dashboard", true)
                         .failureUrl("/?error")
                         .permitAll()
                 )
@@ -72,7 +77,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🔐 USUÁRIO + PERFIS VINDOS DO BANCO
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> usuarioRepository.findByEmail(username)
@@ -92,7 +96,6 @@ public class SecurityConfig {
                 );
     }
 
-    // ⚠️ apenas para teste
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();

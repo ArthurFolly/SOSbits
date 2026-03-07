@@ -3,10 +3,14 @@ package com.sosbits.helpdesk.controller;
 import com.sosbits.helpdesk.model.Categoria;
 import com.sosbits.helpdesk.service.CategoriaService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -21,10 +25,12 @@ public class CategoriaController {
 
     @GetMapping
     public String listar(@RequestParam(value = "deleted", required = false) Integer deleted,
-                         Model model) {
+                         Model model,
+                         @AuthenticationPrincipal UserDetails user) {
 
         boolean modoExcluidos = (deleted != null && deleted == 1);
 
+        model.addAttribute("usuarioPerfil", extrairPerfil(user));
         model.addAttribute("categorias",
                 modoExcluidos ? service.listarDeletadas() : service.listarAtivas());
 
@@ -147,5 +153,29 @@ public class CategoriaController {
     public ResponseEntity<Void> restaurarAjaxCompat(@PathVariable Long id) {
         service.restaurar(id);
         return ResponseEntity.ok().build();
+    }
+
+    private String extrairPerfil(UserDetails user) {
+        if (user == null || user.getAuthorities() == null || user.getAuthorities().isEmpty()) {
+            return "CONVIDADO";
+        }
+
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+
+        for (GrantedAuthority authority : authorities) {
+            String role = authority.getAuthority();
+
+            if ("ROLE_ADMIN".equals(role)) {
+                return "ADMIN";
+            }
+            if ("ROLE_SUPORTE".equals(role)) {
+                return "SUPORTE";
+            }
+            if ("ROLE_USUARIO".equals(role)) {
+                return "USUARIO";
+            }
+        }
+
+        return authorities.iterator().next().getAuthority().replace("ROLE_", "");
     }
 }

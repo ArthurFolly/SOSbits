@@ -17,6 +17,8 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
     List<Chamado> findFirst5ByDeletadoFalseOrderByDataCriacaoDesc();
 
+    List<Chamado> findBySolicitanteIdAndDeletadoFalseOrderByDataCriacaoDesc(Long idUsuario);
+
     long countByStatusAndDeletadoFalse(String status);
 
     long countByPrioridadeAndDeletadoFalse(String prioridade);

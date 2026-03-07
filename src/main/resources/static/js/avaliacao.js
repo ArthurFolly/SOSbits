@@ -1,126 +1,203 @@
+/* =========================================================
+   MODAIS GENÉRICOS
+   =========================================================
+   Funções reutilizáveis para abrir e fechar modais do sistema
+   ========================================================= */
+
 function abrirModalGenerico(modalId) {
+
     const modal = document.getElementById(modalId);
+
     if (!modal) return;
+
     modal.style.display = "flex";
+
     document.body.classList.add("modal-open");
 }
 
 function fecharModalGenerico(modalId) {
+
     const modal = document.getElementById(modalId);
+
     if (!modal) return;
+
     modal.style.display = "none";
+
     document.body.classList.remove("modal-open");
 }
 
+
+/* =========================================================
+   BUSCA NA TABELA DE AVALIAÇÕES
+   =========================================================
+   Filtra dinamicamente os resultados digitados no campo
+   de busca da página de avaliações
+   ========================================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
-    const input = document.getElementById("avaliacoesSearchInput");
-    const tbody = document.getElementById("avaliacoesTableBody");
 
-    if (input && tbody) {
-        input.addEventListener("input", () => {
-            const termo = (input.value || "").trim().toLowerCase();
+    const inputBusca = document.getElementById("avaliacoesSearchInput");
 
-            const linhas = tbody.querySelectorAll("tr");
-            linhas.forEach((tr) => {
-                // Ignora linha "Nenhuma avaliação encontrada"
-                if (tr.querySelector("td[colspan]")) return;
+    const tabelaBody = document.getElementById("avaliacoesTableBody");
 
-                const textoLinha = (tr.innerText || "").toLowerCase();
-                tr.style.display = textoLinha.includes(termo) ? "" : "none";
-            });
+    if (!inputBusca || !tabelaBody) return;
+
+    inputBusca.addEventListener("input", () => {
+
+        const termo = inputBusca.value.toLowerCase();
+
+        const linhas = tabelaBody.querySelectorAll("tr");
+
+        linhas.forEach(linha => {
+
+            /* ignora linha "nenhum resultado" */
+
+            if (linha.querySelector("td[colspan]")) return;
+
+            const textoLinha = linha.innerText.toLowerCase();
+
+            linha.style.display =
+                textoLinha.includes(termo) ? "" : "none";
+
         });
-    }
 
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            // fecha qualquer modal overlay visível
-            document.querySelectorAll(".modal-overlay").forEach((m) => {
-                if (m.style.display === "flex") m.style.display = "none";
-            });
-            document.body.classList.remove("modal-open");
-        }
     });
+
 });
 
-function abrirModalDetalheAvaliacao(btn) {
-    const tr = btn.closest("tr");
-    if (!tr) return;
 
-    const tds = tr.querySelectorAll("td");
-    if (!tds || tds.length < 6) return;
+/* =========================================================
+   FECHAR MODAIS COM ESC
+   ========================================================= */
 
-    const id = (tds[0].innerText || "").trim();
-    const chamado = (tds[1].innerText || "").trim();
-    const avaliador = (tds[2].innerText || "").trim();
-    const nota = (tds[3].innerText || "").trim();
+document.addEventListener("keydown", (e) => {
 
-    const comentario = (btn.getAttribute("data-comentario") || "—").trim();
+    if (e.key !== "Escape") return;
 
-    setText("detAvaliacaoId", id || "-");
-    setText("detChamado", chamado || "-");
-    setText("detAvaliador", avaliador || "-");
-    setText("detNota", nota || "-");
-    setText("detComentario", comentario || "—");
+    document.querySelectorAll(".modal-overlay").forEach(modal => {
+
+        if (modal.style.display === "flex") {
+
+            modal.style.display = "none";
+
+        }
+
+    });
+
+    document.body.classList.remove("modal-open");
+
+});
+
+
+/* =========================================================
+   MODAL DETALHE DA AVALIAÇÃO
+   =========================================================
+   Preenche os dados da avaliação ao clicar no botão "olho"
+   ========================================================= */
+
+function abrirModalDetalheAvaliacao(botao) {
+
+    const linha = botao.closest("tr");
+
+    if (!linha) return;
+
+    const colunas = linha.querySelectorAll("td");
+
+    if (colunas.length < 4) return;
+
+
+    /* =============================
+       COLETA DADOS DA TABELA
+       ============================= */
+
+    const id = colunas[0].innerText.trim();
+
+    const chamado = colunas[1].innerText.trim();
+
+    const avaliador = colunas[2].innerText.trim();
+
+    const nota = parseInt(colunas[3].innerText.trim());
+
+
+    /* comentário vem do atributo data */
+    const comentario = botao.getAttribute("data-comentario") || "—";
+
+
+    /* =============================
+       PREENCHE MODAL
+       ============================= */
+
+    setText("detAvaliacaoId", id);
+
+    setText("detChamado", chamado);
+
+    setText("detAvaliador", avaliador);
+
+    setText("detComentario", comentario);
+
+
+    /* renderiza estrelas */
+
+    renderStars(nota);
+
 
     abrirModalGenerico("modalDetalheAvaliacao");
+
 }
 
-function setText(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
+
+/* =========================================================
+   FUNÇÃO AUXILIAR PARA DEFINIR TEXTO
+   ========================================================= */
+
+function setText(idElemento, valor) {
+
+    const elemento = document.getElementById(idElemento);
+
+    if (!elemento) return;
+
+    elemento.textContent = valor;
+
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const select = document.getElementById("selectChamadoAvaliacao");
-    const previewBox = document.getElementById("previewChamadoBox");
-    const pvErro = document.getElementById("pvErro");
 
-    if (!select) return;
+/* =========================================================
+   RENDERIZA ESTRELAS DA NOTA
+   ========================================================= */
 
-    select.addEventListener("change", async () => {
-        const id = (select.value || "").trim();
+function renderStars(nota) {
 
-        // reset visual
-        if (pvErro) {
-            pvErro.style.display = "none";
-            pvErro.innerText = "";
-        }
-        if (previewBox) previewBox.style.display = "none";
+    const container = document.getElementById("detNota");
 
-        if (!id) return;
+    if (!container) return;
 
-        try {
-            const resp = await fetch(`/avaliacoes/chamados/${id}/resumo`, {
-                headers: { "Accept": "application/json" }
-            });
+    container.innerHTML = "";
 
-            if (!resp.ok) throw new Error("Falha ao buscar resumo.");
 
-            const data = await resp.json();
+    /* cria estrelas */
 
-            const elTitulo = document.getElementById("pvTitulo");
-            const elStatus = document.getElementById("pvStatus");
-            const elTipo = document.getElementById("pvTipo");
-            const elPri = document.getElementById("pvPrioridade");
-            const elAt = document.getElementById("pvAtendente");
-            const elDesc = document.getElementById("pvDescricao");
+    for (let i = 1; i <= 5; i++) {
 
-            if (elTitulo) elTitulo.innerText = `#${data.id} - ${data.titulo ?? "-"}`;
-            if (elStatus) elStatus.innerText = data.status ?? "-";
-            if (elTipo) elTipo.innerText = data.tipo ?? "-";
-            if (elPri) elPri.innerText = data.prioridade ?? "-";
-            if (elAt) elAt.innerText = data.nomeAtendente ?? "Não atribuído";
-            if (elDesc) elDesc.innerText = data.descricao ?? "-";
+        const estrela = document.createElement("i");
 
-            if (previewBox) previewBox.style.display = "block";
-        } catch (e) {
+        estrela.className =
+            i <= nota
+                ? "fas fa-star estrela-on"
+                : "far fa-star estrela-off";
 
-            if (pvErro) {
-                pvErro.innerText =
-                    "Não foi possível carregar os dados do chamado (pode já ter sido avaliado ou você não tem permissão).";
-                pvErro.style.display = "block";
-            }
-            if (previewBox) previewBox.style.display = "block";
-        }
-    });
-});
+        container.appendChild(estrela);
+
+    }
+
+
+    /* adiciona texto da nota */
+
+    const textoNota = document.createElement("span");
+
+    textoNota.className = "nota-texto";
+
+    textoNota.innerText = ` (${nota})`;
+
+    container.appendChild(textoNota);
+
+}

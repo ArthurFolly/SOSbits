@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Chamados - Help Desk</title>
+
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/chamados.css}">
+    <link rel="stylesheet" th:href="@{/css/relatorios.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body id="page-relatorios-geral">
+
+<div class="app-container">
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-headset"></i>
+            <h2>Help Desk</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a th:href="@{/chamados/dashboard}">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/chamados}">
+                        <i class="fas fa-ticket-alt"></i> Chamados
+                    </a>
+                </li>
+
+                <li>
+                    <a th:href="@{/relatorios}" class="active">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+
+                <li th:if="${usuarioPerfil == 'ADMIN'}">
+                    <a th:href="@{/admin/usuarios}">
+                        <i class="fas fa-users"></i> Usuários
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="page-header">
+            <div class="header-left">
+                <h1>Relatório Geral de Chamados</h1>
+                <p>Lista completa de tickets do sistema</p>
+            </div>
+        </header>
+
+        <!-- BOTOES DE NAVEGACAO ENTRE RELATORIOS -->
+        <div class="relatorios-topbar">
+            <a th:href="@{/relatorios}" class="btn-relatorio-primary">
+                <i class="fas fa-table"></i> Relatório Geral
+            </a>
+
+            <a th:href="@{/relatorios/status}" class="btn-relatorio-outline">
+                <i class="fas fa-chart-pie"></i> Status
+            </a>
+        </div>
+
+        <div class="card-table">
+            <table class="chamados-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>TIPO</th>
+                    <th>SETOR</th>
+                    <th>ASSUNTO</th>
+                    <th>STATUS</th>
+                    <th>PRIORIDADE</th>
+                    <th>DATA</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="chamado : ${chamados}">
+                    <td class="id-cell" th:text="'#' + ${chamado.id}">#1</td>
+
+                    <td class="col-tipo" th:text="${chamado.tipo}">
+                        Tipo
+                    </td>
+
+                    <td class="col-setor" th:text="${chamado.setor != null ? chamado.setor.nome : '-'}">
+                        Setor
+                    </td>
+
+                    <td class="col-titulo" th:text="${chamado.titulo}">
+                        Assunto
+                    </td>
+
+                    <td class="col-status">
+                        <th:block th:switch="${chamado.status}">
+                            <span th:case="'ABERTO'" class="table-status-badge table-status-aberto">Aberto</span>
+                            <span th:case="'EM_ANDAMENTO'" class="table-status-badge table-status-andamento">Em Andamento</span>
+                            <span th:case="'PENDENTE'" class="table-status-badge table-status-pendente">Pendente</span>
+                            <span th:case="'FECHADO'" class="table-status-badge table-status-fechado">Fechado</span>
+
+                            <span th:case="'Aberto'" class="table-status-badge table-status-aberto">Aberto</span>
+                            <span th:case="'Em Andamento'" class="table-status-badge table-status-andamento">Em Andamento</span>
+                            <span th:case="'Pendente'" class="table-status-badge table-status-pendente">Pendente</span>
+                            <span th:case="'Fechado'" class="table-status-badge table-status-fechado">Fechado</span>
+                            <span th:case="'Resolvido'" class="table-status-badge table-status-fechado">Fechado</span>
+                            <span th:case="'RESOLVIDO'" class="table-status-badge table-status-fechado">Fechado</span>
+
+                            <span th:case="*" class="table-status-badge table-status-default" th:text="${chamado.status}">
+                                Status
+                            </span>
+                        </th:block>
+                    </td>
+
+                    <td class="col-prio">
+                        <th:block th:switch="${chamado.prioridade}">
+                            <span th:case="'ALTA'" class="table-prio-badge table-prio-alta">Alta</span>
+                            <span th:case="'MEDIA'" class="table-prio-badge table-prio-media">Média</span>
+                            <span th:case="'BAIXA'" class="table-prio-badge table-prio-baixa">Baixa</span>
+
+                            <span th:case="'Alta'" class="table-prio-badge table-prio-alta">Alta</span>
+                            <span th:case="'Média'" class="table-prio-badge table-prio-media">Média</span>
+                            <span th:case="'Media'" class="table-prio-badge table-prio-media">Média</span>
+                            <span th:case="'Baixa'" class="table-prio-badge table-prio-baixa">Baixa</span>
+
+                            <span th:case="*" class="table-prio-badge table-prio-default" th:text="${chamado.prioridade}">
+                                Prioridade
+                            </span>
+                        </th:block>
+                    </td>
+
+                    <td class="col-data" th:text="${#temporals.format(chamado.dataCriacao,'dd/MM/yyyy')}">
+                        28/01/2026
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(chamados)}">
+                    <td colspan="7" class="empty-row">
+                        Nenhum chamado encontrado.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

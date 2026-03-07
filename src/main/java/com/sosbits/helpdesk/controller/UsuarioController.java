@@ -49,7 +49,6 @@ public class UsuarioController {
             return "redirect:/cadastro?error=email";
         }
 
-
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setAtivo(true);
 
