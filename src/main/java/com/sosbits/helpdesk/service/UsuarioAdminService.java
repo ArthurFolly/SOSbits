@@ -66,9 +66,7 @@ public class UsuarioAdminService {
             atual.setEmail(usuario.getEmail());
             atual.setCpf(usuario.getCpf());
             atual.setTelefone(usuario.getTelefone());
-            /* ==========================
-            ENDEREÇO
-            ========================== */
+
 
             atual.setCep(usuario.getCep());
             atual.setLogradouro(usuario.getLogradouro());

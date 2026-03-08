@@ -122,7 +122,6 @@ return;
 
 }
 
-/* PREENCHE CAMPOS */
 
 document.querySelector('[name="logradouro"]').value = data.logradouro || "";
 document.querySelector('[name="bairro"]').value = data.bairro || "";
@@ -130,7 +129,7 @@ document.querySelector('[name="cidade"]').value = data.localidade || "";
 document.querySelector('[name="estado"]').value = data.uf || "";
 document.querySelector('[name="complemento"]').value = data.complemento || "";
 
-/* FOCO NO NUMERO */
+
 
 document.querySelector('[name="numero"]').focus();
 

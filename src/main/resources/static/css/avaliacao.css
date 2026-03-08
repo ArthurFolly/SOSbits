@@ -1,6 +1,4 @@
-/* =========================================================
-   AVALIAÇÕES - FILTROS
-   ========================================================= */
+
 
 #page-avaliacoes .avaliacoes-filters-row{
 display:flex;
@@ -19,7 +17,7 @@ flex:1;
 flex-wrap:wrap;
 }
 
-/* BUSCA */
+
 
 #page-avaliacoes .avaliacoes-search-wrapper{
 position:relative;
@@ -45,7 +43,7 @@ outline:none;
 background:#fff;
 }
 
-/* BOTÕES */
+
 
 #page-avaliacoes .avaliacoes-btn-excluidas,
 #page-avaliacoes .avaliacoes-btn-filter{
@@ -82,9 +80,7 @@ cursor:pointer;
 background:#1d4ed8;
 }
 
-/* =========================================================
-   CARD TABELA
-   ========================================================= */
+
 
 #page-avaliacoes .avaliacoes-card-table{
 background:#fff;
@@ -93,9 +89,7 @@ border:1px solid #e2e8f0;
 overflow-x:auto;
 }
 
-/* =========================================================
-   TABELA
-   ========================================================= */
+
 
 #page-avaliacoes .avaliacoes-table{
 width:100%;
@@ -151,9 +145,7 @@ font-size:13px;
 color:#b91c1c;
 }
 
-/* =========================================================
-   BADGES
-   ========================================================= */
+
 
 .avaliacoes-badge{
 padding:6px 10px;
@@ -234,9 +226,7 @@ color:#dc2626;
 color:#16a34a;
 }
 
-/* =========================================================
-   MODAIS
-   ========================================================= */
+
 
 .avaliacao-modal-box{
 width:92%;
@@ -351,9 +341,7 @@ color:#334155;
 background:#e2e8f0;
 }
 
-/* =========================================================
-   MODAL DETALHE
-   ========================================================= */
+
 
 #modalDetalheAvaliacao .avaliacao-detalhe-grid{
 display:grid;
@@ -410,17 +398,11 @@ margin-left:6px;
 color:#475569;
 }
 
-/* =========================================================
-   MODAL EXCLUÍDAS
-   ========================================================= */
 
 .avaliacoes-card-table-modal{
 margin:24px;
 }
 
-/* =========================================================
-   RESPONSIVO
-   ========================================================= */
 
 @media (max-width: 768px){
 
