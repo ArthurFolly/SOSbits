@@ -23,30 +23,30 @@ public class UsuarioService {
             throw new RuntimeException("Usuário não autenticado");
         }
 
-        // No seu SecurityConfig, o username é o EMAIL
         String email = auth.getName();
 
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado no banco: " + email));
     }
 
-    // ✅ PARA USAR NO HEADER (Thymeleaf): ${usuarioNome}
     public String getNomeUsuarioLogado() {
         Usuario u = getUsuarioLogado();
 
         if (u.getNome() != null && !u.getNome().trim().isEmpty()) {
             return u.getNome().trim();
         }
-        return u.getEmail(); // fallback
+
+        return u.getEmail();
     }
 
     public Long getIdUsuarioLogado() {
         return getUsuarioLogado().getId();
     }
 
-    // =========================
-    // CRUD / LISTAGENS
-    // =========================
+    public Usuario buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email).orElse(null);
+    }
+
     public List<Usuario> listarAtivos() {
         return usuarioRepository.findByAtivoTrueOrderByIdAsc();
     }
@@ -71,14 +71,12 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    // ✅ Soft delete (admin)
     public void desativar(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(false);
         usuarioRepository.save(usuario);
     }
 
-    // ✅ Restore (admin)
     public void restaurar(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(true);

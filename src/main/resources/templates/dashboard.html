@@ -16,7 +16,6 @@
 
 <div class="app-container">
 
-    <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
 
         <div class="sidebar-header">
@@ -55,7 +54,6 @@
                     </a>
                 </li>
 
-                <!-- NOVO BOTÃO: RELATÓRIOS -->
                 <li th:if="${usuarioPerfil == 'ADMIN' or usuarioPerfil == 'SUPORTE'}">
                     <a th:href="@{/relatorios}">
                         <i class="fas fa-chart-line"></i>
@@ -84,12 +82,17 @@
                     </a>
                 </li>
 
+                <li th:if="${usuarioPerfil == 'ADMIN'}">
+                    <a th:href="@{/admin/logs-acesso}">
+                        <i class="fas fa-history"></i>
+                        <span>Logs de acesso</span>
+                    </a>
+                </li>
             </ul>
         </nav>
 
     </aside>
 
-    <!-- ================= CONTEÚDO PRINCIPAL ================= -->
     <main class="main-content">
 
         <div class="dashboard-page">
@@ -127,7 +130,6 @@
 
         </div>
 
-        <!-- ================= CARDS DE ESTATÍSTICAS ================= -->
         <section class="stats-grid">
 
             <div class="stat-card open">
@@ -172,7 +174,6 @@
 
         </section>
 
-        <!-- ================= CHAMADOS RECENTES ================= -->
         <section class="recent-tickets">
 
             <div class="section-header">

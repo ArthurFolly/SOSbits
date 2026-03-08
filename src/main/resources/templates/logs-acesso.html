@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logs de Acesso - Help Desk</title>
+
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+  <link rel="stylesheet" th:href="@{/css/chamados.css}">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body id="page-logs-acesso">
+
+<div class="app-container">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-headset"></i>
+      <h2>Help Desk</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <a th:href="@{/chamados/dashboard}">
+            <i class="fas fa-th-large"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/chamados}">
+            <i class="fas fa-ticket-alt"></i>
+            <span>Chamados</span>
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/chamados(novo=1)}">
+            <i class="fas fa-plus"></i>
+            <span>Abrir Chamado</span>
+          </a>
+        </li>
+
+        <li>
+          <a th:href="@{/avaliacoes}">
+            <i class="fas fa-star"></i>
+            <span>Avaliações</span>
+          </a>
+        </li>
+
+        <li th:if="${usuarioPerfil == 'ADMIN' or usuarioPerfil == 'SUPORTE'}">
+          <a th:href="@{/relatorios}">
+            <i class="fas fa-chart-line"></i>
+            <span>Relatórios</span>
+          </a>
+        </li>
+
+        <li th:if="${usuarioPerfil == 'ADMIN'}">
+          <a th:href="@{/admin/usuarios}">
+            <i class="fas fa-users"></i>
+            <span>Usuários</span>
+          </a>
+        </li>
+
+        <li th:if="${usuarioPerfil == 'ADMIN' or usuarioPerfil == 'SUPORTE'}">
+          <a th:href="@{/categorias}">
+            <i class="fas fa-tags"></i>
+            <span>Categorias</span>
+          </a>
+        </li>
+
+        <li th:if="${usuarioPerfil == 'ADMIN' or usuarioPerfil == 'SUPORTE'}">
+          <a th:href="@{/setores}">
+            <i class="fas fa-building"></i>
+            <span>Setores</span>
+          </a>
+        </li>
+
+        <li th:if="${usuarioPerfil == 'ADMIN'}">
+          <a th:href="@{/admin/logs-acesso}" class="active">
+            <i class="fas fa-history"></i>
+            <span>Logs de acesso</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="dashboard-page">
+      <header class="page-header">
+        <div class="header-left">
+          <h1>Logs de acesso</h1>
+          <p>Histórico de entrada e saída dos usuários</p>
+        </div>
+
+        <div class="header-right">
+          <div class="user-info">
+
+            <span class="user-role" th:text="${usuarioPerfil}"></span>
+
+            <span class="user-name" th:text="${usuarioNome} ?: 'Convidado'">
+                Convidado
+            </span>
+
+            <div class="user-avatar"
+                 th:text="${usuarioNome != null and #strings.length(usuarioNome) >= 2 ? #strings.toUpperCase(#strings.substring(usuarioNome,0,2)) : 'US'}">
+              US
+            </div>
+
+            <a th:href="@{/logout}" class="logout-link">Sair</a>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <section class="recent-tickets">
+      <div class="section-header">
+        <h2>Registros</h2>
+      </div>
+
+      <div class="card-table">
+        <table class="chamados-table">
+
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>USUÁRIO</th>
+            <th>E-MAIL</th>
+            <th>PERFIL</th>
+            <th>LOGIN</th>
+            <th>LOGOUT</th>
+            <th>TEMPO_ACESSO (min.)</th>
+          </tr>
+          </thead>
+
+          <tbody>
+
+          <tr th:each="log : ${logs}">
+
+            <td th:text="${log.id}">1</td>
+
+            <td th:text="${log.nomeUsuario}">Administrador</td>
+
+            <td th:text="${log.emailUsuario}">admin@gmail.com</td>
+
+            <td th:text="${log.perfilUsuario}">ADMIN</td>
+
+            <td th:text="${log.dataHoraLogin != null ? #temporals.format(log.dataHoraLogin, 'dd/MM/yyyy HH:mm:ss') : '-'}">-</td>
+
+            <td th:text="${log.dataHoraLogout != null ? #temporals.format(log.dataHoraLogout, 'dd/MM/yyyy HH:mm:ss') : '-'}">-</td>
+
+            <td th:text="${log.tempoAcessoMinutos != null ? log.tempoAcessoMinutos : ''}"></td>
+
+          </tr>
+
+          <tr th:if="${#lists.isEmpty(logs)}">
+            <td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">
+              Nenhum log de acesso encontrado.
+            </td>
+          </tr>
+
+          </tbody>
+
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>

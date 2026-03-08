@@ -1,6 +1,8 @@
 package com.sosbits.helpdesk.config;
 
 import com.sosbits.helpdesk.repository.UsuarioRepository;
+import com.sosbits.helpdesk.security.LoginSuccessHandler;
+import com.sosbits.helpdesk.security.LogoutHandlerCustom;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,9 +19,17 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final UsuarioRepository usuarioRepository;
+    private final LoginSuccessHandler loginSuccessHandler;
+    private final LogoutHandlerCustom logoutHandlerCustom;
 
-    public SecurityConfig(UsuarioRepository usuarioRepository) {
+    public SecurityConfig(
+            UsuarioRepository usuarioRepository,
+            LoginSuccessHandler loginSuccessHandler,
+            LogoutHandlerCustom logoutHandlerCustom
+    ) {
         this.usuarioRepository = usuarioRepository;
+        this.loginSuccessHandler = loginSuccessHandler;
+        this.logoutHandlerCustom = logoutHandlerCustom;
     }
 
     @Bean
@@ -55,7 +65,6 @@ public class SecurityConfig {
                         .requestMatchers("/setores/**").hasAnyRole("ADMIN", "SUPORTE")
                         .requestMatchers("/relatorios/**").hasAnyRole("ADMIN", "SUPORTE")
 
-                        // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )
 
@@ -64,13 +73,14 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/chamados/dashboard", true)
+                        .successHandler(loginSuccessHandler)
                         .failureUrl("/?error")
                         .permitAll()
                 )
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        .addLogoutHandler(logoutHandlerCustom)
                         .logoutSuccessUrl("/")
                         .permitAll()
                 );
