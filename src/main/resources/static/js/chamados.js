@@ -381,8 +381,8 @@ function aplicarFiltrosElite() {
     const statusChip = document.querySelector("#statusFilterGroup .chip.active");
     const prioChip = document.querySelector("#prioFilterGroup .chip.active");
 
-    const statusSelecionado = statusChip ? statusChip.innerText.trim() : "Tudo";
-    const prioSelecionada = prioChip ? prioChip.innerText.trim() : "Tudo";
+    const statusSelecionado = statusChip ? statusChip.innerText.trim().toLowerCase() : "tudo";
+    const prioSelecionada = prioChip ? prioChip.innerText.trim().toLowerCase() : "tudo";
 
     const tbody = document.getElementById("chamadosTable");
     if (!tbody) return;
@@ -391,28 +391,38 @@ function aplicarFiltrosElite() {
 
     rows.forEach(row => {
         const tds = row.querySelectorAll("td");
-        if (tds.length < 7) return;
+        if (tds.length < 8) return;
 
         const idTxt = (tds[0]?.innerText || "").trim().toLowerCase();
-        const tipoTxt = (tds[1]?.innerText || "").trim().toLowerCase();
-        const setorTxt = (tds[2]?.innerText || "").trim().toLowerCase();
-        const assuntoTxt = (tds[3]?.innerText || "").trim().toLowerCase();
+        const solicitanteTxt = (tds[1]?.innerText || "").trim().toLowerCase();
+        const tipoTxt = (tds[2]?.innerText || "").trim().toLowerCase();
+        const setorTxt = (tds[3]?.innerText || "").trim().toLowerCase();
+        const assuntoTxt = (tds[4]?.innerText || "").trim().toLowerCase();
+        const statusTxt = (tds[5]?.innerText || "").trim().toLowerCase();
+        const prioridadeTxt = (tds[6]?.innerText || "").trim().toLowerCase();
+        const dataBr = (tds[7]?.innerText || "").trim();
 
-        const statusTxt = (tds[4]?.innerText || "").trim();
-        const prioridadeTxt = (tds[5]?.innerText || "").trim();
-
-        const dataBr = (tds[6]?.innerText || "").trim();
         const dataISO = brDateToISO(dataBr);
 
         let mostrar = true;
 
-        if (statusSelecionado !== "Tudo" && statusTxt !== statusSelecionado) mostrar = false;
-        if (prioSelecionada !== "Tudo" && prioridadeTxt !== prioSelecionada) mostrar = false;
-        if (dataFiltroISO && dataISO !== dataFiltroISO) mostrar = false;
+        if (statusSelecionado !== "tudo" && statusTxt !== statusSelecionado) {
+            mostrar = false;
+        }
+
+        if (prioSelecionada !== "tudo" && prioridadeTxt !== prioSelecionada) {
+            mostrar = false;
+        }
+
+        if (dataFiltroISO && dataISO !== dataFiltroISO) {
+            mostrar = false;
+        }
 
         if (busca) {
-            const textoLinha = `${idTxt} ${tipoTxt} ${setorTxt} ${assuntoTxt}`;
-            if (!textoLinha.includes(busca)) mostrar = false;
+            const textoLinha = `${idTxt} ${solicitanteTxt} ${tipoTxt} ${setorTxt} ${assuntoTxt}`;
+            if (!textoLinha.includes(busca)) {
+                mostrar = false;
+            }
         }
 
         row.style.display = mostrar ? "" : "none";
@@ -425,9 +435,11 @@ function brDateToISO(br) {
     const s = (br || "").trim();
     const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
     if (!m) return "";
+
     const dd = m[1];
     const mm = m[2];
     const yyyy = m[3];
+
     return `${yyyy}-${mm}-${dd}`;
 }
 
@@ -443,7 +455,9 @@ function limparFiltros() {
 
     const tbody = document.getElementById("chamadosTable");
     if (tbody) {
-        tbody.querySelectorAll("tr").forEach(tr => tr.style.display = "");
+        tbody.querySelectorAll("tr").forEach(tr => {
+            tr.style.display = "";
+        });
     }
 }
 
@@ -454,7 +468,7 @@ function setChipTudoAtivo(groupId) {
     const chips = Array.from(group.querySelectorAll(".chip"));
     chips.forEach(c => c.classList.remove("active"));
 
-    const chipTudo = chips.find(c => c.innerText.trim() === "Tudo");
+    const chipTudo = chips.find(c => c.innerText.trim().toLowerCase() === "tudo");
     if (chipTudo) chipTudo.classList.add("active");
 }
 
@@ -493,16 +507,18 @@ function aplicarBuscaTopo(busca) {
     if (!tbody) return;
 
     const rows = Array.from(tbody.querySelectorAll("tr"));
+
     rows.forEach(row => {
         const tds = row.querySelectorAll("td");
-        if (tds.length < 4) return;
+        if (tds.length < 8) return;
 
         const idTxt = (tds[0]?.innerText || "").trim().toLowerCase();
-        const tipoTxt = (tds[1]?.innerText || "").trim().toLowerCase();
-        const setorTxt = (tds[2]?.innerText || "").trim().toLowerCase();
-        const assuntoTxt = (tds[3]?.innerText || "").trim().toLowerCase();
+        const solicitanteTxt = (tds[1]?.innerText || "").trim().toLowerCase();
+        const tipoTxt = (tds[2]?.innerText || "").trim().toLowerCase();
+        const setorTxt = (tds[3]?.innerText || "").trim().toLowerCase();
+        const assuntoTxt = (tds[4]?.innerText || "").trim().toLowerCase();
 
-        const textoLinha = `${idTxt} ${tipoTxt} ${setorTxt} ${assuntoTxt}`;
+        const textoLinha = `${idTxt} ${solicitanteTxt} ${tipoTxt} ${setorTxt} ${assuntoTxt}`;
         const mostrar = !busca || textoLinha.includes(busca);
 
         row.style.display = mostrar ? "" : "none";

@@ -5,7 +5,7 @@
         ativarBuscaUsuarios();
         ativarCliqueForaParaFecharModais();
         ativarTeclaESCParaFecharModais();
-        abrirModalEdicaoSeNecessario(); // ✅ FALTAVA ISSO
+        abrirModalEdicaoSeNecessario();
     });
 
     function ativarBuscaUsuarios() {
@@ -66,6 +66,7 @@
             }
         });
     }
+
     function ativarTeclaESCParaFecharModais() {
         document.addEventListener("keydown", function (e) {
             if (e.key !== "Escape") return;
@@ -75,6 +76,7 @@
             });
         });
     }
+
     function abrirModalEdicaoSeNecessario() {
         const flag = document.getElementById("modoEdicaoFlag");
         if (!flag) return;
@@ -85,60 +87,53 @@
         }
     }
 
-/* =========================================
-CONSULTA CEP VIA VIACEP
-========================================= */
+    /* =========================================
+       CONSULTA CEP VIA VIACEP
+    ========================================= */
 
-const cepInput = document.getElementById("cep");
-const btnBuscarCep = document.getElementById("btnBuscarCep");
+    const cepInput = document.getElementById("cep");
+    const btnBuscarCep = document.getElementById("btnBuscarCep");
 
-if(btnBuscarCep){
+    if (btnBuscarCep) {
+        btnBuscarCep.addEventListener("click", buscarCep);
+    }
 
-btnBuscarCep.addEventListener("click", buscarCep);
+    async function buscarCep() {
+        if (!cepInput) return;
 
-}
+        let cep = cepInput.value.replace(/\D/g, "");
 
-async function buscarCep(){
+        if (cep.length !== 8) {
+            alert("CEP inválido");
+            return;
+        }
 
-let cep = cepInput.value.replace(/\D/g,'');
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
 
-if(cep.length !== 8){
+            if (data.erro) {
+                alert("CEP não encontrado");
+                return;
+            }
 
-alert("CEP inválido");
-return;
+            const logradouro = document.querySelector('[name="logradouro"]');
+            const bairro = document.querySelector('[name="bairro"]');
+            const cidade = document.querySelector('[name="cidade"]');
+            const estado = document.querySelector('[name="estado"]');
+            const complemento = document.querySelector('[name="complemento"]');
+            const numero = document.querySelector('[name="numero"]');
 
-}
+            if (logradouro) logradouro.value = data.logradouro || "";
+            if (bairro) bairro.value = data.bairro || "";
+            if (cidade) cidade.value = data.localidade || "";
+            if (estado) estado.value = data.uf || "";
+            if (complemento) complemento.value = data.complemento || "";
 
-try{
+            if (numero) numero.focus();
 
-const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-
-const data = await response.json();
-
-if(data.erro){
-
-alert("CEP não encontrado");
-return;
-
-}
-
-
-document.querySelector('[name="logradouro"]').value = data.logradouro || "";
-document.querySelector('[name="bairro"]').value = data.bairro || "";
-document.querySelector('[name="cidade"]').value = data.localidade || "";
-document.querySelector('[name="estado"]').value = data.uf || "";
-document.querySelector('[name="complemento"]').value = data.complemento || "";
-
-
-
-document.querySelector('[name="numero"]').focus();
-
-}catch(error){
-
-alert("Erro ao consultar CEP");
-
-}
-
-}
-
+        } catch (error) {
+            alert("Erro ao consultar CEP");
+        }
+    }
 })();

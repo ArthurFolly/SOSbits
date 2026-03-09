@@ -54,7 +54,6 @@
         </nav>
     </aside>
 
-
     <main class="main-content">
 
         <header class="page-header">
@@ -88,7 +87,6 @@
                     <i class="fas fa-sliders-h"></i>
                     Filtros
                 </button>
-
             </div>
 
             <div class="usuarios-filters-right">
@@ -100,7 +98,6 @@
                 </button>
             </div>
         </div>
-
 
         <div class="usuarios-card-table">
             <table class="usuarios-table">
@@ -156,7 +153,7 @@
     </main>
 </div>
 
-
+<!-- MODAL NOVO / EDITAR USUÁRIO -->
 <div class="modal-overlay" id="modalNovoUsuario">
     <div class="modal-box elite-box modal-usuario-tabs">
 
@@ -258,16 +255,14 @@
                         <label for="cep">CEP</label>
 
                         <div class="cep-container">
-                            <input
-                                    type="text"
-                                    id="cep"
-                                    th:field="*{cep}"
-                                    class="input-elite"
-                                    placeholder="00000-000"
-                                    maxlength="9">
+                            <input type="text"
+                                   id="cep"
+                                   th:field="*{cep}"
+                                   class="input-elite"
+                                   placeholder="00000-000"
+                                   maxlength="9">
 
-                            <button
-                                    type="button"
+                            <button type="button"
                                     id="btnBuscarCep"
                                     class="btn-buscar-cep">
                                 Consultar
@@ -363,9 +358,154 @@
                     Salvar Usuário
                 </button>
             </div>
-
         </form>
+    </div>
+</div>
 
+<!-- MODAL FILTROS -->
+<div class="modal-overlay" id="modalFiltroUsuarios">
+    <div class="modal-box elite-box">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite">
+                    <i class="fas fa-filter"></i>
+                </div>
+
+                <div class="header-text-elite">
+                    <h2>Filtros de Usuários</h2>
+                    <p>Refine a listagem de usuários do sistema</p>
+                </div>
+            </div>
+
+            <button class="btn-close-elite"
+                    type="button"
+                    onclick="fecharModalGenerico('modalFiltroUsuarios')">
+                &times;
+            </button>
+        </div>
+
+        <form th:action="@{/admin/usuarios}" method="get" class="modal-body-elite">
+            <div class="usuario-form-grid">
+                <div class="form-group-elite">
+                    <label for="filtroAtivo">Status</label>
+                    <select id="filtroAtivo" name="ativo" class="modern-select-elite">
+                        <option value="">Todos</option>
+                        <option value="true">Ativos</option>
+                        <option value="false">Inativos</option>
+                    </select>
+                </div>
+
+                <div class="form-group-elite">
+                    <label for="filtroPerfil">Perfil</label>
+                    <select id="filtroPerfil" name="perfilId" class="modern-select-elite">
+                        <option value="">Todos</option>
+                        <option th:each="perfil : ${perfis}"
+                                th:value="${perfil.id}"
+                                th:text="${perfil.nome}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer-elite">
+                <button type="button"
+                        class="btn-ghost-elite"
+                        onclick="fecharModalGenerico('modalFiltroUsuarios')">
+                    Cancelar
+                </button>
+
+                <a th:href="@{/admin/usuarios}" class="btn-ghost-elite" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                    Limpar
+                </a>
+
+                <button type="submit" class="btn-primary-elite">
+                    Aplicar Filtros
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL USUÁRIOS EXCLUÍDOS -->
+<div class="modal-overlay" id="modalUsuariosExcluidos">
+    <div class="modal-box elite-box" style="max-width: 1100px; width: 95%;">
+        <div class="modal-header-elite">
+            <div class="header-main-content">
+                <div class="header-icon-elite">
+                    <i class="fas fa-trash-restore"></i>
+                </div>
+
+                <div class="header-text-elite">
+                    <h2>Usuários Excluídos</h2>
+                    <p>Restaure contas desativadas do sistema</p>
+                </div>
+            </div>
+
+            <button class="btn-close-elite"
+                    type="button"
+                    onclick="fecharModalUsuariosExcluidos()">
+                &times;
+            </button>
+        </div>
+
+        <div class="modal-body-elite">
+            <div class="usuarios-card-table" style="margin-top: 0;">
+                <table class="usuarios-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Cargo</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:if="${usuariosExcluidos == null or #lists.isEmpty(usuariosExcluidos)}">
+                        <td colspan="6" style="text-align: center; padding: 24px;">
+                            Nenhum usuário excluído encontrado.
+                        </td>
+                    </tr>
+
+                    <tr th:each="usuario : ${usuariosExcluidos}">
+                        <td th:text="'#' + ${usuario.id}"></td>
+                        <td th:text="${usuario.nome}"></td>
+                        <td th:text="${usuario.email}"></td>
+
+                        <td>
+                            <span class="usuarios-badge"
+                                  th:each="perfil, stat : ${usuario.perfis}"
+                                  th:text="${perfil.nome + (stat.last ? '' : ', ')}">
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="usuarios-badge usuarios-badge-inativo">Inativo</span>
+                        </td>
+
+                        <td class="usuarios-actions">
+                            <a th:href="@{/admin/usuarios/restaurar/{id}(id=${usuario.id})}"
+                               class="usuarios-btn-icon usuarios-btn-edit"
+                               onclick="return confirm('Deseja restaurar este usuário?');"
+                               title="Restaurar">
+                                <i class="fas fa-trash-restore"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-footer-elite">
+            <button type="button"
+                    class="btn-ghost-elite"
+                    onclick="fecharModalUsuariosExcluidos()">
+                Fechar
+            </button>
+        </div>
     </div>
 </div>
 
